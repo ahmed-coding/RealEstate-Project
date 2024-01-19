@@ -144,7 +144,6 @@ STATIC_ROOT = BASE_DIR / '../assets'
 
 
 APPEND_SLASH = False
-CORS_ORIGIN_ALLOW_ALL = True  # -> Cors Header
 
 # Rest_framework
 REST_FRAMEWORK = {
@@ -152,7 +151,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
 
     ),
     'DEFAULT_PERMISSINS_CLASSES': ("rest_framework.permissions.IsAuthenticated",),
@@ -195,3 +194,20 @@ MEDIAFILES_DIRS = [
     BASE_DIR / "../media",
 ]
 MEDIA_ROOT = BASE_DIR / '../media'
+
+CORS_ORIGIN_ALLOW_ALL = True  # -> Cors Header
+
+# CORS_ORIGIN_WHITELIST = (
+#     'http://localhost:8000',
+#     'http://192.168.1.100:8080',
+# )
+
+# Channels settings
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
+    },
+}
