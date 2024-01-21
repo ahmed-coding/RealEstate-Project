@@ -16,17 +16,10 @@ import os
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-%m2=vfc6yd@^m_qmg1@bubht_kg!8j)g!g_8^ex1*za+=u@si)'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = os.environ.get('DEBUG')
 DEBUG = True
 
@@ -34,7 +27,6 @@ AUTH_USER_MODEL = 'apps.User'
 
 DEFAULT_CHARSET = 'utf-8'
 
-# Application definition
 
 INSTALLED_APPS = [
     # 'admin_soft.apps.AdminSoftDashboardConfig',
@@ -49,11 +41,11 @@ INSTALLED_APPS = [
     'apps',
     # # external apps
     'corsheaders',
-    'mptt',
+    # 'mptt',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
-    'user_agents',
+    # 'user_agents',
     'drf_spectacular',
     'schema_graph',
 
@@ -90,7 +82,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-# ASGI_APPLICATION = "core.asgi.application"
+ASGI_APPLICATION = "core.asgi.application"
 
 
 # Database
@@ -131,6 +123,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+
 STATIC_URL = 'static/'
 
 STATIC_URL = 'static/'
@@ -149,10 +142,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
 
     ),
-    'DEFAULT_PERMISSINS_CLASSES': ("rest_framework.permissions.IsAuthenticated",),
+    'DEFAULT_PERMISSION_CLASSES': ("rest_framework.permissions.IsAuthenticated",),
 
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
