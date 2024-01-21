@@ -353,3 +353,56 @@ class Review(models.Model):
 
 
 # End Interaction Models
+# Start TICKET Models
+
+class Ticket_type(models.Model):
+    type = models.CharField(_("type"), max_length=50)
+
+
+class Ticket_status(models.Model):
+    status = models.CharField(_("Status"), max_length=50)
+
+
+class Ticket(models.Model):
+
+    type = models.ForeignKey(Ticket_type, verbose_name=_(
+        ""), on_delete=models.DO_NOTHING)
+    status = models.ForeignKey(
+        Ticket_status, verbose_name=_(""), on_delete=models.CASCADE)
+    solver = models.ForeignKey(User, verbose_name=_(
+        "solver"), on_delete=models.CASCADE)
+    sender = models.ForeignKey(User, verbose_name=_(
+        "sender"), on_delete=models.CASCADE)
+    phone_number = models.CharField(_("phone_number"), max_length=50)
+    created_time = models.DateTimeField(
+        _("created_time"), auto_now=False, auto_now_add=True)
+    solved_time = models.DateTimeField(
+        _("solved_time"), auto_now=False, auto_now_add=False)
+    image = models.ImageField(_("image"), upload_to="ticket",)
+    email = models.EmailField(_("email"), max_length=254)
+    problem_text = models.TextField(_("problem_text"))
+
+
+class Solve_message(models.Model):
+    ticket = models.ForeignKey(
+        Ticket, verbose_name=_(""), on_delete=models.CASCADE)
+    message = models.TextField(_("message"))
+
+# End TICKET Models
+# Start Notifications Models
+
+
+class Notification(models.Model):
+    content = models.TextField(_("content"))
+    time_created = models.DateTimeField(
+        _("time_created"), auto_now=False, auto_now_add=True)
+
+
+class User_notification(models.Model):
+    user = models.ForeignKey(User, verbose_name=_(
+        "user"), on_delete=models.CASCADE)
+    notification = models.ForeignKey(
+        Notification, verbose_name=_(""), on_delete=models.CASCADE)
+
+
+# End Notifications Models
