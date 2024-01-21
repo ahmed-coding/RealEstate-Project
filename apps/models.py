@@ -310,3 +310,46 @@ class Category_attribute(models.Model):
 
 
 # End Property Models
+
+# Start Interaction Models
+
+class Rate(models.Model):
+    prop = models.ForeignKey(
+        Property, verbose_name=_(""), on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        "apps.User", verbose_name=_(""), on_delete=models.CASCADE)
+    rate = models.FloatField(_("Rating Number"), default=0.0)
+    time_created = models.DateTimeField(
+        _("time_created"), auto_now=False, auto_now_add=True)
+
+
+class Favorite(models.Model):
+    prop = models.ForeignKey(
+        Property, verbose_name=_(""), on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        "apps.User", verbose_name=_(""), on_delete=models.CASCADE)
+    time_created = models.DateTimeField(
+        _("time_created"), auto_now=False, auto_now_add=True)
+
+
+class Report(models.Model):
+    prop = models.ForeignKey(
+        Property, verbose_name=_(""), on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        "apps.User", verbose_name=_(""), on_delete=models.CASCADE)
+    time_created = models.DateTimeField(
+        _("time_created"), auto_now=False, auto_now_add=True)
+    note = models.TextField(_("Note"))
+
+
+class Review(models.Model):
+    prop = models.ForeignKey(
+        Property, verbose_name=_(""), on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        "apps.User", verbose_name=_(""), on_delete=models.CASCADE)
+    time_created = models.DateTimeField(
+        _("time_created"), auto_now=False, auto_now_add=True)
+    review = models.TextField(_("Note"))
+
+
+# End Interaction Models
