@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-%m2=vfc6yd@^m_qmg1@bubht_kg!8j)g!g_8^ex1*za+=u@si)
 # DEBUG = os.environ.get('DEBUG')
 DEBUG = True
 
-# AUTH_USER_MODEL = 'apps.User'
+AUTH_USER_MODEL = 'apps.User'
 
 DEFAULT_CHARSET = 'utf-8'
 
@@ -39,7 +39,6 @@ DEFAULT_CHARSET = 'utf-8'
 INSTALLED_APPS = [
     # 'admin_soft.apps.AdminSoftDashboardConfig',
     # 'admin_material.apps.AdminMaterialDashboardConfig',
-    # 'dashboard',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # internl apps
     'apps',
-    # 'dashboard',
     # # external apps
     'corsheaders',
     'mptt',
@@ -92,7 +90,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-ASGI_APPLICATION = "core.asgi.application"
+# ASGI_APPLICATION = "core.asgi.application"
 
 
 # Database
@@ -121,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'ar'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
@@ -177,16 +175,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # SPECTACULAR Swagger documentation settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': ' API Documentation with Swagger UI for Ecommerce',
-    'DESCRIPTION': 'Your project description',
+    'TITLE': ' API Documentation for RealEstate ',
+    'DESCRIPTION': 'RealEstate project description',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': True,
     # OTHER SETTINGS
 }
 
-LOGIN_REDIRECT_URL = '/'
+# LOGIN_REDIRECT_URL = '/'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 MEDIA_URL = 'media/'
@@ -203,11 +201,11 @@ CORS_ORIGIN_ALLOW_ALL = True  # -> Cors Header
 # )
 
 # Channels settings
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("redis", 6379)],
-        },
-    },
-}
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("redis", 6379)],
+#         },
+#     },
+# }

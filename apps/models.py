@@ -232,7 +232,7 @@ class Attribute_verify(models.Model):
 
 class Attribute_value(models.Model):
     attribute = models.ForeignKey(
-        "app.Model", verbose_name=_(""), on_delete=models.CASCADE)
+        'Attribute', verbose_name=_(""), on_delete=models.CASCADE)
 
 # End Custom User Manager and User Models
 
@@ -260,8 +260,8 @@ class Property(models.Model):
         "User"), on_delete=models.CASCADE)
     category = models.ForeignKey(Category, verbose_name=_(
         "category"), on_delete=models.CASCADE)
-    address = models.ForeignKey(
-        "Address", verbose_name=_(""), on_delete=models.CASCADE)
+    # address = models.ForeignKey(
+    #     "Address", verbose_name=_(""), on_delete=models.CASCADE)
     name = models.CharField(_("Name"), max_length=50)
     description = models.TextField(_("description"))
     price = models.DecimalField(_("Price"), max_digits=10, decimal_places=2)
@@ -370,9 +370,9 @@ class Ticket(models.Model):
     status = models.ForeignKey(
         Ticket_status, verbose_name=_(""), on_delete=models.CASCADE)
     solver = models.ForeignKey(User, verbose_name=_(
-        "solver"), on_delete=models.CASCADE)
+        "solver"), on_delete=models.CASCADE, related_name="solver")
     sender = models.ForeignKey(User, verbose_name=_(
-        "sender"), on_delete=models.CASCADE)
+        "sender"), on_delete=models.CASCADE, related_name="sender")
     phone_number = models.CharField(_("phone_number"), max_length=50)
     created_time = models.DateTimeField(
         _("created_time"), auto_now=False, auto_now_add=True)
