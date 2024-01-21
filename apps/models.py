@@ -16,6 +16,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.utils import timezone
 
 
+# Custom User Manager and User Models
+
 class MyUserManager(BaseUserManager):
     """
     Custom User Manager
@@ -231,3 +233,80 @@ class Attribute_verify(models.Model):
 class Attribute_value(models.Model):
     attribute = models.ForeignKey(
         "app.Model", verbose_name=_(""), on_delete=models.CASCADE)
+
+# End Custom User Manager and User Models
+
+# Start Property Models
+
+
+class Category(models.Model):
+    name = models.CharField(_("category"), max_length=50)
+    image = models.ImageField(_("cate_image"), upload_to="cate-image")
+
+
+class Feature(models.Model):
+    name = models.CharField(_("feature Name"), max_length=50)
+
+
+class Feature_category(models.Model):
+    feature = models.ForeignKey(Feature, verbose_name=_(
+        "feature"), on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, verbose_name=_(
+        "category"), on_delete=models.CASCADE)
+
+
+class Property(models.Model):
+    user = models.ForeignKey(User, verbose_name=_(
+        "User"), on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, verbose_name=_(
+        "category"), on_delete=models.CASCADE)
+    address = models.ForeignKey(
+        "Address", verbose_name=_(""), on_delete=models.CASCADE)
+    name = models.CharField(_("Name"), max_length=50)
+    description = models.TextField(_("description"))
+    price = models.DecimalField(_("Price"), max_digits=10, decimal_places=2)
+    size = models.IntegerField(_("size"))
+    is_active = models.BooleanField(_("is_active"), default=True)
+    is_deleted = models.BooleanField(_("is_deleted"), default=False)
+    time_created = models.DateTimeField(
+        _("time_created"), auto_now=False, auto_now_add=True)
+    unique_number = models.SlugField(_("unique_number"))
+
+
+class Feature_property(models.Model):
+    property = models.ForeignKey(Property, verbose_name=_(
+        "Property"), on_delete=models.CASCADE)
+    feature = models.ForeignKey(Feature, verbose_name=_(
+        "Feature"), on_delete=models.CASCADE)
+    image = models.ImageField(_("image"), upload_to='feature_property')
+
+
+class Attribute(models.Model):
+    name = models.CharField(_("Name"), max_length=50)
+    data_type = models.CharField(_("data_type"), max_length=50)
+
+
+class ValueModel(models.Model):
+    attribute = models.ForeignKey(
+        Attribute, verbose_name=_(""), on_delete=models.CASCADE)
+    value = models.CharField(_("Value"), max_length=50)
+
+    class Meta:
+        db_table = 'Value'
+
+
+class property_value(models.Model):
+    property = models.ForeignKey(
+        Property, verbose_name=_(""), on_delete=models.CASCADE)
+    value = models.ForeignKey(
+        ValueModel, verbose_name=_(""), on_delete=models.CASCADE)
+
+
+class Category_attribute(models.Model):
+    category = models.ForeignKey(Category, verbose_name=_(
+        "category"), on_delete=models.CASCADE)
+    attribute = models.ForeignKey(
+        Attribute, verbose_name=_(""), on_delete=models.CASCADE)
+
+
+# End Property Models
