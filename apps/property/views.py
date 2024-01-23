@@ -14,13 +14,16 @@ from . import serializers
 
 
 class PropertyViewsets(viewsets.ModelViewSet):
-    serializer_class = serializers.PropertySerializers
+    serializer_class = serializers.SinglePropertySerializers
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', ]
     filterset_fields = ['name',]
     ordering_fields = '__all__'
+
+    def get_serializer_context(self):
+        return {'user': self.request.user} if self.request.user.is_authenticated else {}
 
     def get_queryset(self):
         if self.action == 'get_high_rate':

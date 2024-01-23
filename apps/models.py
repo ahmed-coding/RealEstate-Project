@@ -264,18 +264,18 @@ class Country(models.Model):
 class City(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     country = models.ForeignKey(
-        Country, verbose_name=_(""), on_delete=models.CASCADE)
+        Country, verbose_name=_("Country"), on_delete=models.CASCADE)
 
 
 class State(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     city = models.ForeignKey(
-        City, verbose_name=_(""), on_delete=models.CASCADE)
+        City, verbose_name=_("City"), on_delete=models.CASCADE)
 
 
 class Address(models.Model):
     state = models.ForeignKey(
-        State, verbose_name=_(""), on_delete=models.CASCADE)
+        State, verbose_name=_("State "), on_delete=models.CASCADE)
     longitude = models.CharField(_("longitude"), max_length=50)
     latitude = models.CharField(_("latitude"), max_length=50)
 
@@ -286,7 +286,7 @@ class Property(models.Model):
     category = models.ForeignKey(Category, verbose_name=_(
         "category"), on_delete=models.CASCADE)
     address = models.ForeignKey(
-        Address, verbose_name=_(""), on_delete=models.CASCADE)
+        Address, verbose_name=_("Address"), on_delete=models.CASCADE)
     name = models.CharField(_("Name"), max_length=50)
     description = models.TextField(_("description"))
     price = models.DecimalField(_("Price"), max_digits=10, decimal_places=2)
@@ -340,7 +340,7 @@ class Category_attribute(models.Model):
 
 class Rate(models.Model):
     prop = models.ForeignKey(
-        Property, verbose_name=_(""), on_delete=models.CASCADE)
+        Property, verbose_name=_(""), on_delete=models.CASCADE, related_name='rate')
     user = models.ForeignKey(
         "apps.User", verbose_name=_(""), on_delete=models.CASCADE)
     rate = models.FloatField(_("Rating Number"), default=0.0)
@@ -350,7 +350,7 @@ class Rate(models.Model):
 
 class Favorite(models.Model):
     prop = models.ForeignKey(
-        Property, verbose_name=_(""), on_delete=models.CASCADE)
+        Property, verbose_name=_(""), on_delete=models.CASCADE, related_name='favorites')
     user = models.ForeignKey(
         "apps.User", verbose_name=_(""), on_delete=models.CASCADE)
     time_created = models.DateTimeField(

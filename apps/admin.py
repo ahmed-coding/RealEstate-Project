@@ -24,5 +24,6 @@ admin.site.register(model_or_iterable=[
     models.Feature_property,
     models.Country,
     models.Address,
-    models.Feature_category
+    models.Feature_category,
+    models.State
 ])
