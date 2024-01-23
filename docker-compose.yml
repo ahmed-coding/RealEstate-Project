@@ -1,0 +1,94 @@
+version: '3.8'
+
+networks:
+  RealEstate:
+
+services:
+  redis:
+    image: redis:7.0.11-alpine
+    container_name: redis
+    networks:
+      - RealEstate
+
+  # postgres:
+  #   build:
+  #     context: ./core
+  #     dockerfile: Dockerfile.postgis
+  #   container_name: ds-postgres
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: 12345
+  #     POSTGRES_DB: DS
+  #   ports:
+  #     - "5435:5432" # Map PostgreSQL port to host
+  #   networks:
+  #     - RealEstate
+  #   command: [ "postgres", "-c", "log_statement=all" ]       
+
+  coreapis:
+    container_name: core
+    build:
+      context: .
+    command: python manage.py runserver 0.0.0.0:8001
+    volumes:
+      - ./:/usr/src/app/realEstate/
+    ports:
+      - 8005:8001
+    environment:
+      - DEBUG=true
+    depends_on:
+      - redis
+      # - postgres # Add PostgreSQL as a dependency
+    networks:
+      - RealEstate
+  # celery:
+  #   container_name: ds-celery
+  #   build:
+  #     context: ./core
+  #   command: celery --app=core worker -l INFO -B
+  #   volumes:
+  #     - ./core:/usr/src/app/ds-project/ds-core/
+  #   environment:
+  #     - DEBUG=true
+  #   depends_on:
+  #     - redis
+  #     - postgres # Add PostgreSQL as a dependency
+  #   networks:
+  #     - DS
+
+  # rabbitmq:
+  #   image: rabbitmq:management
+  #   container_name: ds-rabbitmq
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
+  #   networks:
+  #     - DS
+  # flower:
+  #   image: mher/flower
+  #   container_name: ds-flower
+  #   ports:
+  #     - 5555:5555
+  #   networks:
+  #     - DS
+  #   environment:
+  #     - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+
+  # celeryworker:
+  #   container_name: celeryworker
+  #   build:
+  #     context: ./celeryworker
+  #     dockerfile: Dockerfile
+  #   command: celery --app=celerytask worker -l INFO -B
+  #   volumes:
+  #     - ./celeryworker:/usr/src/app/ds-project/ds-celeryworker/
+  #   environment:
+  #     - DEBUG=true
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+  #     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  #   depends_on:
+  #     - redis
+  #     - coreapis
+  #     # - postgres # Add PostgreSQL as a dependency
+  #   networks:
+  #     - DS

@@ -29,8 +29,7 @@ DEFAULT_CHARSET = 'utf-8'
 
 
 INSTALLED_APPS = [
-    # 'admin_soft.apps.AdminSoftDashboardConfig',
-    # 'admin_material.apps.AdminMaterialDashboardConfig',
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,10 +41,11 @@ INSTALLED_APPS = [
     # # external apps
     'corsheaders',
     # 'mptt',
+    'channels',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
-    # 'user_agents',
+    'user_agents',
     'drf_spectacular',
     'schema_graph',
 
