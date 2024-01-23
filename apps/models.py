@@ -128,6 +128,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True
     )
     unique_no = models.SlugField(_("unique_no"), unique=True, blank=True,)
+    is_seller = models.BooleanField(_("Is Seller?"), default=False)
 
     ########## ManyToMAny Fileds ###########
     # product_view = models.ManyToManyField("Product_item", through='View')
@@ -256,13 +257,36 @@ class Feature_category(models.Model):
         "category"), on_delete=models.CASCADE)
 
 
+class Country(models.Model):
+    name = models.CharField(_("Name"), max_length=50)
+
+
+class City(models.Model):
+    name = models.CharField(_("Name"), max_length=50)
+    country = models.ForeignKey(
+        Country, verbose_name=_(""), on_delete=models.CASCADE)
+
+
+class State(models.Model):
+    name = models.CharField(_("Name"), max_length=50)
+    city = models.ForeignKey(
+        City, verbose_name=_(""), on_delete=models.CASCADE)
+
+
+class Address(models.Model):
+    state = models.ForeignKey(
+        State, verbose_name=_(""), on_delete=models.CASCADE)
+    longitude = models.CharField(_("longitude"), max_length=50)
+    latitude = models.CharField(_("latitude"), max_length=50)
+
+
 class Property(models.Model):
     user = models.ForeignKey(User, verbose_name=_(
         "User"), on_delete=models.CASCADE)
     category = models.ForeignKey(Category, verbose_name=_(
         "category"), on_delete=models.CASCADE)
-    # address = models.ForeignKey(
-    #     "Address", verbose_name=_(""), on_delete=models.CASCADE)
+    address = models.ForeignKey(
+        Address, verbose_name=_(""), on_delete=models.CASCADE)
     name = models.CharField(_("Name"), max_length=50)
     description = models.TextField(_("description"))
     price = models.DecimalField(_("Price"), max_digits=10, decimal_places=2)
