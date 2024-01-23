@@ -1,3 +1,5 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 import uuid
 from django.utils.text import slugify
 from django.contrib.gis.db import models as gis_models
@@ -395,6 +397,17 @@ class Notification(models.Model):
     content = models.TextField(_("content"))
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            'notifications',
+            {
+                'type': 'send_notifications',
+                'content': self.content
+            },
+        )
+        return super().save(*args, **kwargs)
 
 
 class User_notification(models.Model):
