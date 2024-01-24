@@ -1,23 +1,39 @@
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
-import uuid
-from django.utils.text import slugify
-from django.contrib.gis.db import models as gis_models
-from django.db import models
-from PIL import Image as PImage
-from xmlrpc.client import TRANSPORT_ERROR
-from django.db import transaction
-from django.core.exceptions import ObjectDoesNotExist
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from django.db import models
-# from django.contrib.auth.models import User
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
+from xmlrpc.client import TRANSPORT_ERROR
+from PIL import Image as PImage
+from django.db import models
+from django.contrib.gis.db import models as gis_models
+from django.utils.text import slugify
+import uuid
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+import string
+import random
+# from django.contrib.auth.models import User
 
+
+def generit_random_code(code_lenth):
+    list_code = string.digits
+    lenth = len(list_code)
+    count = 0
+    code = ''
+    while count <= 3:
+        index = random.randint(0, lenth-1)
+        code += list_code[index]
+        count += 1
+    # print(len(str(int(code))))
+    if len(str(int(code))) != code_lenth:
+        generit_random_code()
+    return int(code)
 
 # Custom User Manager and User Models
+
 
 class MyUserManager(BaseUserManager):
     """
@@ -154,6 +170,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Return the short name for the user."""
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.unique_no = f"{generit_random_code(8)[:8]}"
+        return super().save(*args, **kwargs)
+
     def delete(self, *args, **kwargs):
         """
         Overrid delete method to delete Image first then delete user
@@ -237,7 +258,33 @@ class Attribute_value(models.Model):
         'Attribute', verbose_name=_(""), on_delete=models.CASCADE)
 
 # End Custom User Manager and User Models
+# Start Address
 
+
+class Country(models.Model):
+    name = models.CharField(_("Name"), max_length=50)
+
+
+class City(models.Model):
+    name = models.CharField(_("Name"), max_length=50)
+    country = models.ForeignKey(
+        Country, verbose_name=_("Country"), on_delete=models.CASCADE, related_name='city')
+
+
+class State(models.Model):
+    name = models.CharField(_("Name"), max_length=50)
+    city = models.ForeignKey(
+        City, verbose_name=_("City"), on_delete=models.CASCADE, related_name='state')
+
+
+class Address(models.Model):
+    state = models.ForeignKey(
+        State, verbose_name=_("State "), on_delete=models.CASCADE, related_name='address')
+    longitude = models.CharField(_("longitude"), max_length=50)
+    latitude = models.CharField(_("latitude"), max_length=50)
+
+
+# End Address
 # Start Property Models
 
 
@@ -252,41 +299,18 @@ class Feature(models.Model):
 
 class Feature_category(models.Model):
     feature = models.ForeignKey(Feature, verbose_name=_(
-        "feature"), on_delete=models.CASCADE)
+        "feature"), on_delete=models.CASCADE, related_name='feature_category')
     category = models.ForeignKey(Category, verbose_name=_(
-        "category"), on_delete=models.CASCADE)
-
-
-class Country(models.Model):
-    name = models.CharField(_("Name"), max_length=50)
-
-
-class City(models.Model):
-    name = models.CharField(_("Name"), max_length=50)
-    country = models.ForeignKey(
-        Country, verbose_name=_("Country"), on_delete=models.CASCADE)
-
-
-class State(models.Model):
-    name = models.CharField(_("Name"), max_length=50)
-    city = models.ForeignKey(
-        City, verbose_name=_("City"), on_delete=models.CASCADE)
-
-
-class Address(models.Model):
-    state = models.ForeignKey(
-        State, verbose_name=_("State "), on_delete=models.CASCADE)
-    longitude = models.CharField(_("longitude"), max_length=50)
-    latitude = models.CharField(_("latitude"), max_length=50)
+        "category"), on_delete=models.CASCADE, related_name='feature_category')
 
 
 class Property(models.Model):
     user = models.ForeignKey(User, verbose_name=_(
-        "User"), on_delete=models.CASCADE)
+        "User"), on_delete=models.CASCADE, related_name='property')
     category = models.ForeignKey(Category, verbose_name=_(
-        "category"), on_delete=models.CASCADE)
+        "category"), on_delete=models.CASCADE, related_name='property')
     address = models.ForeignKey(
-        Address, verbose_name=_("Address"), on_delete=models.CASCADE)
+        Address, verbose_name=_("Address"), on_delete=models.CASCADE, related_name='property')
     name = models.CharField(_("Name"), max_length=50)
     description = models.TextField(_("description"))
     price = models.DecimalField(_("Price"), max_digits=10, decimal_places=2)
@@ -295,14 +319,19 @@ class Property(models.Model):
     is_deleted = models.BooleanField(_("is_deleted"), default=False)
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
-    unique_number = models.SlugField(_("unique_number"))
+    unique_number = models.SlugField(_("unique_number"), editable=False)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.unique_no = f"{generit_random_code(10)}"
+        return super().save(*args, **kwargs)
 
 
 class Feature_property(models.Model):
     property = models.ForeignKey(Property, verbose_name=_(
-        "Property"), on_delete=models.CASCADE)
+        "Property"), on_delete=models.CASCADE, related_name='feature_property')
     feature = models.ForeignKey(Feature, verbose_name=_(
-        "Feature"), on_delete=models.CASCADE)
+        "Feature"), on_delete=models.CASCADE, related_name='feature_property')
     image = models.ImageField(_("image"), upload_to='feature_property')
 
 
@@ -313,7 +342,7 @@ class Attribute(models.Model):
 
 class ValueModel(models.Model):
     attribute = models.ForeignKey(
-        Attribute, verbose_name=_(""), on_delete=models.CASCADE)
+        Attribute, verbose_name=_("attribute"), on_delete=models.CASCADE, related_name='value_attribute')
     value = models.CharField(_("Value"), max_length=50)
 
     class Meta:
@@ -322,16 +351,16 @@ class ValueModel(models.Model):
 
 class property_value(models.Model):
     property = models.ForeignKey(
-        Property, verbose_name=_(""), on_delete=models.CASCADE)
+        Property, verbose_name=_("property"), on_delete=models.CASCADE, related_name='property_value')
     value = models.ForeignKey(
-        ValueModel, verbose_name=_(""), on_delete=models.CASCADE)
+        ValueModel, verbose_name=_("value"), on_delete=models.CASCADE, related_name="property_value")
 
 
 class Category_attribute(models.Model):
     category = models.ForeignKey(Category, verbose_name=_(
-        "category"), on_delete=models.CASCADE)
+        "category"), on_delete=models.CASCADE, related_name='category_attribute')
     attribute = models.ForeignKey(
-        Attribute, verbose_name=_(""), on_delete=models.CASCADE)
+        Attribute, verbose_name=_("attribute"), on_delete=models.CASCADE, related_name='category_attribute')
 
 
 # End Property Models
@@ -340,9 +369,9 @@ class Category_attribute(models.Model):
 
 class Rate(models.Model):
     prop = models.ForeignKey(
-        Property, verbose_name=_(""), on_delete=models.CASCADE, related_name='rate')
+        Property, verbose_name=_("prperty"), on_delete=models.CASCADE, related_name='rate')
     user = models.ForeignKey(
-        "apps.User", verbose_name=_(""), on_delete=models.CASCADE)
+        "apps.User", verbose_name=_("user"), on_delete=models.CASCADE, related_name='rate')
     rate = models.FloatField(_("Rating Number"), default=0.0)
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
@@ -352,16 +381,16 @@ class Favorite(models.Model):
     prop = models.ForeignKey(
         Property, verbose_name=_(""), on_delete=models.CASCADE, related_name='favorites')
     user = models.ForeignKey(
-        "apps.User", verbose_name=_(""), on_delete=models.CASCADE)
+        "apps.User", verbose_name=_(""), on_delete=models.CASCADE, related_name='favorites')
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
 
 
 class Report(models.Model):
     prop = models.ForeignKey(
-        Property, verbose_name=_(""), on_delete=models.CASCADE)
+        Property, verbose_name=_("property"), on_delete=models.CASCADE, related_name='report')
     user = models.ForeignKey(
-        "apps.User", verbose_name=_(""), on_delete=models.CASCADE)
+        "apps.User", verbose_name=_("user"), on_delete=models.CASCADE, related_name='report')
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
     note = models.TextField(_("Note"))
@@ -369,9 +398,9 @@ class Report(models.Model):
 
 class Review(models.Model):
     prop = models.ForeignKey(
-        Property, verbose_name=_(""), on_delete=models.CASCADE)
+        Property, verbose_name=_("Property"), on_delete=models.CASCADE, related_name='review')
     user = models.ForeignKey(
-        "apps.User", verbose_name=_(""), on_delete=models.CASCADE)
+        "apps.User", verbose_name=_("user"), on_delete=models.CASCADE, related_name='review')
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
     review = models.TextField(_("Note"))
@@ -391,9 +420,9 @@ class Ticket_status(models.Model):
 class Ticket(models.Model):
 
     type = models.ForeignKey(Ticket_type, verbose_name=_(
-        ""), on_delete=models.DO_NOTHING)
+        "type"), on_delete=models.DO_NOTHING, related_name='ticket')
     status = models.ForeignKey(
-        Ticket_status, verbose_name=_(""), on_delete=models.CASCADE)
+        Ticket_status, verbose_name=_("Ticket_status"), on_delete=models.CASCADE, related_name='ticket')
     solver = models.ForeignKey(User, verbose_name=_(
         "solver"), on_delete=models.CASCADE, related_name="solver")
     sender = models.ForeignKey(User, verbose_name=_(
@@ -410,7 +439,7 @@ class Ticket(models.Model):
 
 class Solve_message(models.Model):
     ticket = models.ForeignKey(
-        Ticket, verbose_name=_(""), on_delete=models.CASCADE)
+        Ticket, verbose_name=_("ticket"), on_delete=models.CASCADE, related_name='solve_message')
     message = models.TextField(_("message"))
 
 # End TICKET Models
@@ -436,9 +465,9 @@ class Notification(models.Model):
 
 class User_notification(models.Model):
     user = models.ForeignKey(User, verbose_name=_(
-        "user"), on_delete=models.CASCADE)
+        "user"), on_delete=models.CASCADE, related_name='notifications')
     notification = models.ForeignKey(
-        Notification, verbose_name=_(""), on_delete=models.CASCADE)
+        Notification, verbose_name=_("notification"), on_delete=models.CASCADE, related_name='user_notification')
 
 
 # End Notifications Models

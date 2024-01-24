@@ -8,13 +8,12 @@ from rest_framework.views import Response
 
 from apps.models import Property
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Count
+from django.db.models import Count, Avg
 
 from . import serializers
 
 
 class PropertyViewsets(viewsets.ModelViewSet):
-    serializer_class = serializers.SinglePropertySerializers
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
@@ -32,6 +31,12 @@ class PropertyViewsets(viewsets.ModelViewSet):
             ).order_by('-rating_count')
         else:
             return Property.objects.all().order_by('-id')
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return serializers.PropertyDetailsSerializers
+        else:
+            return serializers.SinglePropertySerializers
 
     @action(detail=True, methods=['list'])
     def get_high_rate(self, request, *args, **kwargs):

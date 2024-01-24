@@ -1,3 +1,4 @@
+from statistics import mode
 from django.contrib import admin
 from . import models
 from django import forms
@@ -25,5 +26,9 @@ admin.site.register(model_or_iterable=[
     models.Country,
     models.Address,
     models.Feature_category,
-    models.State
+    models.State,
+    models.Feature,
+    models.ValueModel,
+    models.Attribute_value,
+    models.Attribute
 ])
