@@ -290,6 +290,11 @@ class Address(models.Model):
 
 class Category(models.Model):
     name = models.CharField(_("category"), max_length=50)
+
+
+class Image_Category(models.Model):
+    category = models.ForeignKey(Category, verbose_name=_(
+        "Category"), on_delete=models.CASCADE, related_name='image')
     image = models.ImageField(_("cate_image"), upload_to="cate-image")
 
 
@@ -327,11 +332,22 @@ class Property(models.Model):
         return super().save(*args, **kwargs)
 
 
+class Image_Property(models.Model):
+    property = models.ForeignKey(Property, verbose_name=_(
+        "Property"), on_delete=models.CASCADE, related_name='image')
+    image = models.ImageField(_("image"), upload_to="ticket",)
+
+
 class Feature_property(models.Model):
     property = models.ForeignKey(Property, verbose_name=_(
         "Property"), on_delete=models.CASCADE, related_name='feature_property')
     feature = models.ForeignKey(Feature, verbose_name=_(
         "Feature"), on_delete=models.CASCADE, related_name='feature_property')
+
+
+class Image_Feature_property(models.Model):
+    feature_property = models.ForeignKey(Feature_property, verbose_name=_(
+        "feature_property"), on_delete=models.CASCADE, related_name='image')
     image = models.ImageField(_("image"), upload_to='feature_property')
 
 
@@ -432,9 +448,14 @@ class Ticket(models.Model):
         _("created_time"), auto_now=False, auto_now_add=True)
     solved_time = models.DateTimeField(
         _("solved_time"), auto_now=False, auto_now_add=False)
-    image = models.ImageField(_("image"), upload_to="ticket",)
     email = models.EmailField(_("email"), max_length=254)
     problem_text = models.TextField(_("problem_text"))
+
+
+class Image_Ticket(models.Model):
+    ticket = models.ForeignKey(Ticket, verbose_name=_(
+        "Ticket"), on_delete=models.CASCADE)
+    image = models.ImageField(_("image"), upload_to="ticket",)
 
 
 class Solve_message(models.Model):
