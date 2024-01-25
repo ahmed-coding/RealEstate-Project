@@ -1,3 +1,4 @@
+from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils.translation import gettext_lazy as _
@@ -23,13 +24,13 @@ def generit_random_code(code_lenth):
     lenth = len(list_code)
     count = 0
     code = ''
-    while count <= 3:
+    while count < code_lenth:
         index = random.randint(0, lenth-1)
         code += list_code[index]
         count += 1
     # print(len(str(int(code))))
     if len(str(int(code))) != code_lenth:
-        generit_random_code()
+        generit_random_code(code_lenth)
     return int(code)
 
 # Custom User Manager and User Models
@@ -172,7 +173,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.unique_no = f"{generit_random_code(8)[:8]}"
+            self.unique_no = f"{generit_random_code(8)}"
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -288,8 +289,25 @@ class Address(models.Model):
 # Start Property Models
 
 
-class Category(models.Model):
-    name = models.CharField(_("category"), max_length=50)
+class Category(MPTTModel):
+    """
+    model for Main category , category and Sub-category in one model
+    ----------------
+    use parent and level attributes to access who category is returned
+    """
+    parent = TreeForeignKey(
+        'self', on_delete=models.CASCADE, blank=True, related_name='children', null=True)
+    name = models.CharField(max_length=50)
+
+    class MPTTMeta:
+        # level_attr = 'parint'
+        order_insertion_by = ['name']
+
+    def __str__(self):
+        return f"name: {self.name} parent {self.parent} id {self.id} "
+
+    class Meta:
+        db_table = 'Category'
 
 
 class Image_Category(models.Model):
@@ -360,6 +378,9 @@ class ValueModel(models.Model):
     attribute = models.ForeignKey(
         Attribute, verbose_name=_("attribute"), on_delete=models.CASCADE, related_name='value_attribute')
     value = models.CharField(_("Value"), max_length=50)
+
+    def __str__(self):
+        return f"{self.attribute.name} - {self.value}"
 
     class Meta:
         db_table = 'Value'

@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import User, UserSerializer
 
 
-class CustomAuthToken(generics.GenericAPIView):
+class CustomAuthToken(CreateAPIView):
     serializer_class = AuthTokenSerializer
 
     def post(self, request, *args, **kwargs):
