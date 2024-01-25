@@ -317,6 +317,11 @@ class Image_Category(models.Model):
 
 
 class Feature(models.Model):
+    """_summary_
+
+    Args:
+        models (_type_): _description_
+    """
     name = models.CharField(_("feature Name"), max_length=50)
 
 
