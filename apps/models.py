@@ -393,18 +393,18 @@ class Category(MPTTModel):
         db_table = 'Category'
 
 
-class Image_Category(models.Model):
-    """
-    Image_Category model .
-    ---------------------------
+# class Image_Category(models.Model):
+#     """
+#     Image_Category model .
+#     ---------------------------
 
-    """
-    category = models.ForeignKey(Category, verbose_name=_(
-        "Category"), on_delete=models.CASCADE, related_name='image')
-    image = models.ImageField(_("cate_image"), upload_to="cate-image")
+#     """
+#     category = models.ForeignKey(Category, verbose_name=_(
+#         "Category"), on_delete=models.CASCADE, related_name='image')
+#     image = models.ImageField(_("cate_image"), upload_to="cate-image")
 
-    class Meta:
-        db_table = 'Image_Category'
+#     class Meta:
+#         db_table = 'Image_Category'
 
 
 class Feature(models.Model):
@@ -466,18 +466,18 @@ class Property(models.Model):
         db_table = 'Property'
 
 
-class Image_Property(models.Model):
-    """
-    Image_Property model .
-    ---------------------------
+# class Image_Property(models.Model):
+#     """
+#     Image_Property model .
+#     ---------------------------
 
-    """
-    property = models.ForeignKey(Property, verbose_name=_(
-        "Property"), on_delete=models.CASCADE, related_name='image')
-    image = models.ImageField(_("image"), upload_to="ticket",)
+#     """
+#     property = models.ForeignKey(Property, verbose_name=_(
+#         "Property"), on_delete=models.CASCADE, related_name='image')
+#     image = models.ImageField(_("image"), upload_to="ticket",)
 
-    class Meta:
-        db_table = 'Image_Property'
+#     class Meta:
+#         db_table = 'Image_Property'
 
 
 class Feature_property(models.Model):
@@ -496,18 +496,18 @@ class Feature_property(models.Model):
         db_table = 'Feature_property'
 
 
-class Image_Feature_property(models.Model):
-    """
-    Image_Feature_property model .
-    ---------------------------
+# class Image_Feature_property(models.Model):
+#     """
+#     Image_Feature_property model .
+#     ---------------------------
 
-    """
-    feature_property = models.ForeignKey(Feature_property, verbose_name=_(
-        "feature_property"), on_delete=models.CASCADE, related_name='image')
-    image = models.ImageField(_("image"), upload_to='feature_property')
+#     """
+#     feature_property = models.ForeignKey(Feature_property, verbose_name=_(
+#         "feature_property"), on_delete=models.CASCADE, related_name='image')
+#     image = models.ImageField(_("image"), upload_to='feature_property')
 
-    class Meta:
-        db_table = 'Image_Feature_property'
+#     class Meta:
+#         db_table = 'Image_Feature_property'
 
 
 class Attribute(models.Model):
@@ -700,18 +700,18 @@ class Ticket(models.Model):
         db_table = 'Ticket'
 
 
-class Image_Ticket(models.Model):
-    """
-    Image_Ticket model .
-    ---------------------------
+# class Image_Ticket(models.Model):
+#     """
+#     Image_Ticket model .
+#     ---------------------------
 
-    """
-    ticket = models.ForeignKey(Ticket, verbose_name=_(
-        "Ticket"), on_delete=models.CASCADE)
-    image = models.ImageField(_("image"), upload_to="ticket",)
+#     """
+#     ticket = models.ForeignKey(Ticket, verbose_name=_(
+#         "Ticket"), on_delete=models.CASCADE)
+#     image = models.ImageField(_("image"), upload_to="ticket",)
 
-    class Meta:
-        db_table = 'Image_Ticket'
+#     class Meta:
+#         db_table = 'Image_Ticket'
 
 
 class Solve_message(models.Model):

@@ -1,16 +1,11 @@
 from rest_framework import serializers
-from ..models import Category, Image_Category
+from ..models import Category, Image
 
-
-class Image_CategorySerializers(serializers.ModelSerializer):
-
-    class Meta:
-        model = Image_Category
-        fields = ('image',)
+from ..serializers import Image_Serializers
 
 
 class CategorySerializers(serializers.ModelSerializer):
-    image = Image_CategorySerializers(many=True, read_only=True)
+    image = Image_Serializers(many=True, read_only=True)
 
     class Meta:
         model = Category

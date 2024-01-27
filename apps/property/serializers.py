@@ -1,28 +1,24 @@
 from rest_framework import serializers
 
+from ..serializers import Image_Serializers
+
 from ..users.serializers import UserSerializers
-from ..models import Attribute, Image_Feature_property, Image_Property, Property, Feature, Feature_property, property_value, ValueModel
+from ..models import Attribute, Image,  Property, Feature, Feature_property, property_value, ValueModel
 from ..categorie.serializers import CategorySerializers
 from ..address.serializers import AddressSerializers
 
 
-class Image_Feature_propertySerializers(serializers.ModelSerializer):
+# class Image_Feature_propertySerializers(serializers.ModelSerializer):
 
-    class Meta:
-        model = Image_Feature_property
-        fiels = ('image',)
-
-
-class Image_PropertySerializers(serializers.ModelSerializer):
-    class Meta:
-        model = Image_Property
-        fields = ("image",)
+#     class Meta:
+#         model = Image
+#         fiels = ('image',)
 
 
 class SinglePropertySerializers(serializers.ModelSerializer):
     rate = serializers.SerializerMethodField(read_only=True)
     in_favorite = serializers.SerializerMethodField(read_only=True)
-    image = Image_PropertySerializers(many=True, read_only=True)
+    image = Image_Serializers(many=True, read_only=True)
 
     def get_in_favorite(self, obj) -> bool:
         user = self.context.get('user' or None)
@@ -58,7 +54,7 @@ class FeatureSerializers(serializers.ModelSerializer):
 
 class Feature_propertySerializers(serializers.ModelSerializer):
     feature = FeatureSerializers(read_only=True)
-    image = Image_Feature_propertySerializers(many=True, read_only=True)
+    image = Image_Serializers(many=True, read_only=True)
 
     class Meta:
         model = Feature_property
@@ -95,7 +91,7 @@ class PropertyDetailsSerializers(serializers.ModelSerializer):
     address = AddressSerializers(read_only=True)
     category = CategorySerializers(read_only=True)
     user = UserSerializers(read_only=True)
-    image = Image_PropertySerializers(many=True, read_only=True)
+    image = Image_Serializers(many=True, read_only=True)
 
     def get_in_favorite(self, obj) -> bool:
         user = self.context.get('user' or None)
