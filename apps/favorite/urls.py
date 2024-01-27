@@ -24,7 +24,7 @@ urlpatterns = [
 
     path('create/', views.FavoriteView.as_view({'post': 'create'})),
 
-    path('<product_id>/delete/',
+    path('<prop_id>/delete/',
          views.FavoriteView.as_view({'delete': 'destroy'})),
     path('delete-all/',
          views.FavoriteView.as_view({'post': 'destroy_list'}), name='delete_all_favorite'),

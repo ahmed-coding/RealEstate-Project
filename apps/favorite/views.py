@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 # from apps.cart.serializers import CreateFavoriteSerializers
 from ..pagination import StandardResultsSetPagination
@@ -16,8 +17,14 @@ from . import serializers
 
 class FavoriteView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['prop', ]
+    filterset_fields = ['prop',]
+    ordering_fields = '__all__'
     # serializer_class = serializers.FavoriteSerializers
-    lookup_field = 'product_id'
+    lookup_field = 'prop_id'
 
     def get_serializer_context(self):
         return {'user': self.request.user}
@@ -30,7 +37,7 @@ class FavoriteView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         ser = self.get_serializer_class()
-        ser = ser(
+        ser = serializers.CreateFavoriteSerializers(
             data=request.data, context={'user': request.user})
         # print(
         # f"User: {request.user}, Product ID: {request.data.get('product')}")

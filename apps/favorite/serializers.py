@@ -24,12 +24,12 @@ class FavoriteSerializers(serializers.ModelSerializer):
 class CreateFavoriteSerializers(serializers.ModelSerializer):
     # user = serializers.HiddenField(default=None)
     # product = ProductSerializer(many=True, read_only=True)
-    prop = serializers.IntegerField()
+    # prop = serializers.IntegerField()
 
-    # def validate(self, attrs):
-    #     # self.user = self.context.get('user').id
-    #     attrs['user'] = self.context.get('user')
-    #     return super().validate(attrs)
+    def validate(self, attrs):
+        # self.user = self.context.get('user').id
+        attrs['user'] = self.context.get('user')
+        return super().validate(attrs)
 
     # def create(self, validated_data):
     #     user = self.context['user']
