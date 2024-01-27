@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
@@ -350,6 +352,25 @@ class Address(models.Model):
 # Start Property Models
 
 
+def generate_upload_to_path(instance, filename):
+    if instance.content_type:
+        return f'{instance.content_type.name}-images/{filename}'
+    return f'images/unknown/{filename}'
+
+
+class Image(models.Model):
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey()
+    image = models.ImageField(_("Image"), upload_to=generate_upload_to_path)
+    # def save(self, *args, **kwargs):
+
+    #     if self.content_type:
+    #         self.image.upload_to = f'{self.content_type.name}/'
+    #     return super().save(*args, **kwargs)
+
+
 class Category(MPTTModel):
     """
     model for Main category , category and Sub-category in one model
@@ -359,6 +380,7 @@ class Category(MPTTModel):
     parent = TreeForeignKey(
         'self', on_delete=models.CASCADE, blank=True, related_name='children', null=True)
     name = models.CharField(max_length=50)
+    image = GenericRelation(Image, related_query_name='category')
 
     class MPTTMeta:
         # level_attr = 'parint'
@@ -433,6 +455,7 @@ class Property(models.Model):
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
     unique_number = models.SlugField(_("unique_number"), editable=False)
+    image = GenericRelation(Image, related_query_name='property')
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -467,6 +490,7 @@ class Feature_property(models.Model):
         "Property"), on_delete=models.CASCADE, related_name='feature_property')
     feature = models.ForeignKey(Feature, verbose_name=_(
         "Feature"), on_delete=models.CASCADE, related_name='feature_property')
+    image = GenericRelation(Image, related_query_name='featuer_property')
 
     class Meta:
         db_table = 'Feature_property'
@@ -670,6 +694,7 @@ class Ticket(models.Model):
         _("solved_time"), auto_now=False, auto_now_add=False)
     email = models.EmailField(_("email"), max_length=254)
     problem_text = models.TextField(_("problem_text"))
+    image = GenericRelation(Image, related_query_name='ticket')
 
     class Meta:
         db_table = 'Ticket'
