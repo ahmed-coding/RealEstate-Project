@@ -74,4 +74,8 @@ admin.site.register(model_or_iterable=[
     models.Rate,
     models.Favorite,
     models.Report,
+    models.Ticket,
+    models.Ticket_status,
+    models.Ticket_type,
+    models.Solve_message,
 ])

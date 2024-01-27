@@ -685,9 +685,9 @@ class Ticket(models.Model):
     type = models.ForeignKey(Ticket_type, verbose_name=_(
         "type"), on_delete=models.DO_NOTHING, related_name='ticket')
     status = models.ForeignKey(
-        Ticket_status, verbose_name=_("Ticket_status"), on_delete=models.CASCADE, related_name='ticket')
+        Ticket_status, verbose_name=_("Ticket_status"), on_delete=models.CASCADE, related_name='ticket', null=True, blank=True)
     solver = models.ForeignKey(User, verbose_name=_(
-        "solver"), on_delete=models.CASCADE, related_name="solver")
+        "solver"), on_delete=models.CASCADE, related_name="solver", null=True, blank=True)
     sender = models.ForeignKey(User, verbose_name=_(
         "sender"), on_delete=models.CASCADE, related_name="sender")
     phone_number = models.CharField(_("phone_number"), max_length=50)

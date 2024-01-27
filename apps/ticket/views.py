@@ -19,13 +19,13 @@ class TicketViewsets(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        if self.action == 'get_ticket_type':
+        if self.action == 'list':
             return Ticket_type.objects.all()
         else:
             return Ticket.objects.all()
 
     def get_serializer_class(self):
-        if self.action == 'get_ticket_type':
+        if self.action == 'list':
             return serializers.TicketTypeSerilalizers
         else:
             return serializers.TicketSerializers
