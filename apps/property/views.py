@@ -28,6 +28,10 @@ class PropertyViewsets(viewsets.ModelViewSet):
             return Property.objects.annotate(
                 rating_count=Count('rate')
             ).order_by('-rating_count')
+        elif self.action == 'get_by_address':
+            pk = self.kwargs.get('pk')
+            obj = Property.objects.get(id=pk)
+            return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
         else:
             return Property.objects.all().order_by('-id')
 
@@ -39,6 +43,19 @@ class PropertyViewsets(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['list'])
     def get_high_rate(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            'data': serializer.data
+        })
+
+    @action(detail=True, methods=['list'])
+    def get_by_address(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         if page is not None:
