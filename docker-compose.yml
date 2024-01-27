@@ -10,21 +10,6 @@ services:
     networks:
       - RealEstate
 
-  # postgres:
-  #   build:
-  #     context: ./core
-  #     dockerfile: Dockerfile.postgis
-  #   container_name: ds-postgres
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: 12345
-  #     POSTGRES_DB: DS
-  #   ports:
-  #     - "5435:5432" # Map PostgreSQL port to host
-  #   networks:
-  #     - RealEstate
-  #   command: [ "postgres", "-c", "log_statement=all" ]       
-
   coreapis:
     container_name: core
     build:
