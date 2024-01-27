@@ -2,6 +2,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
@@ -76,8 +77,6 @@ class MyUserManager(BaseUserManager):
 
         return self._create_user(email, username, password, **extra_fields)
 
-    class Meta:
-        db_table = 'UserManager'
 
 # ==========
 
@@ -245,7 +244,7 @@ class VerificationCode(models.Model):
         _("time_created"), auto_now=False, auto_now_add=True)
     expire_date = models.DateTimeField(
         _("expire_date"), auto_now=False, auto_now_add=True)
-    
+
     class Meta:
         db_table = 'VerificationCode'
 
@@ -254,7 +253,7 @@ class TypeModel(models.Model):
     """
     Type model .
     --------------------------
-    
+
     """
     type = models.CharField(_("type"), max_length=50, default="")
 
@@ -266,13 +265,13 @@ class Attribute_verify(models.Model):
     """
     Attribute_verify model .
     ---------------------------
-    
+
     """
     attribute = models.CharField(_("attribute"), max_length=50)
     data_type = models.CharField(_("data_type"), max_length=50)
     type = models.ForeignKey(TypeModel, verbose_name=_(
         "type"), on_delete=models.CASCADE)
-    
+
     class Meta:
         db_table = 'Attribute_verify'
 
@@ -281,14 +280,14 @@ class Attribute_value(models.Model):
     """
     Attribute_value
     ---------------------------
-    
+
     """
     attribute = models.ForeignKey(
         'Attribute', verbose_name=_(""), on_delete=models.CASCADE)
-    
+
     class Meta:
         db_table = 'Attribute_value'
-        
+
 # End Custom User Manager and User Models
 # Start Address
 
@@ -297,18 +296,19 @@ class Country(models.Model):
     """
     Country model . 
     ---------------------------
-    
+
     """
     name = models.CharField(_("Name"), max_length=50)
 
     class Meta:
         db_table = 'Country'
-        
+
+
 class City(models.Model):
     """
     City model .
     ---------------------------
-    
+
     """
     name = models.CharField(_("Name"), max_length=50)
     country = models.ForeignKey(
@@ -317,11 +317,12 @@ class City(models.Model):
     class Meta:
         db_table = 'City'
 
+
 class State(models.Model):
     """
     State model .
     ---------------------------
-    
+
     """
     name = models.CharField(_("Name"), max_length=50)
     city = models.ForeignKey(
@@ -330,11 +331,12 @@ class State(models.Model):
     class Meta:
         db_table = 'State'
 
+
 class Address(models.Model):
     """
     Address model .
     ---------------------------
-    
+
     """
     state = models.ForeignKey(
         State, verbose_name=_("State "), on_delete=models.CASCADE, related_name='address')
@@ -343,9 +345,10 @@ class Address(models.Model):
 
     class Meta:
         db_table = 'Address'
-        
+
 # End Address
 # Start Property Models
+
 
 class Category(MPTTModel):
     """
@@ -372,7 +375,7 @@ class Image_Category(models.Model):
     """
     Image_Category model .
     ---------------------------
-    
+
     """
     category = models.ForeignKey(Category, verbose_name=_(
         "Category"), on_delete=models.CASCADE, related_name='image')
@@ -380,37 +383,40 @@ class Image_Category(models.Model):
 
     class Meta:
         db_table = 'Image_Category'
-        
+
+
 class Feature(models.Model):
     """
     Feature model .
     ---------------------------
-    
+
     """
     name = models.CharField(_("feature Name"), max_length=50)
 
     class Meta:
         db_table = 'Feature'
 
+
 class Feature_category(models.Model):
     """
     Feature_Category model .
     ---------------------------
-    
+
     """
     feature = models.ForeignKey(Feature, verbose_name=_(
         "feature"), on_delete=models.CASCADE, related_name='feature_category')
     category = models.ForeignKey(Category, verbose_name=_(
         "category"), on_delete=models.CASCADE, related_name='feature_category')
-    
+
     class Meta:
         db_table = 'Feature_category'
-        
+
+
 class Property(models.Model):
     """
     Property model .
     ---------------------------
-    
+
     """
     user = models.ForeignKey(User, verbose_name=_(
         "User"), on_delete=models.CASCADE, related_name='property')
@@ -436,11 +442,12 @@ class Property(models.Model):
     class Meta:
         db_table = 'Property'
 
+
 class Image_Property(models.Model):
     """
     Image_Property model .
     ---------------------------
-    
+
     """
     property = models.ForeignKey(Property, verbose_name=_(
         "Property"), on_delete=models.CASCADE, related_name='image')
@@ -448,12 +455,13 @@ class Image_Property(models.Model):
 
     class Meta:
         db_table = 'Image_Property'
-        
+
+
 class Feature_property(models.Model):
     """
     Feature_property model .
     ---------------------------
-    
+
     """
     property = models.ForeignKey(Property, verbose_name=_(
         "Property"), on_delete=models.CASCADE, related_name='feature_property')
@@ -462,12 +470,13 @@ class Feature_property(models.Model):
 
     class Meta:
         db_table = 'Feature_property'
-        
+
+
 class Image_Feature_property(models.Model):
     """
     Image_Feature_property model .
     ---------------------------
-    
+
     """
     feature_property = models.ForeignKey(Feature_property, verbose_name=_(
         "feature_property"), on_delete=models.CASCADE, related_name='image')
@@ -476,11 +485,12 @@ class Image_Feature_property(models.Model):
     class Meta:
         db_table = 'Image_Feature_property'
 
+
 class Attribute(models.Model):
     """
     Attribute model .
     ---------------------------
-    
+
     """
     name = models.CharField(_("Name"), max_length=50)
     data_type = models.CharField(_("data_type"), max_length=50)
@@ -488,11 +498,12 @@ class Attribute(models.Model):
     class Meta:
         db_table = 'Attribute'
 
+
 class ValueModel(models.Model):
     """
     Value model .
     ---------------------------
-    
+
     """
     attribute = models.ForeignKey(
         Attribute, verbose_name=_("attribute"), on_delete=models.CASCADE, related_name='value_attribute')
@@ -509,7 +520,7 @@ class property_value(models.Model):
     """
     property_value model .
     ---------------------------
-    
+
     """
     property = models.ForeignKey(
         Property, verbose_name=_("property"), on_delete=models.CASCADE, related_name='property_value')
@@ -518,12 +529,13 @@ class property_value(models.Model):
 
     class Meta:
         db_table = 'property_value'
-        
+
+
 class Category_attribute(models.Model):
     """
     Category_attribute model .
     ---------------------------
-    
+
     """
     category = models.ForeignKey(Category, verbose_name=_(
         "category"), on_delete=models.CASCADE, related_name='category_attribute')
@@ -532,16 +544,17 @@ class Category_attribute(models.Model):
 
     class Meta:
         db_table = 'Category_attribute'
-        
+
 # End Property Models
 
 # Start Interaction Models
+
 
 class Rate(models.Model):
     """
     Rate model .
     ---------------------------
-    
+
     """
     prop = models.ForeignKey(
         Property, verbose_name=_("prperty"), on_delete=models.CASCADE, related_name='rate')
@@ -554,11 +567,12 @@ class Rate(models.Model):
     class Meta:
         db_table = 'Rate'
 
+
 class Favorite(models.Model):
     """
     Favorite model .
     ---------------------------
-    
+
     """
     prop = models.ForeignKey(
         Property, verbose_name=_(""), on_delete=models.CASCADE, related_name='favorites')
@@ -570,11 +584,12 @@ class Favorite(models.Model):
     class Meta:
         db_table = 'Favorite'
 
+
 class Report(models.Model):
     """
     Report model .
     ---------------------------
-    
+
     """
     prop = models.ForeignKey(
         Property, verbose_name=_("property"), on_delete=models.CASCADE, related_name='report')
@@ -587,11 +602,12 @@ class Report(models.Model):
     class Meta:
         db_table = 'Report'
 
+
 class Review(models.Model):
     """
     Review model .
     ---------------------------
-    
+
     """
     prop = models.ForeignKey(
         Property, verbose_name=_("Property"), on_delete=models.CASCADE, related_name='review')
@@ -607,33 +623,36 @@ class Review(models.Model):
 # End Interaction Models
 # Start TICKET Models
 
+
 class Ticket_type(models.Model):
     """
     Ticket_type model .
     ---------------------------
-    
+
     """
     type = models.CharField(_("type"), max_length=50)
 
     class Meta:
         db_table = 'Ticket_type'
 
+
 class Ticket_status(models.Model):
     """
     Ticket_status model .
     ---------------------------
-    
+
     """
     status = models.CharField(_("Status"), max_length=50)
 
     class Meta:
         db_table = 'Ticket_status'
 
+
 class Ticket(models.Model):
     """
     Ticket model .
     ---------------------------
-    
+
     """
 
     type = models.ForeignKey(Ticket_type, verbose_name=_(
@@ -655,11 +674,12 @@ class Ticket(models.Model):
     class Meta:
         db_table = 'Ticket'
 
+
 class Image_Ticket(models.Model):
     """
     Image_Ticket model .
     ---------------------------
-    
+
     """
     ticket = models.ForeignKey(Ticket, verbose_name=_(
         "Ticket"), on_delete=models.CASCADE)
@@ -668,11 +688,12 @@ class Image_Ticket(models.Model):
     class Meta:
         db_table = 'Image_Ticket'
 
+
 class Solve_message(models.Model):
     """
     Solve_message model .
     ---------------------------
-    
+
     """
     ticket = models.ForeignKey(
         Ticket, verbose_name=_("ticket"), on_delete=models.CASCADE, related_name='solve_message')
@@ -689,7 +710,7 @@ class Notification(models.Model):
     """
     Notification model .
     ---------------------------
-    
+
     """
     content = models.TextField(_("content"))
     time_created = models.DateTimeField(
@@ -709,11 +730,12 @@ class Notification(models.Model):
     class Meta:
         db_table = 'Notification'
 
+
 class User_notification(models.Model):
     """
     User_notification model .
     ---------------------------
-    
+
     """
     user = models.ForeignKey(User, verbose_name=_(
         "user"), on_delete=models.CASCADE, related_name='notifications')
