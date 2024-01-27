@@ -71,5 +71,7 @@ admin.site.register(model_or_iterable=[
     models.Attribute,
     models.Image,
     models.Review,
-    models.Rate
+    models.Rate,
+    models.Favorite,
+    models.Report,
 ])

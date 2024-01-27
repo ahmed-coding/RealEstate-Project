@@ -602,9 +602,9 @@ class Favorite(models.Model):
 
     """
     prop = models.ForeignKey(
-        Property, verbose_name=_(""), on_delete=models.CASCADE, related_name='favorites')
+        Property, verbose_name=_("prop"), on_delete=models.CASCADE, related_name='favorites')
     user = models.ForeignKey(
-        "apps.User", verbose_name=_(""), on_delete=models.CASCADE, related_name='favorites')
+        "apps.User", verbose_name=_("user"), on_delete=models.CASCADE, related_name='favorites')
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
 

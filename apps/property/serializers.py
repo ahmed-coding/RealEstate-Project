@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from ..serializers import Image_Serializers
-from ..users.serializers import UserSerializers
+from ..users.serializers import UserSerializer
 from ..models import Attribute, Image,  Property, Feature, Feature_property, property_value, ValueModel
 from ..categorie.serializers import CategorySerializers
 from ..address.serializers import AddressSerializers
@@ -90,7 +90,7 @@ class PropertyDetailsSerializers(serializers.ModelSerializer):
     in_favorite = serializers.SerializerMethodField(read_only=True)
     address = AddressSerializers(read_only=True)
     category = CategorySerializers(read_only=True)
-    user = UserSerializers(read_only=True)
+    user = UserSerializer(read_only=True)
     image = Image_Serializers(many=True, read_only=True)
 
     def get_in_favorite(self, obj) -> bool:
