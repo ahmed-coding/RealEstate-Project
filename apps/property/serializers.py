@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from ..serializers import Image_Serializers
-
 from ..users.serializers import UserSerializers
 from ..models import Attribute, Image,  Property, Feature, Feature_property, property_value, ValueModel
 from ..categorie.serializers import CategorySerializers

@@ -9,7 +9,6 @@ from rest_framework.views import Response
 from apps.models import Property
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Avg
-
 from . import serializers
 
 

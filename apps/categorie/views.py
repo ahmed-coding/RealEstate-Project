@@ -12,7 +12,6 @@ from . import serializers
 
 
 class CategoryViewsets(viewsets.ModelViewSet):
-    queryset = Category.objects.all().order_by('id')
     serializer_class = serializers.CategorySerializers
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
@@ -20,3 +19,7 @@ class CategoryViewsets(viewsets.ModelViewSet):
     search_fields = ['name', ]
     filterset_fields = ['name',]
     ordering_fields = '__all__'
+
+    def get_queryset(self):
+        parent = self.request.query_params.get("parent") or None
+        return Category.objects.filter(parent=parent).order_by('id')

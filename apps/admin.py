@@ -2,7 +2,46 @@ from statistics import mode
 from django.contrib import admin
 from . import models
 from django import forms
+from .models import Category
 # Register your models here.
+from mptt.admin import DraggableMPTTAdmin
+
+
+class CategoryAdmin(DraggableMPTTAdmin):
+    mptt_indent_field = "name"
+    list_display = ('tree_actions', 'indented_title',
+                    'related_property_counts', 'related_property_cumulative_count')
+    list_display_links = ('indented_title',)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+
+        # Add cumulative product count
+        qs = Category.objects.add_related_count(
+            qs,
+            models.Property,
+            'category',
+            'property_cumulative_count',
+            cumulative=True)
+
+        # Add non cumulative product count
+        qs = Category.objects.add_related_count(qs,
+                                                models.Property,
+                                                'category',
+                                                'property_counts',
+                                                cumulative=False)
+        return qs
+
+    def related_property_counts(self, instance):
+        return instance.property_counts
+    related_property_counts.short_description = 'Related property (for this specific category)'
+
+    def related_property_cumulative_count(self, instance):
+        return instance.property_cumulative_count
+    related_property_cumulative_count.short_description = 'Related property (in tree)'
+
+
+admin.site.register(models.Category, CategoryAdmin)
 
 
 class SendNotification(forms.Form):
@@ -17,7 +56,6 @@ class NotificationAdmin(admin.ModelAdmin):
 
 admin.site.register(model_or_iterable=[
     models.City,
-    models.Category,
     models.User,
     models.Category_attribute,
     models.property_value,
