@@ -31,6 +31,4 @@ urlpatterns = [
     path('delete-list/', views.FavoriteView.as_view({'post': 'destroy_list'}),
          name='delete_list_favorite'),
 
-
-
 ]

@@ -6,6 +6,7 @@ urlpatterns = [
     path('property/', include('apps.property.urls')),
     path('address/', include('apps.address.urls')),
     path('user/', include('apps.users.urls')),
+    path('ticket/', include('apps.ticket.urls')),
 
 
 ]
