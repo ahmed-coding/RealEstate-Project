@@ -285,7 +285,7 @@ class Attribute_value(models.Model):
 
     """
     attribute = models.ForeignKey(
-        'Attribute', verbose_name=_(""), on_delete=models.CASCADE)
+        'Attribute', verbose_name=_("attribute_value"), on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'Attribute_value'
@@ -518,6 +518,9 @@ class Attribute(models.Model):
     """
     name = models.CharField(_("Name"), max_length=50)
     data_type = models.CharField(_("data_type"), max_length=50)
+
+    def __str__(self) -> str:
+        return self.name
 
     class Meta:
         db_table = 'Attribute'
