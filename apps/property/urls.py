@@ -5,4 +5,5 @@ urlpatterns = [
     path('high-rate/',
          views.PropertyViewsets.as_view({'get': 'get_high_rate'})),
     path('<pk>/', views.PropertyViewsets.as_view({'get': 'retrieve'})),
+    path('<prop>/reviews/', include('apps.review.urls'))
 ]

@@ -5,7 +5,7 @@ from ..users.serializers import UserSerializers
 from ..models import Attribute, Image,  Property, Feature, Feature_property, property_value, ValueModel
 from ..categorie.serializers import CategorySerializers
 from ..address.serializers import AddressSerializers
-
+from ..review.serializers import ReviewSerializers
 
 # class Image_Feature_propertySerializers(serializers.ModelSerializer):
 
@@ -18,6 +18,7 @@ class SinglePropertySerializers(serializers.ModelSerializer):
     rate = serializers.SerializerMethodField(read_only=True)
     in_favorite = serializers.SerializerMethodField(read_only=True)
     image = Image_Serializers(many=True, read_only=True)
+    # review = ReviewSerializers(many=True, read_only=True)
 
     def get_in_favorite(self, obj) -> bool:
         user = self.context.get('user' or None)
