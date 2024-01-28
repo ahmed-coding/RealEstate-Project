@@ -1,4 +1,3 @@
-from .chat.utils import find_or_create_private_chat
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.fields import GenericForeignKey
 from mptt.models import MPTTModel, TreeForeignKey
@@ -20,6 +19,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import string
 import random
+
 # from django.contrib.auth.models import User
 
 
@@ -923,6 +923,18 @@ class UnreadChatRoomMessages(models.Model):
 
 # End Chat
 # Friend
+
+
+def find_or_create_private_chat(user1, user2):
+    try:
+        chat = PrivateChatRoom.objects.get(user1=user1, user2=user2)
+    except PrivateChatRoom.DoesNotExist:
+        try:
+            chat = PrivateChatRoom.objects.get(user1=user2, user2=user1)
+        except PrivateChatRoom.DoesNotExist:
+            chat = PrivateChatRoom(user1=user1, user2=user2)
+            chat.save()
+    return chat
 
 
 class FriendList(models.Model):

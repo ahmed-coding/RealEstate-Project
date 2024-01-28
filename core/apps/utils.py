@@ -2,9 +2,8 @@ from datetime import datetime
 from django.contrib.humanize.templatetags.humanize import naturalday
 from django.core.serializers.python import Serializer
 
-# from apps.models import PrivateChatRoom
-from .constants import *
-
+from .models import PrivateChatRoom
+from .chat.constants import *
 
 
 def calculate_timestamp(timestamp):
