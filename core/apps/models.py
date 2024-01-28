@@ -1,3 +1,4 @@
+from .chat.utils import find_or_create_private_chat
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.fields import GenericForeignKey
 from mptt.models import MPTTModel, TreeForeignKey
@@ -172,7 +173,19 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         """Return the short name for the user."""
+
         return self.name
+
+    def get_profile_image_filename(self):
+        return self.image.url or ""
+
+    # For checking permissions. to keep it simple all admin have ALL permissons
+    def has_perm(self, perm, obj=None):
+        return self.is_admin
+
+    # Does this user have permission to view this app? (ALWAYS YES FOR SIMPLICITY)
+    def has_module_perms(self, app_label):
+        return True
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -296,7 +309,7 @@ class Attribute_value(models.Model):
 
 class Country(models.Model):
     """
-    Country model . 
+    Country model .
     ---------------------------
 
     """
@@ -740,20 +753,36 @@ class Notification(models.Model):
     ---------------------------
 
     """
-    content = models.TextField(_("content"))
-    time_created = models.DateTimeField(
-        _("time_created"), auto_now=False, auto_now_add=True)
 
-    def save(self, *args, **kwargs):
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            'notifications',
-            {
-                'type': 'send_notifications',
-                'content': self.content
-            },
-        )
-        return super().save(*args, **kwargs)
+    # Who the notification is sent to
+    target = models.ForeignKey(
+        User, on_delete=models.CASCADE)
+
+    # The user that the creation of the notification was triggered by.
+    from_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, blank=True, related_name="from_user")
+
+    # statement describing the notification (ex: "Mitch sent you a friend request")
+    verb = models.CharField(
+        max_length=255, unique=False, blank=True, null=True)
+
+    # When the notification was created/updated
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    # Some notifications can be marked as "read". (I used "read" instead of "active". I think its more appropriate)
+    read = models.BooleanField(default=False)
+
+    # A generic type that can refer to a FriendRequest, Unread Message, or any other type of "Notification"
+    # See article: https://simpleisbetterthancomplex.com/tutorial/2016/10/13/how-to-use-generic-relations.html
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey()
+
+    def __str__(self):
+        return self.verb
+
+    def get_content_object_type(self):
+        return str(self.content_object.get_cname)
 
     class Meta:
         db_table = 'Notification'
@@ -776,19 +805,21 @@ class User_notification(models.Model):
 # End Notifications Models
 # Start Chats Models
 
+# Chat
+
 
 class PrivateChatRoom(models.Model):
     """
     A private room for people to chat in.
     """
-    user1 = models.ForeignKey(settings.AUTH_USER_MODEL,
+    user1 = models.ForeignKey(User,
                               on_delete=models.CASCADE, related_name="user1")
-    user2 = models.ForeignKey(settings.AUTH_USER_MODEL,
+    user2 = models.ForeignKey(User,
                               on_delete=models.CASCADE, related_name="user2")
 
     # Users who are currently connected to the socket (Used to keep track of unread messages)
     connected_users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, blank=True, related_name="connected_users")
+        User, blank=True, related_name="connected_users")
 
     is_active = models.BooleanField(default=False)
 
@@ -890,70 +921,239 @@ class UnreadChatRoomMessages(models.Model):
         else:
             return self.room.user1
 
-
-@receiver(post_save, sender=PrivateChatRoom)
-def create_unread_chatroom_messages_obj(sender, instance, created, **kwargs):
-    if created:
-        unread_msgs1 = UnreadChatRoomMessages(
-            room=instance, user=instance.user1)
-        unread_msgs1.save()
-
-        unread_msgs2 = UnreadChatRoomMessages(
-            room=instance, user=instance.user2)
-        unread_msgs2.save()
+# End Chat
+# Friend
 
 
-@receiver(pre_save, sender=UnreadChatRoomMessages)
-def increment_unread_msg_count(sender, instance, **kwargs):
+class FriendList(models.Model):
+
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="user")
+    friends = models.ManyToManyField(
+        User, blank=True, related_name="friends")
+
+    # set up the reverse relation to GenericForeignKey
+    notifications = GenericRelation(Notification)
+
+    def __str__(self):
+        return self.user.username
+
+    def add_friend(self, account):
+        """
+        Add a new friend.
+        """
+        if not account in self.friends.all():
+            self.friends.add(account)
+            self.save()
+
+            content_type = ContentType.objects.get_for_model(self)
+
+            # Create notification
+            # Can create this way if you want. Doesn't matter.
+            # Notification(
+            # 	target=self.user,
+            # 	from_user=account,
+            # 	verb=f"You are now friends with {account.username}.",
+            # 	content_type=content_type,
+            # 	object_id=self.id,
+            # ).save()
+
+            self.notifications.create(
+                target=self.user,
+                from_user=account,
+                verb=f"You are now friends with {account.username}.",
+                content_type=content_type,
+            )
+            self.save()
+
+            # Create a private chat (or activate an old one)
+            chat = find_or_create_private_chat(self.user, account)
+            if not chat.is_active:
+                chat.is_active = True
+                chat.save()
+
+    def remove_friend(self, account):
+        """
+        Remove a friend.
+        """
+        if account in self.friends.all():
+            self.friends.remove(account)
+
+            # Deactivate the private chat between these two users
+            chat = find_or_create_private_chat(self.user, account)
+            if chat.is_active:
+                chat.is_active = False
+                chat.save()
+
+    def unfriend(self, removee):
+        """
+        Initiate the action of unfriending someone.
+        """
+        remover_friends_list = self  # person terminating the friendship
+
+        # Remove friend from remover friend list
+        remover_friends_list.remove_friend(removee)
+
+        # Remove friend from removee friend list
+        friends_list = FriendList.objects.get(user=removee)
+        friends_list.remove_friend(remover_friends_list.user)
+
+        content_type = ContentType.objects.get_for_model(self)
+
+        # Create notification for removee
+        friends_list.notifications.create(
+            target=removee,
+            from_user=self.user,
+            verb=f"You are no longer friends with {self.user.name}.",
+            content_type=content_type,
+        )
+
+        # Create notification for remover
+        self.notifications.create(
+            target=self.user,
+            from_user=removee,
+            verb=f"You are no longer friends with {removee.username}.",
+            content_type=content_type,
+        )
+
+    @property
+    def get_cname(self):
+        """
+        For determining what kind of object is associated with a Notification
+        """
+        return "FriendList"
+
+    def is_mutual_friend(self, friend):
+        """
+        Is this a friend?
+        """
+        if friend in self.friends.all():
+            return True
+        return False
+
+
+class FriendRequest(models.Model):
     """
-    When the unread message count increases, update the notification. 
-    If one does not exist, create one. (This should never happen)
+    A friend request consists of two main parts:
+            1. SENDER
+                    - Person sending/initiating the friend request
+            2. RECIVER
+                    - Person receiving the friend friend
     """
-    if instance.id is None:  # new object will be created
-        pass  # create_unread_chatroom_messages_obj will handle this scenario
-    else:
-        previous = UnreadChatRoomMessages.objects.get(id=instance.id)
-        if previous.count < instance.count:  # if count is incremented
-            content_type = ContentType.objects.get_for_model(instance)
-            if instance.user == instance.room.user1:
-                other_user = instance.room.user2
-            else:
-                other_user = instance.room.user1
-            try:
-                notification = Notification.objects.get(
-                    target=instance.user, content_type=content_type, object_id=instance.id)
-                notification.verb = instance.most_recent_message
-                notification.timestamp = timezone.now()
-                notification.save()
-            except Notification.DoesNotExist:
-                instance.notifications.create(
-                    target=instance.user,
-                    from_user=other_user,
-                    # we want to go to the chatroom
-                    redirect_url=f"{settings.BASE_URL}/chat/?room_id={instance.room.id}",
-                    verb=instance.most_recent_message,
+
+    sender = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="receiver")
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    notifications = GenericRelation(Notification)
+
+    def __str__(self):
+        return self.sender.name
+
+    def accept(self):
+        """
+        Accept a friend request.
+        Update both SENDER and RECEIVER friend lists.
+        """
+        receiver_friend_list = FriendList.objects.get(user=self.receiver)
+        if receiver_friend_list:
+            content_type = ContentType.objects.get_for_model(self)
+
+            # Update notification for RECEIVER
+            receiver_notification = Notification.objects.get(
+                target=self.receiver, content_type=content_type, object_id=self.id)
+            receiver_notification.is_active = False
+            receiver_notification.verb = f"You accepted {self.sender.username}'s friend request."
+            receiver_notification.timestamp = timezone.now()
+            receiver_notification.save()
+
+            receiver_friend_list.add_friend(self.sender)
+
+            sender_friend_list = FriendList.objects.get(user=self.sender)
+            if sender_friend_list:
+
+                # Create notification for SENDER
+                self.notifications.create(
+                    target=self.sender,
+                    from_user=self.receiver,
+                    verb=f"{self.receiver.username} accepted your friend request.",
                     content_type=content_type,
                 )
 
+                sender_friend_list.add_friend(self.receiver)
+                # sender_friend_list.save()
+                self.is_active = False
+                self.save()
+            # we will need this later to update the realtime notifications
+            return receiver_notification
 
-@receiver(pre_save, sender=UnreadChatRoomMessages)
-def remove_unread_msg_count_notification(sender, instance, **kwargs):
-    """
-    If the unread messge count decreases, it means the user joined the chat. So delete the notification.
-    """
-    if instance.id is None:  # new object will be created
-        pass  # create_unread_chatroom_messages_obj will handle this scenario
-    else:
-        previous = UnreadChatRoomMessages.objects.get(id=instance.id)
-        if previous.count > instance.count:  # if count is decremented
-            content_type = ContentType.objects.get_for_model(instance)
-            try:
-                notification = Notification.objects.get(
-                    target=instance.user, content_type=content_type, object_id=instance.id)
-                notification.delete()
-            except Notification.DoesNotExist:
-                pass
-                # Do nothing
+    def decline(self):
+        """
+        Decline a friend request.
+        Is it "declined" by setting the `is_active` field to False
+        """
+        self.is_active = False
+        self.save()
+
+        content_type = ContentType.objects.get_for_model(self)
+
+        # Update notification for RECEIVER
+        notification = Notification.objects.get(
+            target=self.receiver, content_type=content_type, object_id=self.id)
+        notification.is_active = False
+        notification.verb = f"You declined {self.sender}'s friend request."
+        notification.from_user = self.sender
+        notification.timestamp = timezone.now()
+        notification.save()
+
+        # Create notification for SENDER
+        self.notifications.create(
+            target=self.sender,
+            verb=f"{self.receiver.username} declined your friend request.",
+            from_user=self.receiver,
+            content_type=content_type,
+        )
+
+        return notification
+
+    def cancel(self):
+        """
+        Cancel a friend request.
+        Is it "cancelled" by setting the `is_active` field to False.
+        This is only different with respect to "declining" through the notification that is generated.
+        """
+        self.is_active = False
+        self.save()
+
+        content_type = ContentType.objects.get_for_model(self)
+
+        # Create notification for SENDER
+        self.notifications.create(
+            target=self.sender,
+            verb=f"You cancelled the friend request to {self.receiver.name}.",
+            from_user=self.receiver,
+            content_type=content_type,
+        )
+
+        notification = Notification.objects.get(
+            target=self.receiver, content_type=content_type, object_id=self.id)
+        notification.verb = f"{self.sender.name} cancelled the friend request sent to you."
+        # notification.timestamp = timezone.now()
+        notification.read = False
+        notification.save()
+
+    @property
+    def get_cname(self):
+        """
+        For determining what kind of object is associated with a Notification
+        """
+        return "FriendRequest"
+# End Friend
 
 
 # End Chats Models
