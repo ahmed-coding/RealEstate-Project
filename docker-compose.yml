@@ -8,9 +8,22 @@ services:
 
   redis:
     image: redis:7.0.11-alpine
-    container_name: redis
+    container_name: rs-redis
     networks:
       - RealEstate
+
+  postgres:
+    image: postgres:latest
+    container_name: rs-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: RealEstate
+    ports:
+      - "5435:5432"
+    networks:
+      - RealEstate
+    command: [ "postgres", "-c", "log_statement=all" ]
 
   core:
     build:
@@ -24,11 +37,9 @@ services:
       - DEBUG=true
     depends_on:
       - redis
+      - postgres
     networks:
       - RealEstate
-
-
-
   # celery:
   #   container_name: ds-celery
   #   build:

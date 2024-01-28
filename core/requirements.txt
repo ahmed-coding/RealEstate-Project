@@ -45,6 +45,7 @@ lxml==4.9.4
 oscrypto==1.3.0
 Pillow==10.0.1
 prompt-toolkit==3.0.43
+psycopg2==2.9.9
 pyasn1==0.5.1
 pyasn1-modules==0.3.0
 pycairo==1.20.0

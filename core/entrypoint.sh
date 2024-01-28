@@ -2,6 +2,10 @@
 
 echo "Apply database migrations"
 
+python manage.py makemigrations
+
+echo "Apply database migrate"
+
 python manage.py migrate
 
 echo "Apply collectstatic"

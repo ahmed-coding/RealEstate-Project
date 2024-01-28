@@ -1,0 +1,1446 @@
+openapi: 3.0.3
+info:
+  title: ' API Documentation for RealEstate '
+  version: 1.0.0
+  description: RealEstate project description
+paths:
+  /api/address/state/:
+    get:
+      operationId: address_state_list
+      parameters:
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - address
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStateSerializersList'
+          description: ''
+  /api/auth/login/:
+    post:
+      operationId: auth_login_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+          description: ''
+  /api/auth/sginup/:
+    post:
+      operationId: auth_sginup_create
+      description: |-
+        Reigster User View to signup after verify the ``email`` or ``phone number`` (just email for new).
+        Returns:
+        - in_Success:
+            - data: (``string``) -> message from server.
+            - user: (``User``) -> data of user after created.
+            - status_code : 200
+        - in_Fail:
+            - error: (``string``) -> Error Message.
+            - status: 401 when come bafore verify the ``email`` or ``phone_number``.
+            - status: 400 when data isn't correct or somthing go to by wrong.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/categorie/:
+    get:
+      operationId: categorie_list
+      parameters:
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - categorie
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategorySerializersList'
+          description: ''
+  /api/property/:
+    get:
+      operationId: property_list
+      parameters:
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - property
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSinglePropertySerializersList'
+          description: ''
+  /api/property/{id}/:
+    get:
+      operationId: property_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this property.
+        required: true
+      tags:
+      - property
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyDetailsSerializers'
+          description: ''
+  /api/property/{id}/by-address/:
+    get:
+      operationId: property_by_address_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - property
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePropertySerializers'
+          description: ''
+  /api/property/{prop}/reviews/:
+    get:
+      operationId: property_reviews_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: path
+        name: prop
+        schema:
+          type: integer
+          title: Property
+        required: true
+      - in: query
+        name: prop
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - property
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReviewSerializersList'
+          description: ''
+  /api/property/high-rate/:
+    get:
+      operationId: property_high_rate_retrieve
+      tags:
+      - property
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePropertySerializers'
+          description: ''
+  /api/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/ticket/create/:
+    post:
+      operationId: ticket_create_create
+      tags:
+      - ticket
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TicketSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TicketSerializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketSerializers'
+          description: ''
+  /api/ticket/ticket-type/:
+    get:
+      operationId: ticket_ticket_type_list
+      tags:
+      - ticket
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TicketTypeSerilalizers'
+          description: ''
+  /api/user/favorite/:
+    get:
+      operationId: user_favorite_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: prop
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - user
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFavoriteSerializersList'
+          description: ''
+  /api/user/favorite/{prop_id}/delete/:
+    delete:
+      operationId: user_favorite_delete_destroy
+      parameters:
+      - in: path
+        name: prop_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - user
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/user/favorite/create/:
+    post:
+      operationId: user_favorite_create_create
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFavoriteSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateFavoriteSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateFavoriteSerializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFavoriteSerializers'
+          description: ''
+  /api/user/favorite/delete-all/:
+    post:
+      operationId: user_favorite_delete_all_create
+      description: |-
+        _summary_
+
+        Args:
+            request (_type_): _description_
+
+        Returns:
+            _type_: _description_
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FavoriteSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FavoriteSerializers'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteSerializers'
+          description: ''
+  /api/user/favorite/delete-list/:
+    post:
+      operationId: user_favorite_delete_list_create
+      description: |-
+        _summary_
+
+        Args:
+            request (_type_): _description_
+
+        Returns:
+            _type_: _description_
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FavoriteSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FavoriteSerializers'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteSerializers'
+          description: ''
+  /api/user/profile/:
+    get:
+      operationId: user_profile_list
+      description: |-
+        _summary_
+
+        Args:
+            viewsets (_type_): _description_
+
+        Returns:
+            _type_: _description_
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - user
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /api/user/profile/update/:
+    put:
+      operationId: user_profile_update_update
+      description: |-
+        _summary_
+
+        Args:
+            viewsets (_type_): _description_
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUser'
+          description: ''
+    patch:
+      operationId: user_profile_update_partial_update
+      description: |-
+        _summary_
+
+        Args:
+            viewsets (_type_): _description_
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateUser'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUser'
+          description: ''
+components:
+  schemas:
+    AddressSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        state:
+          allOf:
+          - $ref: '#/components/schemas/StateSerializers'
+          readOnly: true
+        longitude:
+          type: string
+          maxLength: 50
+        latitude:
+          type: string
+          maxLength: 50
+      required:
+      - id
+      - latitude
+      - longitude
+      - state
+    AttributeSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        data_type:
+          type: string
+          maxLength: 50
+      required:
+      - data_type
+      - id
+      - name
+    AuthToken:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        token:
+          type: string
+          readOnly: true
+      required:
+      - password
+      - token
+      - username
+    CategorySerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        image:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image_Serializers'
+          readOnly: true
+        have_children:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        lft:
+          type: integer
+          readOnly: true
+        rght:
+          type: integer
+          readOnly: true
+        tree_id:
+          type: integer
+          readOnly: true
+        level:
+          type: integer
+          readOnly: true
+        parent:
+          type: integer
+          nullable: true
+      required:
+      - have_children
+      - id
+      - image
+      - level
+      - lft
+      - name
+      - rght
+      - tree_id
+    CitySerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        country:
+          allOf:
+          - $ref: '#/components/schemas/CountrySerializers'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+      required:
+      - country
+      - id
+      - name
+    CountrySerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+      required:
+      - id
+      - name
+    CreateFavoriteSerializers:
+      type: object
+      properties:
+        prop:
+          type: integer
+      required:
+      - prop
+    FavoriteSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        prop:
+          allOf:
+          - $ref: '#/components/schemas/SinglePropertySerializers'
+          readOnly: true
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - id
+      - prop
+      - time_created
+    FeatureSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Feature Name
+          maxLength: 50
+      required:
+      - id
+      - name
+    Feature_propertySerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        feature:
+          allOf:
+          - $ref: '#/components/schemas/FeatureSerializers'
+          readOnly: true
+        image:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image_Serializers'
+          readOnly: true
+        property:
+          type: integer
+      required:
+      - feature
+      - id
+      - image
+      - property
+    Image_Serializers:
+      type: object
+      properties:
+        image:
+          type: string
+          format: uri
+      required:
+      - image
+    PaginatedCategorySerializersList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategorySerializers'
+    PaginatedFavoriteSerializersList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavoriteSerializers'
+    PaginatedReviewSerializersList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewSerializers'
+    PaginatedSinglePropertySerializersList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SinglePropertySerializers'
+    PaginatedStateSerializersList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StateSerializers'
+    PatchedUpdateUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+        username:
+          type: string
+        name:
+          type: string
+        register_data:
+          type: string
+          readOnly: true
+        image:
+          type: string
+          format: uri
+    PropertyDetailsSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        feature_property:
+          type: array
+          items:
+            $ref: '#/components/schemas/Feature_propertySerializers'
+          readOnly: true
+        property_value:
+          type: array
+          items:
+            $ref: '#/components/schemas/property_valueSerializers'
+          readOnly: true
+        rate:
+          type: string
+          readOnly: true
+        in_favorite:
+          type: boolean
+          readOnly: true
+        address:
+          allOf:
+          - $ref: '#/components/schemas/AddressSerializers'
+          readOnly: true
+        category:
+          allOf:
+          - $ref: '#/components/schemas/CategorySerializers'
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        image:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image_Serializers'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        size:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        is_active:
+          type: boolean
+        is_deleted:
+          type: boolean
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        unique_number:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - address
+      - category
+      - description
+      - feature_property
+      - id
+      - image
+      - in_favorite
+      - name
+      - price
+      - property_value
+      - rate
+      - size
+      - time_created
+      - unique_number
+      - user
+    ReviewSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        review:
+          type: string
+          title: Note
+        prop:
+          type: integer
+          title: Property
+      required:
+      - id
+      - prop
+      - review
+      - time_created
+      - user
+    SinglePropertySerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        rate:
+          type: string
+          readOnly: true
+        in_favorite:
+          type: boolean
+          readOnly: true
+        image:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image_Serializers'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        size:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        is_active:
+          type: boolean
+        is_deleted:
+          type: boolean
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        unique_number:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        user:
+          type: integer
+        category:
+          type: integer
+        address:
+          type: integer
+      required:
+      - address
+      - category
+      - description
+      - id
+      - image
+      - in_favorite
+      - name
+      - price
+      - rate
+      - size
+      - time_created
+      - unique_number
+      - user
+    StateSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        city:
+          allOf:
+          - $ref: '#/components/schemas/CitySerializers'
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+      required:
+      - city
+      - id
+      - name
+    TicketSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        phone_number:
+          type: string
+          maxLength: 50
+        created_time:
+          type: string
+          format: date-time
+          readOnly: true
+        solved_time:
+          type: string
+          format: date-time
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        problem_text:
+          type: string
+        type:
+          type: integer
+        status:
+          type: integer
+          nullable: true
+          title: Ticket_status
+        solver:
+          type: integer
+          nullable: true
+      required:
+      - created_time
+      - email
+      - id
+      - phone_number
+      - problem_text
+      - solved_time
+      - type
+    TicketTypeSerilalizers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          type: string
+          maxLength: 50
+      required:
+      - id
+      - type
+    UpdateUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+        username:
+          type: string
+        name:
+          type: string
+        register_data:
+          type: string
+          readOnly: true
+        image:
+          type: string
+          format: uri
+      required:
+      - email
+      - id
+      - image
+      - name
+      - phone_number
+      - register_data
+      - username
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        username:
+          type: string
+          nullable: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+        name:
+          type: string
+          title: Full name
+          maxLength: 60
+        image:
+          type: string
+          format: uri
+          nullable: true
+        user_auth:
+          type: string
+          readOnly: true
+      required:
+      - email
+      - id
+      - password
+      - user_auth
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        username:
+          type: string
+          nullable: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          maxLength: 150
+        name:
+          type: string
+          title: Full name
+          maxLength: 60
+        register_data:
+          type: string
+          maxLength: 20
+        image:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - email
+      - id
+    ValueSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        attribute:
+          allOf:
+          - $ref: '#/components/schemas/AttributeSerializers'
+          readOnly: true
+        value:
+          type: string
+          maxLength: 50
+      required:
+      - attribute
+      - id
+      - value
+    property_valueSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        value:
+          allOf:
+          - $ref: '#/components/schemas/ValueSerializers'
+          readOnly: true
+        property:
+          type: integer
+      required:
+      - id
+      - property
+      - value
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
