@@ -18,8 +18,8 @@ pip install -r requirements.txt
 
 COPY ./entrypoint.sh /usr/src/app/realEstate/entrypoint.sh
 
-# RUN tr -d '\r' </usr/src/app/realEstate/entrypoint.sh >/usr/src/app/realEstate/entrypoint_unix.sh
-# RUN chmod +x /usr/src/app/realEstate/entrypoint_unix.sh
-
+RUN dos2unix /usr/src/app/realEstate/entrypoint.sh
+RUN chmod +x /usr/src/app/realEstate/entrypoint.sh
 COPY . /usr/src/app/realEstate/
+
 ENTRYPOINT [ "/usr/src/app/realEstate/entrypoint.sh" ]
