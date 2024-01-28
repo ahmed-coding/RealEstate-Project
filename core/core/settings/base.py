@@ -137,6 +137,12 @@ STATIC_ROOT = BASE_DIR / '../assets'
 
 APPEND_SLASH = True
 
+# AUTHENTICATION_BACKENDS = (
+#     'django.contrib.auth.backends.AllowAllUsersModelBackend',
+#     'apps.backends.CaseInsensitiveModelBackend',
+# )
+
+
 # Rest_framework
 REST_FRAMEWORK = {
 
@@ -144,6 +150,9 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'apps.users.backends.CaseInsensitiveModelBackend',
+        'django.contrib.auth.backends.AllowAllUsersModelBackend',
+
 
     ),
     'DEFAULT_PERMISSION_CLASSES': (
