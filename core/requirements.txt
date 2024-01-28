@@ -47,7 +47,7 @@ Pillow==10.0.1
 prompt-toolkit==3.0.43
 pyasn1==0.5.1
 pyasn1-modules==0.3.0
-pycairo==1.25.1
+pycairo==1.20.0
 pycodestyle==2.11.1
 pycparser==2.21
 pyHanko==0.21.0

@@ -3,29 +3,32 @@ version: '3.8'
 networks:
   RealEstate:
 
+
 services:
+
   redis:
     image: redis:7.0.11-alpine
     container_name: redis
     networks:
       - RealEstate
 
-  coreapis:
-    container_name: core
+  core:
     build:
-      context: .
-    command: python manage.py runserver 0.0.0.0:8001
+      context: ./core
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./:/usr/src/app/realEstate/
+      - ./core:/usr/src/app/realEstate/
     ports:
-      - 8005:8001
+      - 8005:8000
     environment:
       - DEBUG=true
     depends_on:
       - redis
-      # - postgres # Add PostgreSQL as a dependency
     networks:
       - RealEstate
+
+
+
   # celery:
   #   container_name: ds-celery
   #   build:
