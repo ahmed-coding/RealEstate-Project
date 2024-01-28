@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'schema_graph',
     'corsheaders',
     'channels',
+    'channels_redis',
 
 ]
 
@@ -195,13 +196,13 @@ CORS_ORIGIN_ALLOW_ALL = True  # -> Cors Header
 
 # Channels settings
 CHANNEL_LAYERS = {
-    # "default": {
-    #     "BACKEND": "channels_redis.core.RedisChannelLayer",
-    #     "CONFIG": {
-    #         "hosts": [("redis", 6379)],
-    #     },
-    # },
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
     },
+    # "default": {
+    #     "BACKEND": "channels.layers.InMemoryChannelLayer",
+    # },
 }
