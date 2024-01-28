@@ -141,7 +141,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     is_deleted = models.BooleanField(_('Deleted'), default=False,)
     date_joined = models.DateTimeField(
-        _("date joined"), default=timezone.now, )
+        _("date joined"), auto_now_add=True, )
     image = models.ImageField(
         upload_to='user_image',
         # default='user_image/MicrosoftTeams-image.png',
@@ -699,10 +699,10 @@ class Ticket(models.Model):
         "type"), on_delete=models.DO_NOTHING, related_name='ticket')
     status = models.ForeignKey(
         Ticket_status, verbose_name=_("Ticket_status"), on_delete=models.CASCADE, related_name='ticket', null=True, blank=True)
-    solver = models.ForeignKey(User, verbose_name=_(
-        "solver"), on_delete=models.CASCADE, related_name="solver", null=True, blank=True)
-    sender = models.ForeignKey(User, verbose_name=_(
-        "sender"), on_delete=models.CASCADE, related_name="sender")
+    ticket_solver = models.ForeignKey(User, verbose_name=_(
+        "solver"), on_delete=models.CASCADE, related_name="ticket_solver", null=True, blank=True)
+    ticket_sender = models.ForeignKey(User, verbose_name=_(
+        "sender"), on_delete=models.CASCADE, related_name="ticket_sender")
     phone_number = models.CharField(_("phone_number"), max_length=50)
     created_time = models.DateTimeField(
         _("created_time"), auto_now=False, auto_now_add=True)
@@ -753,7 +753,6 @@ class Notification(models.Model):
     ---------------------------
 
     """
-
     # Who the notification is sent to
     target = models.ForeignKey(
         User, on_delete=models.CASCADE)
@@ -788,19 +787,19 @@ class Notification(models.Model):
         db_table = 'Notification'
 
 
-class User_notification(models.Model):
-    """
-    User_notification model .
-    ---------------------------
+# class User_notification(models.Model):
+#     """
+#     User_notification model .
+#     ---------------------------
 
-    """
-    user = models.ForeignKey(User, verbose_name=_(
-        "user"), on_delete=models.CASCADE, related_name='notifications')
-    notification = models.ForeignKey(
-        Notification, verbose_name=_("notification"), on_delete=models.CASCADE, related_name='user_notification')
+#     """
+#     user = models.ForeignKey(User, verbose_name=_(
+#         "user"), on_delete=models.CASCADE, related_name='notifications')
+#     notification = models.ForeignKey(
+#         Notification, verbose_name=_("notification"), on_delete=models.CASCADE, related_name='user_notification')
 
-    class Meta:
-        db_table = 'User_notification'
+#     class Meta:
+#         db_table = 'User_notification'
 
 # End Notifications Models
 # Start Chats Models
@@ -891,7 +890,7 @@ class UnreadChatRoomMessages(models.Model):
         max_length=500, blank=True, null=True)
 
     # last time msgs were read by the user
-    reset_timestamp = models.DateTimeField()
+    reset_timestamp = models.DateTimeField(null=True, blank=True)
 
     notifications = GenericRelation(Notification)
 

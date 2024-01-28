@@ -51,7 +51,7 @@ class SendNotification(forms.Form):
 @admin.register(models.Notification)
 class NotificationAdmin(admin.ModelAdmin):
     add_form_templat = "admin/custom_add_form.html"
-    list_display = ('content',)
+    list_display = ('verb',)
 
 
 admin.site.register(model_or_iterable=[

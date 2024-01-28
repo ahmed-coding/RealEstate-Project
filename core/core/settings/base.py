@@ -29,7 +29,7 @@ DEFAULT_CHARSET = 'utf-8'
 
 
 INSTALLED_APPS = [
-    # 'daphne',
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     # internl apps
     'apps',
     # # external apps
-    # 'mptt',
+    'mptt',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
