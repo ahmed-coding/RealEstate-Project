@@ -1,5 +1,4 @@
 FROM python:3.11.5-alpine
-FROM postgresql
 WORKDIR /usr/src/app/realEstate
 
 ENV PYTHONDONTWRITEBYTECODE 1
