@@ -29,7 +29,7 @@ DEFAULT_CHARSET = 'utf-8'
 
 
 INSTALLED_APPS = [
-    'daphne',
+    # 'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -135,7 +135,7 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / '../assets'
 
 
-APPEND_SLASH = False
+APPEND_SLASH = True
 
 # Rest_framework
 REST_FRAMEWORK = {
@@ -146,7 +146,9 @@ REST_FRAMEWORK = {
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
 
     ),
-    'DEFAULT_PERMISSION_CLASSES': ("rest_framework.permissions.IsAuthenticated",),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ),
 
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
