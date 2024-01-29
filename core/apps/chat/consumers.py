@@ -121,7 +121,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 {
                     "type": "chat.join",
                     "room_id": room_id,
-                            "profile_image": self.scope["user"].get_profile_image_filename(),
+                            "profile_image": self.scope["user"].get_profile_image_filename,
                             "username": self.scope["user"].username,
                             "user_id": self.scope["user"].id,
                             "name": self.scope["user"].name,
@@ -147,7 +147,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             {
                 "type": "chat.leave",
                 "room_id": room_id,
-                        "profile_image": self.scope["user"].get_profile_image_filename(),
+                        "profile_image": self.scope["user"].get_profile_image_filename,
                         "username": self.scope["user"].username,
                         "name": self.scope["user"].name,
                         "user_id": self.scope["user"].id,
@@ -200,7 +200,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             room.group_name,
             {
                 "type": "chat.message",
-                "profile_image": self.scope["user"].get_profile_image_filename(),
+                "profile_image": self.scope["user"].get_profile_image_filename,
                         "username": self.scope["user"].username,
                         "name": self.scope["user"].name,
                         "user_id": self.scope["user"].id,

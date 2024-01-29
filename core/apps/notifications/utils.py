@@ -29,7 +29,7 @@ class LazyNotificationEncoder(Serializer):
                 # 	# 'redirect_url': str(obj.redirect_url),
                 # },
                 "from": {
-                    "image_url": str(obj.from_user.get_profile_image_filename())
+                    "image_url": str(obj.from_user.get_profile_image_filename if obj.obj.from_user else "")
                 }
             })
         if obj.get_content_object_type() == "FriendList":
@@ -43,7 +43,7 @@ class LazyNotificationEncoder(Serializer):
             dump_object.update({'timestamp': str(obj.timestamp)})
             dump_object.update({
                 "from": {
-                    "image_url": str(obj.from_user.get_profile_image_filename())
+                    "image_url": str(obj.from_user.get_profile_image_filename if obj.from_user else "")
                 }
             })
         if obj.get_content_object_type() == "UnreadChatRoomMessages":
@@ -58,7 +58,7 @@ class LazyNotificationEncoder(Serializer):
 
                 "from": {
                     "title": str(obj.content_object.get_other_user.username or obj.content_object.get_other_user.name),
-                    "image_url": str(obj.content_object.get_other_user.get_profile_image_filename())
+                    "image_url": str(obj.content_object.get_other_user.get_profile_image_filename)
                 }
             })
 

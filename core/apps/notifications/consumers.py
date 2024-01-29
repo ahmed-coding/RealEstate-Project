@@ -57,10 +57,9 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
         """
         print("NotificationConsumer: connect: " + str(self.scope["user"]))
         await self.accept()
-        f"chat_{self.room_id}"
         self.user = self.scope["user"]
         if self.user.is_authenticated:
-            self.group_name = f"chat_{self.user.unique_no}"
+            self.group_name = f"notification_{self.user.unique_no}"
 
             await self.channel_layer.group_add(self.group_name,
                                                self.channel_name)
@@ -268,6 +267,12 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
                 "notifications": notifications,
             },
         )
+
+    async def send_new_chat_notifications_brodcast(self, event):
+        await self.send_json({
+            "chat_msg_type": event["chat_msg_type"],
+            "notifications": event["notifications"],
+        })
 
     async def chat_pagination_exhausted(self):
         """

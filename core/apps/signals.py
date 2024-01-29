@@ -1,7 +1,13 @@
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
+
+from .notifications.utils import LazyNotificationEncoder
+
+from .notifications.constants import CHAT_MSG_TYPE_GET_NEW_NOTIFICATIONS
 from .models import FriendRequest, Notification, PrivateChatRoom, UnreadChatRoomMessages, User, FriendList
 
 # create user frindlist
@@ -88,3 +94,21 @@ def remove_unread_msg_count_notification(sender, instance, **kwargs):
             except Notification.DoesNotExist:
                 pass
                 # Do nothing
+
+
+# notification signals
+
+@receiver(post_save, sender=Notification)
+def create_notification_messages_brodcast(sender, instance, created, **kwargs):
+    if created:
+        s = LazyNotificationEncoder()
+        channel_layer = get_channel_layer()
+        notifications = s.serialize([instance])
+        async_to_sync(channel_layer.group_send)(
+            f"notification_{instance.target.unique_no}",
+            {
+                'type': 'send_new_chat_notifications_payload',
+                "chat_msg_type": CHAT_MSG_TYPE_GET_NEW_NOTIFICATIONS,
+                'notifications': notifications,
+            },
+        )

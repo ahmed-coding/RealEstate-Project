@@ -176,8 +176,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         return self.name
 
+    @property
     def get_profile_image_filename(self):
-        return self.image.url if self.image else " "
+        return self.image.url if self.image else ""
 
     # For checking permissions. to keep it simple all admin have ALL permissons
     # def has_perm(self, perm, obj=None):
@@ -779,6 +780,17 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.verb
+
+    # def save(self, *args, **kwargs):
+    #     channel_layer = get_channel_layer()
+    #     async_to_sync(channel_layer.group_send)(
+    #         'notifications',
+    #         {
+    #             'type': 'send_notifications',
+    #             'content': self.content
+    #         },
+    #     )
+    #     return super().save(*args, **kwargs)
 
     def get_content_object_type(self):
         return str(self.content_object.get_cname)
