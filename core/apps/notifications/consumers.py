@@ -29,6 +29,16 @@ from ..chat.exceptions import ClientError
 #             'content': message
 #         }))
 
+# def save(self, *args, **kwargs):
+#     channel_layer = get_channel_layer()
+#     async_to_sync(channel_layer.group_send)(
+#         'notifications',
+#         {
+#             'type': 'send_notifications',
+#             'content': self.content
+#         },
+#     )
+#     return super().save(*args, **kwargs)
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
     """
@@ -47,6 +57,13 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
         """
         print("NotificationConsumer: connect: " + str(self.scope["user"]))
         await self.accept()
+        f"chat_{self.room_id}"
+        self.user = self.scope["user"]
+        if self.user.is_authenticated:
+            self.group_name = f"chat_{self.user.unique_no}"
+
+            await self.channel_layer.group_add(self.group_name,
+                                               self.channel_name)
 
     async def disconnect(self, code):
         """

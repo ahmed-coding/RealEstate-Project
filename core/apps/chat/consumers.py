@@ -7,7 +7,7 @@ import json
 import asyncio
 from ..models import RoomChatMessage, PrivateChatRoom, UnreadChatRoomMessages, User, FriendList
 from ..users.serializers import UserProfileSerializer
-from .utils import calculate_timestamp, LazyRoomChatMessageEncoder
+from .utils import LazyAccountEncoder, calculate_timestamp, LazyRoomChatMessageEncoder
 from .exceptions import ClientError
 from .constants import *
 
@@ -60,7 +60,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             elif command == "get_user_info":
                 await self.display_progress_bar(True)
                 room = await get_room_or_error(content['room_id'], self.scope["user"])
-                payload = get_user_info(room, self.scope["user"])
+                payload = await get_user_info(room, self.scope["user"])
                 if payload != None:
                     payload = json.loads(payload)
                     await self.send_user_info_payload(payload['user_info'])
@@ -121,9 +121,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 {
                     "type": "chat.join",
                     "room_id": room_id,
-                            "profile_image": self.scope["user"].get_profile_image_filename,
+                            "profile_image": self.scope["user"].get_profile_image_filename(),
                             "username": self.scope["user"].username,
                             "user_id": self.scope["user"].id,
+                            "name": self.scope["user"].name,
+
                 }
             )
 
@@ -145,8 +147,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             {
                 "type": "chat.leave",
                 "room_id": room_id,
-                        "profile_image": self.scope["user"].get_profile_image_filename,
+                        "profile_image": self.scope["user"].get_profile_image_filename(),
                         "username": self.scope["user"].username,
+                        "name": self.scope["user"].name,
                         "user_id": self.scope["user"].id,
             }
         )
@@ -197,8 +200,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             room.group_name,
             {
                 "type": "chat.message",
-                "profile_image": self.scope["user"].get_profile_image_filename,
-                        "username": self.scope["user"].name,
+                "profile_image": self.scope["user"].get_profile_image_filename(),
+                        "username": self.scope["user"].username,
+                        "name": self.scope["user"].name,
                         "user_id": self.scope["user"].id,
                         "message": message,
             }
@@ -217,8 +221,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 {
                     "msg_type": MSG_TYPE_ENTER,
                     "room": event["room_id"],
-                    "profile_image": event["profile_image"](),
+                    "profile_image": event["profile_image"],
                     "username": event["username"],
+                    "name": event["name"],
+
                     "user_id": event["user_id"],
                     "message": event["username"] + " connected.",
                 },
@@ -235,8 +241,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 {
                     "msg_type": MSG_TYPE_LEAVE,
                     "room": event["room_id"],
-                    "profile_image": event["profile_image"](),
+                    "profile_image": event["profile_image"],
                     "username": event["username"],
+                    "name": event["name"],
+
                     "user_id": event["user_id"],
                     "message": event["username"] + " disconnected.",
                 },
@@ -256,7 +264,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 "msg_type": MSG_TYPE_MESSAGE,
                 "username": event["username"],
                 "user_id": event["user_id"],
-                "profile_image": event["profile_image"](),
+                "name": event["name"],
+
+                "profile_image": event["profile_image"],
                 "message": event["message"],
                 "natural_timestamp": timestamp,
             },
@@ -340,6 +350,7 @@ def get_room_or_error(room_id, user):
 
 # I don't think this requires @database_sync_to_async since we are just accessing a model field
 # https://docs.djangoproject.com/en/3.1/ref/models/instances/#refreshing-objects-from-database
+@database_sync_to_async
 def get_user_info(room, user):
     """
     Retrieve the user info for the user you are chatting with
@@ -351,7 +362,7 @@ def get_user_info(room, user):
             other_user = room.user2
 
         payload = {}
-        s = UserProfileSerializer()
+        s = LazyAccountEncoder()
         # convert to list for serializer and select first entry (there will be only 1)
         payload['user_info'] = s.serialize([other_user])[0]
         return json.dumps(payload)

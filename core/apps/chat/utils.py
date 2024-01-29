@@ -41,3 +41,16 @@ class LazyRoomChatMessageEncoder(Serializer):
         dump_object.update(
             {'natural_timestamp': calculate_timestamp(obj.timestamp)})
         return dump_object
+
+
+class LazyAccountEncoder(Serializer):
+    def get_dump_object(self, obj):
+        dump_object = {}
+        dump_object.update({'id': str(obj.id)})
+        dump_object.update({'email': str(obj.email)})
+        dump_object.update({'username': str(obj.username)})
+        dump_object.update({'name': str(obj.name)})
+
+        dump_object.update(
+            {'profile_image': str(obj.get_profile_image_filename())})
+        return dump_object
