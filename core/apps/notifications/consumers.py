@@ -62,7 +62,7 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
         command = content.get("command", None)
         print("NotificationConsumer: receive_json. Command: " + command)
         try:
-            if command == "get_general_notifications":
+            if command == " ":
                 payload = await get_general_notifications(self.scope["user"], content.get("page_number", None))
                 if payload == None:
                     await self.general_pagination_exhausted()

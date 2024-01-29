@@ -78,4 +78,6 @@ admin.site.register(model_or_iterable=[
     models.Ticket_status,
     models.Ticket_type,
     models.Solve_message,
+    models.FriendList,
+    models.FriendRequest,
 ])

@@ -177,7 +177,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.name
 
     def get_profile_image_filename(self):
-        return self.image.url or ""
+        return self.image.url if self.image else " "
 
     # For checking permissions. to keep it simple all admin have ALL permissons
     def has_perm(self, perm, obj=None):
@@ -947,7 +947,7 @@ class FriendList(models.Model):
     notifications = GenericRelation(Notification)
 
     def __str__(self):
-        return self.user.username
+        return self.user.name or self.user.email
 
     def add_friend(self, account):
         """
@@ -1023,7 +1023,7 @@ class FriendList(models.Model):
         self.notifications.create(
             target=self.user,
             from_user=removee,
-            verb=f"You are no longer friends with {removee.username}.",
+            verb=f"You are no longer friends with {removee.name}.",
             content_type=content_type,
         )
 
@@ -1079,7 +1079,7 @@ class FriendRequest(models.Model):
             receiver_notification = Notification.objects.get(
                 target=self.receiver, content_type=content_type, object_id=self.id)
             receiver_notification.is_active = False
-            receiver_notification.verb = f"You accepted {self.sender.username}'s friend request."
+            receiver_notification.verb = f"You accepted {self.sender.name}'s friend request."
             receiver_notification.timestamp = timezone.now()
             receiver_notification.save()
 

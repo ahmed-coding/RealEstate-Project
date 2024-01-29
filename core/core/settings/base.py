@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'channels_redis',
 
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -150,8 +149,6 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'apps.users.backends.CaseInsensitiveModelBackend',
-        'django.contrib.auth.backends.AllowAllUsersModelBackend',
 
 
     ),

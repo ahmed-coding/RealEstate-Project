@@ -3,10 +3,8 @@ from channels.db import database_sync_to_async
 from django.core.serializers import serialize
 from django.utils import timezone
 from django.core.paginator import Paginator
-
 import json
 import asyncio
-
 from ..models import RoomChatMessage, PrivateChatRoom, UnreadChatRoomMessages, User, FriendList
 from ..users.serializers import UserProfileSerializer
 from chat.utils import calculate_timestamp, LazyRoomChatMessageEncoder
@@ -146,7 +144,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             {
                 "type": "chat.leave",
                 "room_id": room_id,
-                        "profile_image": self.scope["user"].profile_image.url,
+                        "profile_image": self.scope["user"].image.url,
                         "username": self.scope["user"].username,
                         "user_id": self.scope["user"].id,
             }
