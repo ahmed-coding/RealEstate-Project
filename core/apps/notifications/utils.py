@@ -29,7 +29,7 @@ class LazyNotificationEncoder(Serializer):
                 # 	# 'redirect_url': str(obj.redirect_url),
                 # },
                 "from": {
-                    "image_url": str(obj.from_user.get_profile_image_filename if obj.obj.from_user else "")
+                    "image_url": str(obj.from_user.get_profile_image_filename if obj.from_user else "")
                 }
             })
         if obj.get_content_object_type() == "FriendList":

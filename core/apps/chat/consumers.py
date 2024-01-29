@@ -377,7 +377,7 @@ def create_room_chat_message(room, user, message):
 
 
 @database_sync_to_async
-def get_room_chat_messages(room, page_number=1):
+def get_room_chat_messages(room, page_number):
     try:
         qs = RoomChatMessage.objects.by_room(room)
         p = Paginator(qs, DEFAULT_ROOM_CHAT_MESSAGE_PAGE_SIZE)

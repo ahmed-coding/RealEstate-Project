@@ -79,12 +79,12 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
         print("NotificationConsumer: receive_json. Command: " + command)
         try:
             if command == " ":
-                payload = await get_general_notifications(self.scope["user"], content.get("page_number", None))
-                if payload == None:
-                    await self.general_pagination_exhausted()
-                else:
-                    payload = json.loads(payload)
-                    await self.send_general_notifications_payload(payload['notifications'], payload['new_page_number'])
+                payload = await get_general_notifications(self.scope["user"], content["page_number"])
+                # if payload == None:
+                #     await self.general_pagination_exhausted()
+                # else:
+                payload = json.loads(payload)
+                await self.send_general_notifications_payload(payload['notifications'], payload['new_page_number'])
             elif command == "get_new_general_notifications":
                 payload = await get_new_general_notifications(self.scope["user"], content.get("newest_timestamp", None))
                 if payload != None:
@@ -313,17 +313,18 @@ def get_general_notifications(user, page_number):
                                                     friend_request_ct, friend_list_ct]).order_by('-timestamp')
         p = Paginator(notifications, DEFAULT_NOTIFICATION_PAGE_SIZE)
 
+        new_page_number = int(page_number)
         payload = {}
-        if len(notifications) > 0:
-            if int(page_number) <= p.num_pages:
-                s = LazyNotificationEncoder()
-                serialized_notifications = s.serialize(
-                    p.page(page_number).object_list)
-                payload['notifications'] = serialized_notifications
-                new_page_number = int(page_number) + 1
-                payload['new_page_number'] = new_page_number
+        # if len(notifications) > 0:
+        if int(page_number) <= p.num_pages:
+            s = LazyNotificationEncoder()
+            serialized_notifications = s.serialize(
+                p.page(page_number).object_list)
+            payload['notifications'] = serialized_notifications
+            new_page_number = int(page_number) + 1
         else:
-            return None
+            payload['notifications'] = "None"
+        payload['new_page_number'] = new_page_number
     else:
         raise ClientError(
             "AUTH_ERROR", "User must be authenticated to get notifications.")
