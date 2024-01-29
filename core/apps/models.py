@@ -901,7 +901,7 @@ class UnreadChatRoomMessages(models.Model):
     def save(self, *args, **kwargs):
         # if just created, add a timestamp. Otherwise do not automatically change it ever.
 
-        return super(UnreadChatRoomMessages, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     @property
     def get_cname(self):
