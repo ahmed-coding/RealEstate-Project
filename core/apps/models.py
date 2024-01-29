@@ -890,7 +890,8 @@ class UnreadChatRoomMessages(models.Model):
         max_length=500, blank=True, null=True)
 
     # last time msgs were read by the user
-    reset_timestamp = models.DateTimeField(null=True, blank=True)
+    reset_timestamp = models.DateTimeField(
+        null=True, blank=True, auto_now_add=True)
 
     notifications = GenericRelation(Notification)
 
@@ -899,8 +900,7 @@ class UnreadChatRoomMessages(models.Model):
 
     def save(self, *args, **kwargs):
         # if just created, add a timestamp. Otherwise do not automatically change it ever.
-        if not self.id:
-            self.reset_timestamp = timezone.now()
+
         return super(UnreadChatRoomMessages, self).save(*args, **kwargs)
 
     @property

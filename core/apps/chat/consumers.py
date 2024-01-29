@@ -46,7 +46,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                     raise ClientError(422, "You can't send an empty message.")
                 await self.send_room(content["room"], content["message"])
             elif command == "get_room_chat_messages":
-                await self.display_progress_bar(True)
+                # await self.display_progress_bar(True)
                 room = await get_room_or_error(content['room_id'], self.scope["user"])
                 payload = await get_room_chat_messages(room, content['page_number'])
                 if payload != None:
@@ -196,8 +196,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             room.group_name,
             {
                 "type": "chat.message",
-                "profile_image": self.scope["user"].profile_image.url,
-                        "username": self.scope["user"].username,
+                "profile_image": self.scope["user"].get_profile_image_filename,
+                        "username": self.scope["user"].name,
                         "user_id": self.scope["user"].id,
                         "message": message,
             }
