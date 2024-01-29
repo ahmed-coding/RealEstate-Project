@@ -4,6 +4,8 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
 from dotenv import load_dotenv
+from django.urls import path
+
 
 load_dotenv()
 
@@ -20,7 +22,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE',
 app = get_asgi_application()
 from .urls import websocket_urlpatterns  # noqa isort:skip
 from .middleware import TokenAuthMiddleware  # noqa isort:skip
-
+from apps.chat.consumers import ChatConsumer  # noqa isort:skip
+from apps.notifications.consumers import NotificationConsumer  # noqa isort:skip
 
 application = ProtocolTypeRouter(
     {
@@ -28,9 +31,11 @@ application = ProtocolTypeRouter(
         "websocket": TokenAuthMiddleware(
             AllowedHostsOriginValidator(
                 AuthMiddlewareStack(
-                    URLRouter(
-                        websocket_urlpatterns
-                    )
+                    URLRouter([
+                        # websocket_urlpatterns
+                        path("ws/notifications/", NotificationConsumer.as_asgi()),
+                        path('ws/chat/<room_id>/', ChatConsumer.as_asgi()),
+                    ])
                 )
             )
         ),

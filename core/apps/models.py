@@ -141,7 +141,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     is_deleted = models.BooleanField(_('Deleted'), default=False,)
     date_joined = models.DateTimeField(
-        _("date joined"), auto_now_add=True, )
+        _("date joined"),  default=timezone.now, )
     image = models.ImageField(
         upload_to='user_image',
         # default='user_image/MicrosoftTeams-image.png',
@@ -180,12 +180,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.image.url if self.image else " "
 
     # For checking permissions. to keep it simple all admin have ALL permissons
-    def has_perm(self, perm, obj=None):
-        return self.is_superuser
+    # def has_perm(self, perm, obj=None):
+    #     return self.is_superuser
 
-    # Does this user have permission to view this app? (ALWAYS YES FOR SIMPLICITY)
-    def has_module_perms(self, app_label):
-        return True
+    # # Does this user have permission to view this app? (ALWAYS YES FOR SIMPLICITY)
+    # def has_module_perms(self, app_label):
+    #     return True
 
     def save(self, *args, **kwargs):
         if not self.id:

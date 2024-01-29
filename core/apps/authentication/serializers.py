@@ -28,10 +28,10 @@ class UserSerializer(serializers.ModelSerializer):
                   'username', 'password',  'name', 'image', 'user_auth']
 
     def create(self, validated_data):
-
         password = validated_data.pop("password", None)
         instence = self.Meta.model(**validated_data)
         if instence is not None:
+
             instence.set_password(password)
         instence.save()
         return instence

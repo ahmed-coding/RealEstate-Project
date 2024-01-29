@@ -7,9 +7,9 @@ import json
 import asyncio
 from ..models import RoomChatMessage, PrivateChatRoom, UnreadChatRoomMessages, User, FriendList
 from ..users.serializers import UserProfileSerializer
-from chat.utils import calculate_timestamp, LazyRoomChatMessageEncoder
-from chat.exceptions import ClientError
-from chat.constants import *
+from .utils import calculate_timestamp, LazyRoomChatMessageEncoder
+from .exceptions import ClientError
+from .constants import *
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -22,9 +22,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         # let everyone connect. But limit read/write to authenticated users
         await self.accept()
-
         # the room_id will define what it means to be "connected". If it is not None, then the user is connected.
-        self.room_id = None
+        self.room_id = self.scope['url_route']['kwargs']['room_id']
+        self.group_name = f"chat_{self.room_id}"
 
     async def receive_json(self, content):
         """
@@ -46,16 +46,17 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                     raise ClientError(422, "You can't send an empty message.")
                 await self.send_room(content["room"], content["message"])
             elif command == "get_room_chat_messages":
-                # await self.display_progress_bar(True)
+                await self.display_progress_bar(True)
                 room = await get_room_or_error(content['room_id'], self.scope["user"])
                 payload = await get_room_chat_messages(room, content['page_number'])
                 if payload != None:
                     payload = json.loads(payload)
                     await self.send_messages_payload(payload['messages'], payload['new_page_number'])
+                    await self.display_progress_bar(False)
                 else:
+                    await self.display_progress_bar(False)
                     raise ClientError(
                         204, "Something went wrong retrieving the chatroom messages.")
-                await self.display_progress_bar(False)
             elif command == "get_user_info":
                 await self.display_progress_bar(True)
                 room = await get_room_or_error(content['room_id'], self.scope["user"])
@@ -120,7 +121,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 {
                     "type": "chat.join",
                     "room_id": room_id,
-                            "profile_image": self.scope["user"].profile_image.url,
+                            "profile_image": self.scope["user"].get_profile_image_filename,
                             "username": self.scope["user"].username,
                             "user_id": self.scope["user"].id,
                 }
@@ -144,7 +145,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             {
                 "type": "chat.leave",
                 "room_id": room_id,
-                        "profile_image": self.scope["user"].image.url,
+                        "profile_image": self.scope["user"].get_profile_image_filename,
                         "username": self.scope["user"].username,
                         "user_id": self.scope["user"].id,
             }
@@ -216,7 +217,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 {
                     "msg_type": MSG_TYPE_ENTER,
                     "room": event["room_id"],
-                    "profile_image": event["profile_image"],
+                    "profile_image": event["profile_image"](),
                     "username": event["username"],
                     "user_id": event["user_id"],
                     "message": event["username"] + " connected.",
@@ -234,7 +235,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 {
                     "msg_type": MSG_TYPE_LEAVE,
                     "room": event["room_id"],
-                    "profile_image": event["profile_image"],
+                    "profile_image": event["profile_image"](),
                     "username": event["username"],
                     "user_id": event["user_id"],
                     "message": event["username"] + " disconnected.",
@@ -255,7 +256,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 "msg_type": MSG_TYPE_MESSAGE,
                 "username": event["username"],
                 "user_id": event["user_id"],
-                "profile_image": event["profile_image"],
+                "profile_image": event["profile_image"](),
                 "message": event["message"],
                 "natural_timestamp": timestamp,
             },
@@ -365,7 +366,7 @@ def create_room_chat_message(room, user, message):
 
 
 @database_sync_to_async
-def get_room_chat_messages(room, page_number):
+def get_room_chat_messages(room, page_number=1):
     try:
         qs = RoomChatMessage.objects.by_room(room)
         p = Paginator(qs, DEFAULT_ROOM_CHAT_MESSAGE_PAGE_SIZE)
