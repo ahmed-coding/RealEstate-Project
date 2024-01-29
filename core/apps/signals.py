@@ -11,9 +11,8 @@ from .models import FriendRequest, Notification, PrivateChatRoom, UnreadChatRoom
 def user_save(sender, instance, **kwargs):
     FriendList.objects.get_or_create(user=instance)
 
+
 # create notifications
-
-
 @receiver(post_save, sender=FriendRequest)
 def create_notification(sender, instance, created, **kwargs):
     if created:
