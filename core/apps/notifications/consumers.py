@@ -421,7 +421,7 @@ def get_new_general_notifications(user, newest_timestamp):
     if user.is_authenticated:
         # remove timezone because who cares
         timestamp = newest_timestamp[0:newest_timestamp.find("+")]
-        timestamp = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f')
+        timestamp = datetime.strptime(timestamp, '%Y-%m-%d %H:%M')
         friend_request_ct = ContentType.objects.get_for_model(FriendRequest)
         friend_list_ct = ContentType.objects.get_for_model(FriendList)
         notifications = Notification.objects.filter(target=user, content_type__in=[
@@ -516,7 +516,7 @@ def get_new_chat_notifications(user, newest_timestatmp):
     if user.is_authenticated:
         # remove timezone because who cares
         timestamp = newest_timestatmp[0:newest_timestatmp.find("+")]
-        timestamp = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f')
+        timestamp = datetime.strptime(timestamp, '%Y-%m-%d %H:%M')
         chatmessage_ct = ContentType.objects.get_for_model(
             UnreadChatRoomMessages)
         notifications = Notification.objects.filter(target=user, content_type__in=[
