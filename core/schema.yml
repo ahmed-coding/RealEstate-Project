@@ -1112,8 +1112,6 @@ components:
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
         size:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         is_active:
           type: boolean
         is_deleted:
@@ -1195,8 +1193,6 @@ components:
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
         size:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         is_active:
           type: boolean
         is_deleted:
@@ -1274,9 +1270,13 @@ components:
           type: integer
           nullable: true
           title: Ticket_status
-        solver:
+        ticket_solver:
           type: integer
           nullable: true
+          title: Solver
+        ticket_sender:
+          type: integer
+          title: Sender
       required:
       - created_time
       - email
@@ -1284,6 +1284,7 @@ components:
       - phone_number
       - problem_text
       - solved_time
+      - ticket_sender
       - type
     TicketTypeSerilalizers:
       type: object
