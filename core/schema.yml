@@ -201,36 +201,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedSinglePropertySerializersList'
           description: ''
-  /api/property/{id}/:
-    get:
-      operationId: property_retrieve
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        description: A unique integer value identifying this property.
-        required: true
-      tags:
-      - property
-      security:
-      - cookieAuth: []
-      - tokenAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PropertyDetailsSerializers'
-          description: ''
-  /api/property/{id}/by-address/:
+  /api/property/{pkpk}/by-address/:
     get:
       operationId: property_by_address_retrieve
       parameters:
       - in: path
-        name: id
+        name: pkpk
         schema:
-          type: string
+          type: integer
         required: true
       tags:
       - property
@@ -244,7 +222,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SinglePropertySerializers'
           description: ''
-  /api/property/{prop}/reviews/:
+  /api/property/{pkprop}/reviews/:
     get:
       operationId: property_reviews_list
       parameters:
@@ -267,10 +245,9 @@ paths:
         schema:
           type: integer
       - in: path
-        name: prop
+        name: pkprop
         schema:
           type: integer
-          title: Property
         required: true
       - in: query
         name: prop
@@ -293,6 +270,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedReviewSerializersList'
+          description: ''
+  /api/property/{id}/:
+    get:
+      operationId: property_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - property
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyDetailsSerializers'
           description: ''
   /api/property/high-rate/:
     get:
