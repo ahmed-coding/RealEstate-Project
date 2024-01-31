@@ -390,6 +390,8 @@ def refresh_general_notifications(user, oldest_timestamp, newest_timestamp):
     """
     Retrieve the general notifications newer than the oldest one on the screen and younger than the newest one the screen.
     The result will be: Notifications currently visible will be updated
+    format of date:
+        `"newest_timestamp":"2024-1-30 00:00"` as %Y-%m-%d %H:%M
     """
     payload = {}
     if user.is_authenticated:
@@ -417,6 +419,8 @@ def refresh_general_notifications(user, oldest_timestamp, newest_timestamp):
 def get_new_general_notifications(user, newest_timestamp):
     """
     Retrieve any notifications newer than the newest_timestatmp on the screen.
+    format of date:
+        `"newest_timestamp":"2024-1-30 00:00"` as %Y-%m-%d %H:%M
     """
     payload = {}
     if user.is_authenticated:
