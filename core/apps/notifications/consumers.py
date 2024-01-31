@@ -1,3 +1,4 @@
+from django.db.models import F, Q
 import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.core.paginator import Paginator
@@ -394,10 +395,10 @@ def refresh_general_notifications(user, oldest_timestamp, newest_timestamp):
     if user.is_authenticated:
         # remove timezone because who cares
         oldest_ts = oldest_timestamp[0:oldest_timestamp.find("+")]
-        oldest_ts = datetime.strptime(oldest_ts, '%Y-%m-%d %H:%M:%S.%f')
+        oldest_ts = datetime.strptime(oldest_ts, '%Y-%m-%d %H:%M')
         # remove timezone because who cares
         newest_ts = newest_timestamp[0:newest_timestamp.find("+")]
-        newest_ts = datetime.strptime(newest_ts, '%Y-%m-%d %H:%M:%S.%f')
+        newest_ts = datetime.strptime(newest_ts, '%Y-%m-%d %H:%M')
         friend_request_ct = ContentType.objects.get_for_model(FriendRequest)
         friend_list_ct = ContentType.objects.get_for_model(FriendList)
         notifications = Notification.objects.filter(target=user, content_type__in=[
@@ -441,14 +442,19 @@ def get_unread_general_notification_count(user):
     if user.is_authenticated:
         friend_request_ct = ContentType.objects.get_for_model(FriendRequest)
         friend_list_ct = ContentType.objects.get_for_model(FriendList)
-        notifications = Notification.objects.filter(
-            target=user, content_type__in=[friend_request_ct, friend_list_ct])
+        # notifications = Notification.objects.filter(
+        #     target=user, content_type__in=[friend_request_ct, friend_list_ct], read=False).count()
+        # unread_count = 0
+        # if notifications:
+        #     for notification in notifications.all():
+        #         if not notification.read:
+        #             unread_count = unread_count + 1
+        # payload['count'] = unread_count
+        # return json.dumps(payload)
 
-        unread_count = 0
-        if notifications:
-            for notification in notifications.all():
-                if not notification.read:
-                    unread_count = unread_count + 1
+        # New style
+        unread_count = Notification.objects.filter(
+            target=user, content_type__in=[friend_request_ct, friend_list_ct], read=False).count()
         payload['count'] = unread_count
         return json.dumps(payload)
     else:
@@ -463,11 +469,8 @@ def mark_notifications_read(user):
     marks a notification as "read"
     """
     if user.is_authenticated:
-        notifications = Notification.objects.filter(target=user)
-        if notifications:
-            for notification in notifications.all():
-                notification.read = True
-                notification.save()
+        notifications = Notification.objects.filter(
+            target=user).update(read=True)
     return
 
 
@@ -533,17 +536,15 @@ def get_new_chat_notifications(user, newest_timestatmp):
 
 @database_sync_to_async
 def get_unread_chat_notification_count(user):
-    payload = {}
     if user.is_authenticated:
         chatmessage_ct = ContentType.objects.get_for_model(
             UnreadChatRoomMessages)
-        notifications = Notification.objects.filter(
-            target=user, content_type__in=[chatmessage_ct])
+        unread_count = Notification.objects.filter(
+            target=user, content_type__in=[chatmessage_ct]).count()
 
-        unread_count = 0
-        if notifications:
-            unread_count = len(notifications.all())
-        payload['count'] = unread_count
+        payload = {
+            'count': unread_count
+        }
         return json.dumps(payload)
     else:
         raise ClientError(
