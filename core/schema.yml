@@ -95,13 +95,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserAuth'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserAuth'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserAuth'
         required: true
       security:
       - cookieAuth: []
@@ -111,7 +111,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserAuth'
           description: ''
   /api/categorie/:
     get:
@@ -815,7 +815,7 @@ components:
             $ref: '#/components/schemas/Image_Serializers'
           readOnly: true
         have_children:
-          type: string
+          type: boolean
           readOnly: true
         name:
           type: string
@@ -1079,7 +1079,8 @@ components:
             $ref: '#/components/schemas/property_valueSerializers'
           readOnly: true
         rate:
-          type: string
+          type: number
+          format: double
           readOnly: true
         in_favorite:
           type: boolean
@@ -1172,7 +1173,8 @@ components:
           type: integer
           readOnly: true
         rate:
-          type: string
+          type: number
+          format: double
           readOnly: true
         in_favorite:
           type: boolean
@@ -1355,12 +1357,60 @@ components:
           type: string
           title: Full name
           maxLength: 60
+        register_data:
+          type: string
+          maxLength: 20
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        image:
+          type: string
+          format: uri
+          nullable: true
+        is_deleted:
+          type: boolean
+          title: Deleted
+      required:
+      - email
+      - id
+      - password
+    UserAuth:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        username:
+          type: string
+          nullable: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+        name:
+          type: string
+          title: Full name
+          maxLength: 60
         image:
           type: string
           format: uri
           nullable: true
         user_auth:
-          type: string
+          type: object
+          additionalProperties: {}
           readOnly: true
       required:
       - email

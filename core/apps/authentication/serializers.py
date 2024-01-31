@@ -4,12 +4,12 @@ from ..models import User
 from rest_framework.authtoken.views import ObtainAuthToken, AuthTokenSerializer
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserAuthSerializer(serializers.ModelSerializer):
     # image = serializers.ImageField(use_url=True)
     password = serializers.CharField(write_only=True)
     user_auth = serializers.SerializerMethodField(read_only=True)
 
-    def get_user_auth(self, obj):
+    def get_user_auth(self, obj) -> dict:
         # request = self.context.get('request' or None)
         # serializer = AuthTokenSerializer(data=request.data,
         #                                  context=self.context)

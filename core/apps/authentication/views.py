@@ -8,7 +8,7 @@ from django.contrib.auth import logout, authenticate, login
 from rest_framework.permissions import IsAuthenticated
 
 
-from .serializers import User, UserSerializer
+from .serializers import User, UserAuthSerializer
 
 
 class CustomAuthToken(CreateAPIView):
@@ -36,7 +36,7 @@ class ReigsterView(CreateAPIView):
     # authentication_classes = [JWTAuthentication]
     # permission_classes = [IsAuthenticated]
     model = User
-    serializer_class = UserSerializer
+    serializer_class = UserAuthSerializer
 
     def post(self, request: Request):
         """
