@@ -22,6 +22,7 @@ from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from apps.notifications.consumers import NotificationConsumer
+from apps.chat.consumers import ChatConsumer
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,4 +36,6 @@ urlpatterns += staticfiles_urlpatterns()
 
 websocket_urlpatterns = [
     path("ws/notifications/", NotificationConsumer.as_asgi()),
+    path('ws/chat/<room_id>/', ChatConsumer.as_asgi()),
+
 ]

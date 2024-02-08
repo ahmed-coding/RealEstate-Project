@@ -4,11 +4,11 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView, Request, status
 from rest_framework.generics import CreateAPIView, GenericAPIView
-from django.contrib.auth import logout
+from django.contrib.auth import logout, authenticate, login
 from rest_framework.permissions import IsAuthenticated
 
 
-from .serializers import User, UserSerializer
+from .serializers import User, UserAuthSerializer
 
 
 class CustomAuthToken(CreateAPIView):
@@ -20,6 +20,7 @@ class CustomAuthToken(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
+        login(request, user)
         return Response({
             'token': token.key,
             'user_id': user.pk,
@@ -35,7 +36,7 @@ class ReigsterView(CreateAPIView):
     # authentication_classes = [JWTAuthentication]
     # permission_classes = [IsAuthenticated]
     model = User
-    serializer_class = UserSerializer
+    serializer_class = UserAuthSerializer
 
     def post(self, request: Request):
         """

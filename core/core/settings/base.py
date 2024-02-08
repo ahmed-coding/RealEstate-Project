@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     # internl apps
     'apps',
     # # external apps
-    # 'mptt',
+    'mptt',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'channels_redis',
 
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -135,7 +134,13 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / '../assets'
 
 
-APPEND_SLASH = False
+APPEND_SLASH = True
+
+# AUTHENTICATION_BACKENDS = (
+#     'django.contrib.auth.backends.AllowAllUsersModelBackend',
+#     'apps.backends.CaseInsensitiveModelBackend',
+# )
+
 
 # Rest_framework
 REST_FRAMEWORK = {
@@ -145,8 +150,11 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
 
+
     ),
-    'DEFAULT_PERMISSION_CLASSES': ("rest_framework.permissions.IsAuthenticated",),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ),
 
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
@@ -195,14 +203,3 @@ CORS_ORIGIN_ALLOW_ALL = True  # -> Cors Header
 # )
 
 # Channels settings
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("redis", 6379)],
-        },
-    },
-    # "default": {
-    #     "BACKEND": "channels.layers.InMemoryChannelLayer",
-    # },
-}

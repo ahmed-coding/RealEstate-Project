@@ -8,7 +8,7 @@ class CategorySerializers(serializers.ModelSerializer):
     image = Image_Serializers(many=True, read_only=True)
     have_children = serializers.SerializerMethodField(read_only=True)
 
-    def get_have_children(self, obj: Category):
+    def get_have_children(self, obj: Category) -> bool:
 
         return obj.get_children().exists()
 

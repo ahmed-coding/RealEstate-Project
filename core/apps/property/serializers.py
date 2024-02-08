@@ -25,7 +25,7 @@ class SinglePropertySerializers(serializers.ModelSerializer):
         # if isinstance(user, User) else False
         return obj.favorites.filter(user=user).exists()
 
-    def get_rate(self, obj):
+    def get_rate(self, obj) -> float:
         # user = self.context.get('user' or None)
         rat = obj.rate.all()
         sub = 0.0
@@ -98,7 +98,7 @@ class PropertyDetailsSerializers(serializers.ModelSerializer):
         # if isinstance(user, User) else False
         return obj.favorites.filter(user=user).exists()
 
-    def get_rate(self, obj):
+    def get_rate(self, obj) -> float:
         # user = self.context.get('user' or None)
         rat = obj.rate.all()
         sub = 0.0
