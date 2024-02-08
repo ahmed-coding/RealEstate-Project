@@ -11,7 +11,8 @@
 - `docker image list`
 - ## other docker commends
     - `docker exec -it containerName /bin/sh`
-    - ex. `docker build -t realestate-project-core core/`
+    - ex.  `docker exec -it realestate-project-core /bin/sh`
+    - `docker build -t realestate-project-core core/`
 # windows problems fix 
 `dos2unix core/entrypoint.sh `
 `docker run -it --rm realestate-project-core /bin/ash`
