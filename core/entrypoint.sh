@@ -1,4 +1,4 @@
-#!user/bin/env sh
+#!/bin/ash
 
 echo "Apply database migrations"
 
