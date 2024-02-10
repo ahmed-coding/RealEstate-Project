@@ -17,8 +17,9 @@ RUN pip install --upgrade pip && \
 
 COPY ./entrypoint.sh /usr/src/app/realEstate/entrypoint.sh
 
-RUN dos2unix /usr/src/app/realEstate/entrypoint.sh
-RUN chmod +x /usr/src/app/realEstate/entrypoint.sh
+RUN dos2unix /usr/src/app/realEstate/entrypoint.sh && \
+    chmod +x /usr/src/app/realEstate/entrypoint.sh
+
 COPY . /usr/src/app/realEstate/
 
 ENTRYPOINT [ "/usr/src/app/realEstate/entrypoint.sh" ]
