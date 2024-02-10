@@ -13,8 +13,8 @@ RUN apk update && \
 
 COPY ./requirements.txt /usr/src/app/realEstate/requirements.txt
 
-# RUN pip install --upgrade pip && \
-#     pip install -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
 COPY ./entrypoint.sh /usr/src/app/realEstate/entrypoint.sh
 
