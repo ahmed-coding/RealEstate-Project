@@ -1,4 +1,5 @@
 FROM python:3.11.5-alpine
+
 WORKDIR /usr/src/app/realEstate
 
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -17,8 +18,9 @@ RUN pip install --upgrade pip && \
 
 COPY ./entrypoint.sh /usr/src/app/realEstate/entrypoint.sh
 
-RUN dos2unix /usr/src/app/realEstate/entrypoint.sh
-RUN chmod +x /usr/src/app/realEstate/entrypoint.sh
+RUN dos2unix /usr/src/app/realEstate/entrypoint.sh && \
+    chmod +x /usr/src/app/realEstate/entrypoint.sh
+
 COPY . /usr/src/app/realEstate/
 
-ENTRYPOINT [ "/usr/src/app/realEstate/entrypoint.sh" ]
+ENTRYPOINT ["/usr/src/app/realEstate/entrypoint.sh"]
