@@ -4,9 +4,7 @@
 `python manage.py collectstatic`
 
 # [Docker]
-<!-- get image list -->
-
-<!--  -->
+### get image list
 - `docker-compose up -d --build`
 - `docker image list`
 - ## other docker commends
