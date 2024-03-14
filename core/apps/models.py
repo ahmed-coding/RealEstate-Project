@@ -861,6 +861,9 @@ class PrivateChatRoom(models.Model):
         """
         return f"PrivateChatRoom-{self.id}"
 
+    class Meta:
+        db_table = 'PrivateChatRoom'
+
 
 class RoomChatMessageManager(models.Manager):
     def by_room(self, room):
@@ -882,6 +885,9 @@ class RoomChatMessage(models.Model):
 
     def __str__(self):
         return self.content
+
+    class Meta:
+        db_table = 'RoomChatMessage'
 
 
 class UnreadChatRoomMessages(models.Model):
@@ -931,6 +937,8 @@ class UnreadChatRoomMessages(models.Model):
         else:
             return self.room.user1
 
+    class Meta:
+        db_table = 'UnreadChatRoomMessages'
 # End Chat
 # Friend
 
@@ -1052,6 +1060,9 @@ class FriendList(models.Model):
         if friend in self.friends.all():
             return True
         return False
+
+    class Meta:
+        db_table = 'FriendList'
 
 
 class FriendRequest(models.Model):
@@ -1175,6 +1186,9 @@ class FriendRequest(models.Model):
         For determining what kind of object is associated with a Notification
         """
         return "FriendRequest"
+
+    class Meta:
+        db_table = 'FriendRequest'
 # End Friend
 
 
