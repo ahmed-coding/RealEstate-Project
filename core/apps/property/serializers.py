@@ -61,14 +61,14 @@ class Feature_propertySerializers(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AttributeSerializers(serializers.ModelSerializer):
+class AttributeVlaueSerializers(serializers.ModelSerializer):
     class Meta:
         model = Attribute
         fields = '__all__'
 
 
 class ValueSerializers(serializers.ModelSerializer):
-    attribute = AttributeSerializers(read_only=True)
+    attribute = AttributeVlaueSerializers(read_only=True)
 
     class Meta:
         model = ValueModel

@@ -4,38 +4,14 @@ info:
   version: 1.0.0
   description: RealEstate project description
 paths:
-  /api/address/state/:
+  /api/address/city/:
     get:
-      operationId: api_address_state_list
-      parameters:
-      - in: query
-        name: name
-        schema:
-          type: string
-      - name: ordering
-        required: false
-        in: query
-        description: Which field to use when ordering the results.
-        schema:
-          type: string
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      - name: page_size
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: search
-        required: false
-        in: query
-        description: A search term.
-        schema:
-          type: string
+      operationId: api_address_city_list
+      description: |-
+        CityViewsets
+
+        Argament:
+            country: country id to get all City in `GET Method`
       tags:
       - api
       security:
@@ -46,7 +22,48 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedStateSerializersList'
+                type: array
+                items:
+                  $ref: '#/components/schemas/CitySerializers'
+          description: ''
+  /api/address/country/:
+    get:
+      operationId: api_address_country_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountrySerializers'
+          description: ''
+  /api/address/state/:
+    get:
+      operationId: api_address_state_list
+      description: |-
+        StateViewsets
+
+        Argament:
+            city: city id to get all State in `GET Method`
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StateSerializers'
           description: ''
   /api/auth/login/:
     post:
@@ -116,6 +133,11 @@ paths:
   /api/categorie/:
     get:
       operationId: api_categorie_list
+      description: |-
+        CategoryViewsets
+
+        Argament:
+            parent: parent id to get all sup Categorie in `GET Method`
       parameters:
       - in: query
         name: name
@@ -156,6 +178,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedCategorySerializersList'
+          description: ''
+  /api/categorie/attributes/:
+    get:
+      operationId: api_categorie_attributes_list
+      description: |-
+        AttributeByCategorieViewsets
+
+        Argament:
+            category: categorie id to get all attribute in `GET Method`
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttributeSerializers'
           description: ''
   /api/property/:
     get:
@@ -775,12 +819,32 @@ components:
         id:
           type: integer
           readOnly: true
+        value_attribute:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueModelSerializers'
+          readOnly: true
         name:
           type: string
           maxLength: 50
         data_type:
+          $ref: '#/components/schemas/DataTypeEnum'
+      required:
+      - data_type
+      - id
+      - name
+      - value_attribute
+    AttributeVlaueSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
           type: string
           maxLength: 50
+        data_type:
+          $ref: '#/components/schemas/DataTypeEnum'
       required:
       - data_type
       - id
@@ -848,27 +912,37 @@ components:
         id:
           type: integer
           readOnly: true
-        country:
-          allOf:
-          - $ref: '#/components/schemas/CountrySerializers'
+        state:
+          type: array
+          items:
+            $ref: '#/components/schemas/StateSerializers'
           readOnly: true
         name:
           type: string
           maxLength: 50
+        country:
+          type: integer
       required:
       - country
       - id
       - name
+      - state
     CountrySerializers:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        city:
+          type: array
+          items:
+            $ref: '#/components/schemas/CitySerializers'
+          readOnly: true
         name:
           type: string
           maxLength: 50
       required:
+      - city
       - id
       - name
     CreateFavoriteSerializers:
@@ -878,6 +952,15 @@ components:
           type: integer
       required:
       - prop
+    DataTypeEnum:
+      enum:
+      - string
+      - int
+      - char
+      - bool
+      - date
+      - float
+      type: string
     FavoriteSerializers:
       type: object
       properties:
@@ -1019,26 +1102,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SinglePropertySerializers'
-    PaginatedStateSerializersList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/StateSerializers'
     PatchedUpdateUser:
       type: object
       properties:
@@ -1123,6 +1186,9 @@ components:
           type: string
           readOnly: true
           pattern: ^[-a-zA-Z0-9_]+$
+        for_sale:
+          type: boolean
+          title: Is For sale
       required:
       - address
       - category
@@ -1205,6 +1271,9 @@ components:
           type: string
           readOnly: true
           pattern: ^[-a-zA-Z0-9_]+$
+        for_sale:
+          type: boolean
+          title: Is For sale
         user:
           type: integer
         category:
@@ -1231,13 +1300,11 @@ components:
         id:
           type: integer
           readOnly: true
-        city:
-          allOf:
-          - $ref: '#/components/schemas/CitySerializers'
-          readOnly: true
         name:
           type: string
           maxLength: 50
+        city:
+          type: integer
       required:
       - city
       - id
@@ -1450,6 +1517,21 @@ components:
       required:
       - email
       - id
+    ValueModelSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        value:
+          type: string
+          maxLength: 50
+        attribute:
+          type: integer
+      required:
+      - attribute
+      - id
+      - value
     ValueSerializers:
       type: object
       properties:
@@ -1458,7 +1540,7 @@ components:
           readOnly: true
         attribute:
           allOf:
-          - $ref: '#/components/schemas/AttributeSerializers'
+          - $ref: '#/components/schemas/AttributeVlaueSerializers'
           readOnly: true
         value:
           type: string
