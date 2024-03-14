@@ -119,3 +119,9 @@ class PropertyDetailsSerializers(serializers.ModelSerializer):
 
 
 # Seller Method
+
+class CreatePropertySerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = Property
+        fields = '__all__'
