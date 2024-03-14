@@ -12,7 +12,6 @@ from django.db import transaction
 from xmlrpc.client import TRANSPORT_ERROR
 from PIL import Image as PImage
 from django.db import models
-from django.contrib.gis.db import models as gis_models
 from django.utils.text import slugify
 import uuid
 from channels.layers import get_channel_layer
