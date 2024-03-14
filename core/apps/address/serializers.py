@@ -2,25 +2,26 @@ from rest_framework import serializers
 from ..models import Address, City, Country, State
 
 
-class CountrySerializers(serializers.ModelSerializer):
+class StateSerializers(serializers.ModelSerializer):
+
     class Meta:
-        model = Country
+        model = State
         fields = '__all__'
 
 
 class CitySerializers(serializers.ModelSerializer):
-    country = CountrySerializers(read_only=True)
+    state = StateSerializers(many=True, read_only=True)
 
     class Meta:
         model = City
         fields = '__all__'
 
 
-class StateSerializers(serializers.ModelSerializer):
-    city = CitySerializers(read_only=True)
+class CountrySerializers(serializers.ModelSerializer):
+    city = CitySerializers(many=True, read_only=True)
 
     class Meta:
-        model = State
+        model = Country
         fields = '__all__'
 
 
