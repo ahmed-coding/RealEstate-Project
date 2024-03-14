@@ -6,6 +6,6 @@ urlpatterns = [
          views.PropertyViewsets.as_view({'get': 'get_high_rate'})),
     path('<int:pk>/', views.PropertyViewsets.as_view({'get': 'retrieve'})),
     path('<int:pkprop>/reviews/', include('apps.review.urls')),
-    path('<int:pkpk>/by-address/',
+    path('<int:pk>/by-address/',
          views.PropertyViewsets.as_view({'get': 'get_by_address'})),
 ]
