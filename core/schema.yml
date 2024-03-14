@@ -6,7 +6,7 @@ info:
 paths:
   /api/address/state/:
     get:
-      operationId: address_state_list
+      operationId: api_address_state_list
       parameters:
       - in: query
         name: name
@@ -37,7 +37,7 @@ paths:
         schema:
           type: string
       tags:
-      - address
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -50,9 +50,9 @@ paths:
           description: ''
   /api/auth/login/:
     post:
-      operationId: auth_login_create
+      operationId: api_auth_login_create
       tags:
-      - auth
+      - api
       requestBody:
         content:
           application/json:
@@ -77,7 +77,7 @@ paths:
           description: ''
   /api/auth/sginup/:
     post:
-      operationId: auth_sginup_create
+      operationId: api_auth_sginup_create
       description: |-
         Reigster User View to signup after verify the ``email`` or ``phone number`` (just email for new).
         Returns:
@@ -90,7 +90,7 @@ paths:
             - status: 401 when come bafore verify the ``email`` or ``phone_number``.
             - status: 400 when data isn't correct or somthing go to by wrong.
       tags:
-      - auth
+      - api
       requestBody:
         content:
           application/json:
@@ -115,7 +115,7 @@ paths:
           description: ''
   /api/categorie/:
     get:
-      operationId: categorie_list
+      operationId: api_categorie_list
       parameters:
       - in: query
         name: name
@@ -146,7 +146,7 @@ paths:
         schema:
           type: string
       tags:
-      - categorie
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -159,7 +159,7 @@ paths:
           description: ''
   /api/property/:
     get:
-      operationId: property_list
+      operationId: api_property_list
       parameters:
       - in: query
         name: name
@@ -190,7 +190,7 @@ paths:
         schema:
           type: string
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -201,30 +201,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedSinglePropertySerializersList'
           description: ''
-  /api/property/{pkpk}/by-address/:
-    get:
-      operationId: property_by_address_retrieve
-      parameters:
-      - in: path
-        name: pkpk
-        schema:
-          type: integer
-        required: true
-      tags:
-      - property
-      security:
-      - cookieAuth: []
-      - tokenAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SinglePropertySerializers'
-          description: ''
   /api/property/{pkprop}/reviews/:
     get:
-      operationId: property_reviews_list
+      operationId: api_property_reviews_list
       parameters:
       - name: ordering
         required: false
@@ -260,7 +239,7 @@ paths:
         schema:
           type: string
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -273,7 +252,7 @@ paths:
           description: ''
   /api/property/{id}/:
     get:
-      operationId: property_retrieve
+      operationId: api_property_retrieve
       parameters:
       - in: path
         name: id
@@ -281,7 +260,7 @@ paths:
           type: integer
         required: true
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -292,11 +271,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/PropertyDetailsSerializers'
           description: ''
+  /api/property/{id}/by-address/:
+    get:
+      operationId: api_property_by_address_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePropertySerializers'
+          description: ''
   /api/property/high-rate/:
     get:
-      operationId: property_high_rate_retrieve
+      operationId: api_property_high_rate_retrieve
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -309,7 +309,7 @@ paths:
           description: ''
   /api/schema/:
     get:
-      operationId: schema_retrieve
+      operationId: api_schema_retrieve
       description: |-
         OpenApi3 schema for this API. Format can be selected via content negotiation.
 
@@ -427,7 +427,7 @@ paths:
           - zh-hans
           - zh-hant
       tags:
-      - schema
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -454,9 +454,9 @@ paths:
           description: ''
   /api/ticket/create/:
     post:
-      operationId: ticket_create_create
+      operationId: api_ticket_create_create
       tags:
-      - ticket
+      - api
       requestBody:
         content:
           application/json:
@@ -481,9 +481,9 @@ paths:
           description: ''
   /api/ticket/ticket-type/:
     get:
-      operationId: ticket_ticket_type_list
+      operationId: api_ticket_ticket_type_list
       tags:
-      - ticket
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -498,7 +498,7 @@ paths:
           description: ''
   /api/user/favorite/:
     get:
-      operationId: user_favorite_list
+      operationId: api_user_favorite_list
       parameters:
       - name: ordering
         required: false
@@ -529,7 +529,7 @@ paths:
         schema:
           type: string
       tags:
-      - user
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -542,7 +542,7 @@ paths:
           description: ''
   /api/user/favorite/{prop_id}/delete/:
     delete:
-      operationId: user_favorite_delete_destroy
+      operationId: api_user_favorite_delete_destroy
       parameters:
       - in: path
         name: prop_id
@@ -550,7 +550,7 @@ paths:
           type: integer
         required: true
       tags:
-      - user
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -559,9 +559,9 @@ paths:
           description: No response body
   /api/user/favorite/create/:
     post:
-      operationId: user_favorite_create_create
+      operationId: api_user_favorite_create_create
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -586,7 +586,7 @@ paths:
           description: ''
   /api/user/favorite/delete-all/:
     post:
-      operationId: user_favorite_delete_all_create
+      operationId: api_user_favorite_delete_all_create
       description: |-
         _summary_
 
@@ -596,7 +596,7 @@ paths:
         Returns:
             _type_: _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -620,7 +620,7 @@ paths:
           description: ''
   /api/user/favorite/delete-list/:
     post:
-      operationId: user_favorite_delete_list_create
+      operationId: api_user_favorite_delete_list_create
       description: |-
         _summary_
 
@@ -630,7 +630,7 @@ paths:
         Returns:
             _type_: _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -654,7 +654,7 @@ paths:
           description: ''
   /api/user/profile/:
     get:
-      operationId: user_profile_list
+      operationId: api_user_profile_list
       description: |-
         _summary_
 
@@ -671,7 +671,7 @@ paths:
         schema:
           type: string
       tags:
-      - user
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -686,14 +686,14 @@ paths:
           description: ''
   /api/user/profile/update/:
     put:
-      operationId: user_profile_update_update
+      operationId: api_user_profile_update_update
       description: |-
         _summary_
 
         Args:
             viewsets (_type_): _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -717,14 +717,14 @@ paths:
                 $ref: '#/components/schemas/UpdateUser'
           description: ''
     patch:
-      operationId: user_profile_update_partial_update
+      operationId: api_user_profile_update_partial_update
       description: |-
         _summary_
 
         Args:
             viewsets (_type_): _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -1111,8 +1111,6 @@ components:
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
         size:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         is_active:
           type: boolean
         is_deleted:
@@ -1195,8 +1193,6 @@ components:
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
         size:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         is_active:
           type: boolean
         is_deleted:

@@ -116,3 +116,6 @@ class PropertyDetailsSerializers(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = '__all__'
+
+
+# Seller Method

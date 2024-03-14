@@ -189,7 +189,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.unique_no = f"{generit_random_code(8)}"
+            self.unique_no = f"{slugify(self.name.strip())}-{str(uuid.uuid4())[:5]}"
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -469,10 +469,11 @@ class Property(models.Model):
         _("time_created"), auto_now=False, auto_now_add=True)
     unique_number = models.SlugField(_("unique_number"), editable=False)
     image = GenericRelation(Image, related_query_name='property')
+    for_sale = models.BooleanField(_("Is For sale"), default=False)
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.unique_no = f"{generit_random_code(10)}"
+            self.unique_no = f"{slugify(self.name.strip())}-{str(uuid.uuid4())[:8]}"
         return super().save(*args, **kwargs)
 
     class Meta:
@@ -527,10 +528,18 @@ class Attribute(models.Model):
     """
     Attribute model .
     ---------------------------
-
     """
+    choices = [
+        ("string", "String"),
+        ("int", "Number"),
+        ("char", "Char"),
+        ("bool", "Boolean"),
+        ("date", "Date"),
+        ("float", "Float"),
+    ]
     name = models.CharField(_("Name"), max_length=50)
-    data_type = models.CharField(_("data_type"), max_length=50)
+    data_type = models.CharField(
+        _("data_type"), max_length=50, choices=choices)
 
     def __str__(self) -> str:
         return self.name
