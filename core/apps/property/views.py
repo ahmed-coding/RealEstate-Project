@@ -110,9 +110,14 @@ class PropertyCreateAPIView(generics.CreateAPIView):
                 "longitude": "longitude_value",
                 "latitude": "latitude_value"
             },
-            "feature_data": {
+            "feature_data": [
+                {
                 "name": "Feature Name"
-            },
+                },
+                {
+                "name": "Feature Name"
+                }
+            ],
             "image_data": [
                 {
                     "image": "image_data"

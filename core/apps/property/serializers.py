@@ -218,9 +218,14 @@ class CreatePropertySerializer(serializers.ModelSerializer):
                 "longitude": "longitude_value",
                 "latitude": "latitude_value"
             },
-            "feature_data": {
+            "feature_data": [
+                {
                 "name": "Feature Name"
-            },
+                },
+                {
+                "name": "Feature Name"
+                }
+            ],
             "image_data": [
                 {
                     "image": "image_data"
@@ -241,13 +246,14 @@ class CreatePropertySerializer(serializers.ModelSerializer):
     attribute_values = serializers.DictField(write_only=True)
 
     address_data = CreateAddressSerializer()
-    feature_data = serializers.DictField(write_only=True)
+    feature_data = serializers.ListField(
+        child=serializers.DictField(), write_only=True)
     image_data = serializers.ListField(
         child=serializers.DictField(), write_only=True)
 
     def create(self, validated_data):
         address_data = validated_data.pop('address_data')
-        feature_data = validated_data.pop('feature_data', None)
+        feature_data = validated_data.pop('feature_data', [])
         image_data = validated_data.pop('image_data', [])
         attribute_values_data = validated_data.pop('attribute_values', {})
 
@@ -259,8 +265,10 @@ class CreatePropertySerializer(serializers.ModelSerializer):
 
         object_id = property_instance.id
         feature_instance = None
-        if feature_data:
-            feature_instance = Feature.objects.create(**feature_data)
+        for feature in feature_data:
+            feature_instance = Feature.objects.create(**feature)
+            Feature_property.objects.create(
+                property=property_instance, feature=feature_instance)
 
         images_instances = []
         for item in image_data:
@@ -268,10 +276,6 @@ class CreatePropertySerializer(serializers.ModelSerializer):
             item['object_id'] = object_id
             image_instance = Image.objects.create(**item)
             images_instances.append(image_instance)
-
-        if feature_instance:
-            Feature_property.objects.create(
-                property=property_instance, feature=feature_instance)
 
         for attribute_id, value in attribute_values_data.items():
             attribute = Attribute.objects.get(id=attribute_id)
