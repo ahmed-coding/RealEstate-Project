@@ -10,6 +10,7 @@ from ..models import Property, User
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Avg
 from . import serializers
+from rest_framework import generics
 
 
 class BastSellerViewsets(viewsets.ModelViewSet):
@@ -79,3 +80,56 @@ class PropertyViewsets(viewsets.ModelViewSet):
         return Response({
             'data': serializer.data
         })
+
+
+class PropertyCreateAPIView(generics.CreateAPIView):
+    """
+    API view class for creating a new property along with address and images.
+
+    This view class provides an endpoint for creating a new property along with associated address and images.
+
+    Example Usage:
+        To create a property with attribute_values, address, features, and images:
+        ```
+        {
+            "user": 1,
+            "category": 1,
+            "name": "Property Name",
+            "description": "Property Description",
+            "price": 100000,
+            "size": 2000,
+            "is_active": true,
+            "is_deleted": false,
+            "attribute_values": {
+                "1": "Value1",
+                "2": "Value2",
+                "3": "Value3"
+            },
+            "address_data": {
+                "state": 1,
+                "longitude": "longitude_value",
+                "latitude": "latitude_value"
+            },
+            "feature_data": {
+                "name": "Feature Name"
+            },
+            "image_data": [
+                {
+                    "image": "image_data"
+                },
+                {
+                    "image": "image_data"
+                }
+            ],
+            "for_sale": true
+        }
+        ```
+
+    Note:
+        Ensure that the user and `category` IDs provided exist in the database.
+        Ensure that the attribute IDs provided in `attribute_values` exist in the database.
+
+
+    """
+    serializer_class = serializers.CreatePropertySerializer
+    permission_classes = [IsAuthenticated]

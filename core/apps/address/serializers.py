@@ -31,3 +31,25 @@ class AddressSerializers(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = '__all__'
+
+
+class CreateAddressSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for creating a new address.
+
+    This serializer allows creating a new address.
+
+    Example Usage:
+        To create an address:
+        ```
+        {
+            "state": 1,
+            "longitude": "longitude_value",
+            "latitude": "latitude_value"
+        }
+        ```
+
+    """
+    class Meta:
+        model = Address
+        fields = '__all__'
