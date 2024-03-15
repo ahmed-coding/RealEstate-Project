@@ -6,14 +6,14 @@ info:
 paths:
   /api/address/city/:
     get:
-      operationId: address_city_list
+      operationId: api_address_city_list
       description: |-
         CityViewsets
 
         Argament:
             country: country id to get all City in `GET Method`
       tags:
-      - address
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -28,9 +28,9 @@ paths:
           description: ''
   /api/address/country/:
     get:
-      operationId: address_country_list
+      operationId: api_address_country_list
       tags:
-      - address
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -45,14 +45,14 @@ paths:
           description: ''
   /api/address/state/:
     get:
-      operationId: address_state_list
+      operationId: api_address_state_list
       description: |-
         StateViewsets
 
         Argament:
             city: city id to get all State in `GET Method`
       tags:
-      - address
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -67,9 +67,9 @@ paths:
           description: ''
   /api/auth/login/:
     post:
-      operationId: auth_login_create
+      operationId: api_auth_login_create
       tags:
-      - auth
+      - api
       requestBody:
         content:
           application/json:
@@ -94,7 +94,7 @@ paths:
           description: ''
   /api/auth/sginup/:
     post:
-      operationId: auth_sginup_create
+      operationId: api_auth_sginup_create
       description: |-
         Reigster User View to signup after verify the ``email`` or ``phone number`` (just email for new).
         Returns:
@@ -107,7 +107,7 @@ paths:
             - status: 401 when come bafore verify the ``email`` or ``phone_number``.
             - status: 400 when data isn't correct or somthing go to by wrong.
       tags:
-      - auth
+      - api
       requestBody:
         content:
           application/json:
@@ -132,7 +132,7 @@ paths:
           description: ''
   /api/categorie/:
     get:
-      operationId: categorie_list
+      operationId: api_categorie_list
       description: |-
         CategoryViewsets
 
@@ -168,7 +168,7 @@ paths:
         schema:
           type: string
       tags:
-      - categorie
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -181,14 +181,14 @@ paths:
           description: ''
   /api/categorie/attributes/:
     get:
-      operationId: categorie_attributes_list
+      operationId: api_categorie_attributes_list
       description: |-
         AttributeByCategorieViewsets
 
         Argament:
             category: categorie id to get all attribute in `GET Method`
       tags:
-      - categorie
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -203,7 +203,7 @@ paths:
           description: ''
   /api/property/:
     get:
-      operationId: property_list
+      operationId: api_property_list
       parameters:
       - in: query
         name: name
@@ -234,7 +234,7 @@ paths:
         schema:
           type: string
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -247,7 +247,7 @@ paths:
           description: ''
   /api/property/{pkprop}/reviews/:
     get:
-      operationId: property_reviews_list
+      operationId: api_property_reviews_list
       parameters:
       - name: ordering
         required: false
@@ -283,7 +283,7 @@ paths:
         schema:
           type: string
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -296,7 +296,7 @@ paths:
           description: ''
   /api/property/{id}/:
     get:
-      operationId: property_retrieve
+      operationId: api_property_retrieve
       parameters:
       - in: path
         name: id
@@ -304,7 +304,7 @@ paths:
           type: integer
         required: true
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -317,7 +317,7 @@ paths:
           description: ''
   /api/property/{id}/by-address/:
     get:
-      operationId: property_by_address_retrieve
+      operationId: api_property_by_address_retrieve
       parameters:
       - in: path
         name: id
@@ -325,7 +325,7 @@ paths:
           type: integer
         required: true
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -336,11 +336,83 @@ paths:
               schema:
                 $ref: '#/components/schemas/SinglePropertySerializers'
           description: ''
+  /api/property/create/:
+    post:
+      operationId: api_property_create_create
+      description: |-
+        API view class for creating a new property along with address and images.
+
+        This view class provides an endpoint for creating a new property along with associated address and images.
+
+        Example Usage:
+            To create a property with attribute_values, address, features, and images:
+            ```
+            {
+                "user": 1,
+                "category": 1,
+                "name": "Property Name",
+                "description": "Property Description",
+                "price": 100000,
+                "size": 2000,
+                "is_active": true,
+                "is_deleted": false,
+                "attribute_values": {
+                    "1": "Value1",
+                    "2": "Value2",
+                    "3": "Value3"
+                },
+                "address_data": {
+                    "state": 1,
+                    "longitude": "longitude_value",
+                    "latitude": "latitude_value"
+                },
+                "feature_data": {
+                    "name": "Feature Name"
+                },
+                "image_data": [
+                    {
+                        "image": "image_data"
+                    },
+                    {
+                        "image": "image_data"
+                    }
+                ],
+                "for_sale": true
+            }
+            ```
+
+        Note:
+            Ensure that the user and `category` IDs provided exist in the database.
+            Ensure that the attribute IDs provided in `attribute_values` exist in the database.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProperty'
+          description: ''
   /api/property/high-rate/:
     get:
-      operationId: property_high_rate_retrieve
+      operationId: api_property_high_rate_retrieve
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -353,7 +425,7 @@ paths:
           description: ''
   /api/schema/:
     get:
-      operationId: schema_retrieve
+      operationId: api_schema_retrieve
       description: |-
         OpenApi3 schema for this API. Format can be selected via content negotiation.
 
@@ -471,7 +543,7 @@ paths:
           - zh-hans
           - zh-hant
       tags:
-      - schema
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -498,9 +570,9 @@ paths:
           description: ''
   /api/ticket/create/:
     post:
-      operationId: ticket_create_create
+      operationId: api_ticket_create_create
       tags:
-      - ticket
+      - api
       requestBody:
         content:
           application/json:
@@ -525,9 +597,9 @@ paths:
           description: ''
   /api/ticket/ticket-type/:
     get:
-      operationId: ticket_ticket_type_list
+      operationId: api_ticket_ticket_type_list
       tags:
-      - ticket
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -542,7 +614,7 @@ paths:
           description: ''
   /api/user/favorite/:
     get:
-      operationId: user_favorite_list
+      operationId: api_user_favorite_list
       parameters:
       - name: ordering
         required: false
@@ -573,7 +645,7 @@ paths:
         schema:
           type: string
       tags:
-      - user
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -586,7 +658,7 @@ paths:
           description: ''
   /api/user/favorite/{prop_id}/delete/:
     delete:
-      operationId: user_favorite_delete_destroy
+      operationId: api_user_favorite_delete_destroy
       parameters:
       - in: path
         name: prop_id
@@ -594,7 +666,7 @@ paths:
           type: integer
         required: true
       tags:
-      - user
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -603,9 +675,9 @@ paths:
           description: No response body
   /api/user/favorite/create/:
     post:
-      operationId: user_favorite_create_create
+      operationId: api_user_favorite_create_create
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -630,7 +702,7 @@ paths:
           description: ''
   /api/user/favorite/delete-all/:
     post:
-      operationId: user_favorite_delete_all_create
+      operationId: api_user_favorite_delete_all_create
       description: |-
         _summary_
 
@@ -640,7 +712,7 @@ paths:
         Returns:
             _type_: _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -664,7 +736,7 @@ paths:
           description: ''
   /api/user/favorite/delete-list/:
     post:
-      operationId: user_favorite_delete_list_create
+      operationId: api_user_favorite_delete_list_create
       description: |-
         _summary_
 
@@ -674,7 +746,7 @@ paths:
         Returns:
             _type_: _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -698,7 +770,7 @@ paths:
           description: ''
   /api/user/profile/:
     get:
-      operationId: user_profile_list
+      operationId: api_user_profile_list
       description: |-
         _summary_
 
@@ -715,7 +787,7 @@ paths:
         schema:
           type: string
       tags:
-      - user
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -730,14 +802,14 @@ paths:
           description: ''
   /api/user/profile/update/:
     put:
-      operationId: user_profile_update_update
+      operationId: api_user_profile_update_update
       description: |-
         _summary_
 
         Args:
             viewsets (_type_): _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -761,14 +833,14 @@ paths:
                 $ref: '#/components/schemas/UpdateUser'
           description: ''
     patch:
-      operationId: user_profile_update_partial_update
+      operationId: api_user_profile_update_partial_update
       description: |-
         _summary_
 
         Args:
             viewsets (_type_): _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -945,6 +1017,39 @@ components:
       - city
       - id
       - name
+    CreateAddress:
+      type: object
+      description: |-
+        Serializer class for creating a new address.
+
+        This serializer allows creating a new address.
+
+        Example Usage:
+            To create an address:
+            ```
+            {
+                "state": 1,
+                "longitude": "longitude_value",
+                "latitude": "latitude_value"
+            }
+            ```
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        longitude:
+          type: string
+          maxLength: 50
+        latitude:
+          type: string
+          maxLength: 50
+        state:
+          type: integer
+      required:
+      - id
+      - latitude
+      - longitude
+      - state
     CreateFavoriteSerializers:
       type: object
       properties:
@@ -952,6 +1057,126 @@ components:
           type: integer
       required:
       - prop
+    CreateProperty:
+      type: object
+      description: |-
+        Serializer class for creating a new property along with associated address, features, and images.
+
+        This serializer allows creating a new property along with an address, features, and images in a single request.
+
+        Attributes:
+            address_data (dict): A dictionary containing address details.
+            feature_data (dict): A dictionary containing feature details.
+            image_data (list): A list of dictionaries containing image details.
+            attribute_values (dict): A dictionary containing attribute IDs as keys and their corresponding values.
+
+        Example Usage:
+            To create a property with address, features, and images:
+            ```
+            {
+                "user": 1,
+                "category": 1,
+                "name": "Property Name",
+                "description": "Property Description",
+                "price": 100000,
+                "size": 2000,
+                "is_active": true,
+                "is_deleted": false,
+                "attribute_values": {
+                    "1": "Value1",
+                    "2": "Value2",
+                    "3": "Value3"
+                },
+                "address_data": {
+                    "state": 1,
+                    "longitude": "longitude_value",
+                    "latitude": "latitude_value"
+                },
+                "feature_data": {
+                    "name": "Feature Name"
+                },
+                "image_data": [
+                    {
+                        "image": "image_data"
+                    },
+                    {
+                        "image": "image_data"
+                    }
+                ],
+                "for_sale": true
+            }
+            ```
+
+        Note:
+            Ensure that the user and `category` IDs provided exist in the database.
+            Ensure that the attribute IDs provided in `attribute_values` exist in the database.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        attribute_values:
+          type: object
+          additionalProperties: {}
+          writeOnly: true
+        address_data:
+          $ref: '#/components/schemas/CreateAddress'
+        feature_data:
+          type: object
+          additionalProperties: {}
+          writeOnly: true
+        image_data:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          writeOnly: true
+        name:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        size:
+          type: integer
+        is_active:
+          type: boolean
+        is_deleted:
+          type: boolean
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        unique_number:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        for_sale:
+          type: boolean
+          title: Is For sale
+        user:
+          type: integer
+        category:
+          type: integer
+        address:
+          type: integer
+          nullable: true
+      required:
+      - address_data
+      - attribute_values
+      - category
+      - description
+      - feature_data
+      - id
+      - image_data
+      - name
+      - size
+      - time_created
+      - unique_number
+      - user
     DataTypeEnum:
       enum:
       - string
@@ -1172,10 +1397,9 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
         size:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         is_active:
           type: boolean
         is_deleted:
@@ -1200,7 +1424,6 @@ components:
       - image
       - in_favorite
       - name
-      - price
       - property_value
       - rate
       - size
@@ -1259,10 +1482,9 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
         size:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         is_active:
           type: boolean
         is_deleted:
@@ -1284,15 +1506,14 @@ components:
           type: integer
         address:
           type: integer
+          nullable: true
       required:
-      - address
       - category
       - description
       - id
       - image
       - in_favorite
       - name
-      - price
       - rate
       - size
       - time_created
