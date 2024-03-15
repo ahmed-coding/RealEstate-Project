@@ -20,18 +20,26 @@
         },
         "feature_data": [
             {
-                "name": "Feature Name"
+                "name": "Feature Name",
+                "images": [
+                    {
+                        "image": "image_data"
+                    },
+                    {
+                        "image": "image_data"
+                    }
+                ]
             },
             {
-                "name": "Feature Name"
-            }
-        ],
-        "image_data": [
-            {
-                "image": "image_data"
-            },
-            {
-                "image": "image_data"
+                "name": "Feature Name",
+                "images": [
+                    {
+                        "image": "image_data"
+                    },
+                    {
+                        "image": "image_data"
+                    }
+                ]
             }
         ],
         "for_sale": true

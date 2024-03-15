@@ -89,7 +89,7 @@ class PropertyCreateAPIView(generics.CreateAPIView):
     This view class provides an endpoint for creating a new property along with associated address and images.
 
     Example Usage:
-        To create a property with attribute_values, address, features, and images:
+        To create a property with address, features, and images:
         ```
         {
             "user": 1,
@@ -112,18 +112,26 @@ class PropertyCreateAPIView(generics.CreateAPIView):
             },
             "feature_data": [
                 {
-                "name": "Feature Name"
+                    "name": "Feature Name",
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
                 },
                 {
-                "name": "Feature Name"
-                }
-            ],
-            "image_data": [
-                {
-                    "image": "image_data"
-                },
-                {
-                    "image": "image_data"
+                    "name": "Feature Name",
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
                 }
             ],
             "for_sale": true
