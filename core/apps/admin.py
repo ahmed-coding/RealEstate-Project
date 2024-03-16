@@ -15,7 +15,11 @@ from django.contrib.auth.forms import (
     ReadOnlyPasswordHashField,
     UsernameField,
 )  # Register your models here.
-
+from .models import (
+    VerificationCode, TypeModel, Attribute_verify, Attribute_value, Country, City, State, Address, Image,
+    Category, Feature, Feature_category, Property, Feature_property, Attribute, ValueModel, property_value, Category_attribute, Rate, Favorite, Report,
+    Review, Ticket_type, Ticket_status, Ticket, Solve_message,
+)
 
 class CustomUserChangeForm(forms.ModelForm):
     """
@@ -157,32 +161,236 @@ class NotificationAdmin(admin.ModelAdmin):
     list_display = ('verb',)
 
 
-admin.site.register(model_or_iterable=[
-    models.City,
-    models.Category_attribute,
-    models.property_value,
-    models.Property,
-    models.Feature_property,
-    models.Country,
-    models.Address,
-    models.Feature_category,
-    models.State,
-    models.Feature,
-    models.ValueModel,
-    models.Attribute_value,
-    models.Attribute,
-    models.Image,
-    models.Review,
-    models.Rate,
-    models.Favorite,
-    models.Report,
-    models.Ticket,
-    models.Ticket_status,
-    models.Ticket_type,
-    models.Solve_message,
-    models.FriendList,
-    models.FriendRequest,
-    models.RoomChatMessage,
-    models.PrivateChatRoom,
-    models.UnreadChatRoomMessages,
-])
+# admin.site.register(model_or_iterable=[
+#     # models.City,
+#     models.Category_attribute,
+#     models.property_value,
+#     models.Property,
+#     models.Feature_property,
+#     # models.Country,
+#     models.Address,
+#     models.Feature_category,
+#     models.State,
+#     models.Feature,
+#     models.ValueModel,
+#     models.Attribute_value,
+#     models.Attribute,
+#     models.Image,
+#     models.Review,
+#     models.Rate,
+#     models.Favorite,
+#     models.Report,
+#     models.Ticket,
+#     models.Ticket_status,
+#     models.Ticket_type,
+#     models.Solve_message,
+#     models.FriendList,
+#     models.FriendRequest,
+#     models.RoomChatMessage,
+#     models.PrivateChatRoom,
+#     models.UnreadChatRoomMessages,
+# ])
+
+@admin.register(models.Country)
+class CountryAdmin(admin.ModelAdmin):
+    list_display = ['name',]
+    search_fields = ['name',]
+
+
+
+
+class VerificationCodeAdmin(admin.ModelAdmin):
+    list_display = ('user_phone_num', 'random_code', 'time_created', 'expire_date')
+
+# Admin class for TypeModel
+class TypeModelAdmin(admin.ModelAdmin):
+    list_display = ('type',)
+
+# Admin class for Attribute_verify
+class AttributeVerifyAdmin(admin.ModelAdmin):
+    list_display = ('attribute', 'data_type', 'type')
+
+# Admin class for Attribute_value
+class AttributeValueAdmin(admin.ModelAdmin):
+    list_display = ('attribute',)
+
+# Admin class for Country
+# class CountryAdmin(admin.ModelAdmin):
+#     list_display = ('name',)
+
+# Admin class for City
+class CityAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country')
+
+# Admin class for State
+class StateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'city')
+
+# Admin class for Address
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ('state', 'longitude', 'latitude')
+
+# Admin class for Image
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ('content_type', 'object_id', 'image')
+
+# # Admin class for Category
+# class CategoryAdmin(DraggableMPTTAdmin):
+#     list_display = ('name', 'parent')
+
+# Admin class for Feature
+class FeatureAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+# Admin class for Feature_category
+class FeatureCategoryAdmin(admin.ModelAdmin):
+    list_display = ('feature', 'category')
+
+
+
+
+# Admin class for Property
+class PropertyAdmin(admin.ModelAdmin):
+    list_display = ('user', 'category', 'address', 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
+
+# Admin class for Feature_property
+class FeaturePropertyAdmin(admin.ModelAdmin):
+    list_display = ('property', 'feature')
+
+# Admin class for Attribute
+class AttributeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'data_type')
+
+# Admin class for ValueModel
+class ValueModelAdmin(admin.ModelAdmin):
+    list_display = ('attribute', 'value')
+
+# Admin class for property_value
+class PropertyValueAdmin(admin.ModelAdmin):
+    list_display = ('property', 'value')
+
+# Admin class for Category_attribute
+class CategoryAttributeAdmin(admin.ModelAdmin):
+    list_display = ('category', 'attribute')
+
+# Admin class for Rate
+class RateAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'rate', 'time_created')
+
+# Admin class for Favorite
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created')
+
+# Admin class for Report
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created', 'note')
+
+# Admin class for Review
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created', 'review')
+
+# Admin class for Ticket_type
+class TicketTypeAdmin(admin.ModelAdmin):
+    list_display = ('type',)
+
+# Admin class for Ticket_status
+class TicketStatusAdmin(admin.ModelAdmin):
+    list_display = ('status',)
+
+# Admin class for Ticket
+class TicketAdmin(admin.ModelAdmin):
+    list_display = ('type', 'status', 'ticket_solver', 'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
+
+# Admin class for Solve_message
+class SolveMessageAdmin(admin.ModelAdmin):
+    list_display = ('ticket', 'message')
+
+
+
+# Admin class for Property
+class PropertyAdmin(admin.ModelAdmin):
+    list_display = ('user', 'category', 'address', 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
+
+# Admin class for Feature_property
+class FeaturePropertyAdmin(admin.ModelAdmin):
+    list_display = ('property', 'feature')
+
+# Admin class for Attribute
+class AttributeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'data_type')
+
+# Admin class for ValueModel
+class ValueModelAdmin(admin.ModelAdmin):
+    list_display = ('attribute', 'value')
+
+# Admin class for property_value
+class PropertyValueAdmin(admin.ModelAdmin):
+    list_display = ('property', 'value')
+
+# Admin class for Category_attribute
+class CategoryAttributeAdmin(admin.ModelAdmin):
+    list_display = ('category', 'attribute')
+
+# Admin class for Rate
+class RateAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'rate', 'time_created')
+
+# Admin class for Favorite
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created')
+
+# Admin class for Report
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created', 'note')
+
+# Admin class for Review
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created', 'review')
+
+# Admin class for Ticket_type
+class TicketTypeAdmin(admin.ModelAdmin):
+    list_display = ('type',)
+
+# Admin class for Ticket_status
+class TicketStatusAdmin(admin.ModelAdmin):
+    list_display = ('status',)
+
+# Admin class for Ticket
+class TicketAdmin(admin.ModelAdmin):
+    list_display = ('type', 'status', 'ticket_solver', 'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
+
+# Admin class for Solve_message
+class SolveMessageAdmin(admin.ModelAdmin):
+    list_display = ('ticket', 'message')
+
+
+
+# Register admin classes
+admin.site.register(VerificationCode, VerificationCodeAdmin)
+admin.site.register(TypeModel, TypeModelAdmin)
+admin.site.register(Attribute_verify, AttributeVerifyAdmin)
+admin.site.register(Attribute_value, AttributeValueAdmin)
+# admin.site.register(Country, CountryAdmin)
+admin.site.register(City, CityAdmin)
+admin.site.register(State, StateAdmin)
+admin.site.register(Address, AddressAdmin)
+admin.site.register(Image, ImageAdmin)
+# admin.site.register(Category, CategoryAdmin)
+admin.site.register(Feature, FeatureAdmin)
+admin.site.register(Feature_category, FeatureCategoryAdmin)
+
+# Register admin classes
+admin.site.register(Property, PropertyAdmin)
+admin.site.register(Feature_property, FeaturePropertyAdmin)
+admin.site.register(Attribute, AttributeAdmin)
+admin.site.register(ValueModel, ValueModelAdmin)
+admin.site.register(property_value, PropertyValueAdmin)
+admin.site.register(Category_attribute, CategoryAttributeAdmin)
+admin.site.register(Rate, RateAdmin)
+admin.site.register(Favorite, FavoriteAdmin)
+admin.site.register(Report, ReportAdmin)
+admin.site.register(Review, ReviewAdmin)
+admin.site.register(Ticket_type, TicketTypeAdmin)
+admin.site.register(Ticket_status, TicketStatusAdmin)
+admin.site.register(Ticket, TicketAdmin)
+admin.site.register(Solve_message, SolveMessageAdmin)
