@@ -4,6 +4,70 @@ info:
   version: 1.0.0
   description: RealEstate project description
 paths:
+  /api/address/{id}/update/:
+    put:
+      operationId: api_address_update_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAddress'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateAddress'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateAddress'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAddress'
+          description: ''
+    patch:
+      operationId: api_address_update_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAddress'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAddress'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAddress'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAddress'
+          description: ''
   /api/address/city/:
     get:
       operationId: api_address_city_list
@@ -201,6 +265,87 @@ paths:
                 items:
                   $ref: '#/components/schemas/AttributeSerializers'
           description: ''
+  /api/image/{id}/delete/:
+    delete:
+      operationId: api_image_delete_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/image/{id}/update/:
+    put:
+      operationId: api_image_update_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Image_Serializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Image_Serializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Image_Serializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image_Serializers'
+          description: ''
+    patch:
+      operationId: api_image_update_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedImage_Serializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedImage_Serializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedImage_Serializers'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image_Serializers'
+          description: ''
   /api/property/:
     get:
       operationId: api_property_list
@@ -345,40 +490,61 @@ paths:
         This view class provides an endpoint for creating a new property along with associated address and images.
 
         Example Usage:
-            To create a property with attribute_values, address, features, and images:
+            To create a property with address, features, and images:
             ```
             {
-                "user": 1,
-                "category": 1,
-                "name": "Property Name",
-                "description": "Property Description",
-                "price": 100000,
-                "size": 2000,
-                "is_active": true,
-                "is_deleted": false,
-                "attribute_values": {
-                    "1": "Value1",
-                    "2": "Value2",
-                    "3": "Value3"
+
+            "category": 1,
+            "name": "Property Name",
+            "description": "Property Description",
+            "price": 100000,
+            "size": 2000,
+            "is_active": true,
+            "is_deleted": false,
+            "attribute_values": {
+                "1": "Value1",
+                "2": "Value2",
+                "3": "Value3"
+            },
+            "address": {
+                "state": 1,
+                "longitude": "20.354654",
+                "latitude": "32.354654"
+            },
+            "feature_data": [
+                {
+                    "id": 1,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
                 },
-                "address_data": {
-                    "state": 1,
-                    "longitude": "longitude_value",
-                    "latitude": "latitude_value"
+                {
+                    "id": 2,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                }
+            ],
+            "image_data": [
+                {
+                    "image": "image_data"
                 },
-                "feature_data": {
-                    "name": "Feature Name"
-                },
-                "image_data": [
-                    {
-                        "image": "image_data"
-                    },
-                    {
-                        "image": "image_data"
-                    }
-                ],
-                "for_sale": true
-            }
+                {
+                    "image": "image_data"
+                }
+            ],
+            "for_sale": true
+        }
             ```
 
         Note:
@@ -1066,45 +1232,68 @@ components:
 
         Attributes:
             address_data (dict): A dictionary containing address details.
-            feature_data (dict): A dictionary containing feature details.
-            image_data (list): A list of dictionaries containing image details.
+            feature_data (list): A list of dictionaries containing feature details.
             attribute_values (dict): A dictionary containing attribute IDs as keys and their corresponding values.
+            image_data (list): A list of dictionaries containing image details.
+
 
         Example Usage:
             To create a property with address, features, and images:
             ```
-            {
-                "user": 1,
-                "category": 1,
-                "name": "Property Name",
-                "description": "Property Description",
-                "price": 100000,
-                "size": 2000,
-                "is_active": true,
-                "is_deleted": false,
-                "attribute_values": {
-                    "1": "Value1",
-                    "2": "Value2",
-                    "3": "Value3"
+        {
+
+            "category": 1,
+            "name": "Property Name",
+            "description": "Property Description",
+            "price": 100000,
+            "size": 2000,
+            "is_active": true,
+            "is_deleted": false,
+            "attribute_values": {
+                "1": "Value1",
+                "2": "Value2",
+                "3": "Value3"
+            },
+            "address": {
+                "state": 1,
+                "longitude": "20.354654",
+                "latitude": "32.354654"
+            },
+            "feature_data": [
+                {
+                    "id": 1,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
                 },
-                "address_data": {
-                    "state": 1,
-                    "longitude": "longitude_value",
-                    "latitude": "latitude_value"
+                {
+                    "id": 2,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                }
+            ],
+            "image_data": [
+                {
+                    "image": "image_data"
                 },
-                "feature_data": {
-                    "name": "Feature Name"
-                },
-                "image_data": [
-                    {
-                        "image": "image_data"
-                    },
-                    {
-                        "image": "image_data"
-                    }
-                ],
-                "for_sale": true
-            }
+                {
+                    "image": "image_data"
+                }
+            ],
+            "for_sale": true
+        }
+
             ```
 
         Note:
@@ -1118,11 +1307,13 @@ components:
           type: object
           additionalProperties: {}
           writeOnly: true
-        address_data:
+        address:
           $ref: '#/components/schemas/CreateAddress'
         feature_data:
-          type: object
-          additionalProperties: {}
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
           writeOnly: true
         image_data:
           type: array
@@ -1157,15 +1348,10 @@ components:
         for_sale:
           type: boolean
           title: Is For sale
-        user:
-          type: integer
         category:
           type: integer
-        address:
-          type: integer
-          nullable: true
       required:
-      - address_data
+      - address
       - attribute_values
       - category
       - description
@@ -1176,7 +1362,6 @@ components:
       - size
       - time_created
       - unique_number
-      - user
     DataTypeEnum:
       enum:
       - string
@@ -1245,7 +1430,11 @@ components:
         image:
           type: string
           format: uri
+        id:
+          type: integer
+          readOnly: true
       required:
+      - id
       - image
     PaginatedCategorySerializersList:
       type: object
@@ -1327,6 +1516,43 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SinglePropertySerializers'
+    PatchedCreateAddress:
+      type: object
+      description: |-
+        Serializer class for creating a new address.
+
+        This serializer allows creating a new address.
+
+        Example Usage:
+            To create an address:
+            ```
+            {
+                "state": 1,
+                "longitude": "longitude_value",
+                "latitude": "latitude_value"
+            }
+            ```
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        longitude:
+          type: string
+          maxLength: 50
+        latitude:
+          type: string
+          maxLength: 50
+        state:
+          type: integer
+    PatchedImage_Serializers:
+      type: object
+      properties:
+        image:
+          type: string
+          format: uri
+        id:
+          type: integer
+          readOnly: true
     PatchedUpdateUser:
       type: object
       properties:

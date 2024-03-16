@@ -5,7 +5,7 @@ from rest_framework import serializers
 class Image_Serializers(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ("image",)
+        fields = ("image", "id")
 
-    def to_representation(self, instance):
-        return instance.image.url
+    # def to_representation(self, instance):
+    #     return instance.image.url

@@ -6,7 +6,7 @@ from rest_framework import filters
 from ..pagination import StandardResultsSetPagination
 from rest_framework.views import Response
 
-from apps.models import State, Country, City
+from apps.models import State, Country, City, Address
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count
 
@@ -54,3 +54,12 @@ class StateViewsets(viewsets.ModelViewSet):
             return State.objects.filter(city=city).order_by('id')
         else:
             return State.objects.all().order_by('id')
+
+
+class AddressViewsets(viewsets.ModelViewSet):
+    queryset = Address.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.CreateAddressSerializer
+
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
