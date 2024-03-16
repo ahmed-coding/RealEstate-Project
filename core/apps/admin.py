@@ -4,6 +4,7 @@ from . import models
 from django import forms
 from .models import Category
 from .models import User
+from django.contrib.contenttypes.admin import GenericTabularInline
 # Register your models here.
 from django.utils.translation import gettext_lazy as _
 from mptt.admin import DraggableMPTTAdmin
@@ -191,6 +192,11 @@ class NotificationAdmin(admin.ModelAdmin):
 #     models.UnreadChatRoomMessages,
 # ])
 
+class ImageInline(GenericTabularInline):
+    model = Image
+
+
+
 @admin.register(models.Country)
 class CountryAdmin(admin.ModelAdmin):
     list_display = ['name',]
@@ -299,7 +305,8 @@ class TicketStatusAdmin(admin.ModelAdmin):
 
 # Admin class for Ticket
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('type', 'status', 'ticket_solver', 'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
+    list_display = ('type', 'status', 'ticket_solver', 
+                    'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
 
 # Admin class for Solve_message
 class SolveMessageAdmin(admin.ModelAdmin):
@@ -309,7 +316,11 @@ class SolveMessageAdmin(admin.ModelAdmin):
 
 # Admin class for Property
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ('user', 'category', 'address', 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
+    list_display = ('user', 'category', 'address', 
+                    'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
+    inlines = [
+        ImageInline,
+    ]
 
 # Admin class for Feature_property
 class FeaturePropertyAdmin(admin.ModelAdmin):
@@ -357,7 +368,8 @@ class TicketStatusAdmin(admin.ModelAdmin):
 
 # Admin class for Ticket
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('type', 'status', 'ticket_solver', 'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
+    list_display = ('type', 'status', 'ticket_solver', 
+                    'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
 
 # Admin class for Solve_message
 class SolveMessageAdmin(admin.ModelAdmin):
