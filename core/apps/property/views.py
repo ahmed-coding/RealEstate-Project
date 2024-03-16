@@ -93,7 +93,6 @@ class PropertyCreateAPIView(generics.CreateAPIView):
         ```
         {
 
-        "user": 1,
         "category": 1,
         "name": "Property Name",
         "description": "Property Description",

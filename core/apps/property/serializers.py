@@ -311,7 +311,6 @@ class CreatePropertySerializer(serializers.ModelSerializer):
         ```
     {
 
-        "user": 1,
         "category": 1,
         "name": "Property Name",
         "description": "Property Description",
@@ -371,13 +370,19 @@ class CreatePropertySerializer(serializers.ModelSerializer):
         Ensure that the attribute IDs provided in `attribute_values` exist in the database.
 
     """
-    attribute_values = serializers.DictField(write_only=True)
+    user = serializers.HiddenField(default=None)
 
+    attribute_values = serializers.DictField(write_only=True)
     address = CreateAddressSerializer()
     feature_data = serializers.ListField(
         child=serializers.DictField(), write_only=True)
     image_data = serializers.ListField(
         child=serializers.DictField(), write_only=True)
+
+    def validate(self, attrs):
+        attrs['user'] = self.context.get('user', None)
+        # self.address.context = self.context
+        return super().validate(attrs)
 
     def create(self, validated_data):
         address_data = validated_data.pop('address')
