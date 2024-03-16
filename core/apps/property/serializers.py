@@ -303,55 +303,67 @@ class CreatePropertySerializer(serializers.ModelSerializer):
         address_data (dict): A dictionary containing address details.
         feature_data (list): A list of dictionaries containing feature details.
         attribute_values (dict): A dictionary containing attribute IDs as keys and their corresponding values.
+        image_data (list): A list of dictionaries containing image details.
+
 
     Example Usage:
         To create a property with address, features, and images:
         ```
-        {
-            "user": 1,
-            "category": 1,
-            "name": "Property Name",
-            "description": "Property Description",
-            "price": 100000,
-            "size": 2000,
-            "is_active": true,
-            "is_deleted": false,
-            "attribute_values": {
-                "1": "Value1",
-                "2": "Value2",
-                "3": "Value3"
+    {
+
+        "user": 1,
+        "category": 1,
+        "name": "Property Name",
+        "description": "Property Description",
+        "price": 100000,
+        "size": 2000,
+        "is_active": true,
+        "is_deleted": false,
+        "attribute_values": {
+            "1": "Value1",
+            "2": "Value2",
+            "3": "Value3"
+        },
+        "address": {
+            "state": 1,
+            "longitude": "20.354654",
+            "latitude": "32.354654"
+        },
+        "feature_data": [
+            {
+                "id": 1,
+                "images": [
+                    {
+                        "image": "image_data"
+                    },
+                    {
+                        "image": "image_data"
+                    }
+                ]
             },
-            "address_data": {
-                "state": 1,
-                "longitude": "longitude_value",
-                "latitude": "latitude_value"
+            {
+                "id": 2,
+                "images": [
+                    {
+                        "image": "image_data"
+                    },
+                    {
+                        "image": "image_data"
+                    }
+                ]
+            }
+        ],
+        "image_data": [
+            {
+                "image": "image_data"
             },
-            "feature_data": [
-                {
-                    "name": "Feature Name",
-                    "images": [
-                        {
-                            "image": "image_data"
-                        },
-                        {
-                            "image": "image_data"
-                        }
-                    ]
-                },
-                {
-                    "name": "Feature Name",
-                    "images": [
-                        {
-                            "image": "image_data"
-                        },
-                        {
-                            "image": "image_data"
-                        }
-                    ]
-                }
-            ],
-            "for_sale": true
-        }
+            {
+                "image": "image_data"
+            }
+        ],
+        "for_sale": true
+    }
+
         ```
 
     Note:
@@ -361,14 +373,17 @@ class CreatePropertySerializer(serializers.ModelSerializer):
     """
     attribute_values = serializers.DictField(write_only=True)
 
-    address_data = CreateAddressSerializer()
+    address = CreateAddressSerializer()
     feature_data = serializers.ListField(
+        child=serializers.DictField(), write_only=True)
+    image_data = serializers.ListField(
         child=serializers.DictField(), write_only=True)
 
     def create(self, validated_data):
-        address_data = validated_data.pop('address_data')
+        address_data = validated_data.pop('address')
         feature_data = validated_data.pop('feature_data', [])
         attribute_values_data = validated_data.pop('attribute_values', {})
+        image_data = validated_data.pop('image_data', [])
 
         address_instance = Address.objects.create(**address_data)
         validated_data['address'] = address_instance
@@ -381,17 +396,25 @@ class CreatePropertySerializer(serializers.ModelSerializer):
         # Create features and associated images
         for feature_item in feature_data:
             images_data = feature_item.pop('images', [])
-            feature_instance = Feature.objects.create(**feature_item)
+            feature_instance = Feature.objects.get(id=feature_item['id'])
             feature_property = Feature_property.objects.create(
                 property=property_instance, feature=feature_instance)
 
-            images_instances = []
+            feature_images_instances = []
             for image_data in images_data:
-                image_data['content_type'] = content_type
-                image_data['object_id'] = object_id
+                image_data['content_type'] = ContentType.objects.get_for_model(
+                    Feature_property)
+                image_data['object_id'] = feature_property.id
                 image_instance = Image.objects.create(**image_data)
-                images_instances.append(image_instance)
-            feature_instance.image.set(images_instances)
+                feature_images_instances.append(feature_images_instances)
+            feature_property.image.set(feature_images_instances)
+
+        images_instances = []
+        for item in image_data:
+            item['content_type'] = content_type
+            item['object_id'] = object_id
+            image_instance = Image.objects.create(**item)
+            images_instances.append(image_instance)
 
         # Create attribute values
         for attribute_id, value in attribute_values_data.items():
@@ -400,6 +423,8 @@ class CreatePropertySerializer(serializers.ModelSerializer):
                 attribute=attribute, value=value)
             property_value.objects.create(
                 property=property_instance, value=value_instance)
+
+        property_instance.image.set(images_instances)
 
         return property_instance
 

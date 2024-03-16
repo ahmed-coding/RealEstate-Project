@@ -13,14 +13,14 @@
             "2": "Value2",
             "3": "Value3"
         },
-        "address_data": {
+        "address": {
             "state": 1,
-            "longitude": "longitude_value",
-            "latitude": "latitude_value"
+            "longitude": "20.354654",
+            "latitude": "32.354654"
         },
         "feature_data": [
             {
-                "name": "Feature Name",
+                "id": 1,
                 "images": [
                     {
                         "image": "image_data"
@@ -31,7 +31,7 @@
                 ]
             },
             {
-                "name": "Feature Name",
+                "id": 2,
                 "images": [
                     {
                         "image": "image_data"
@@ -40,6 +40,14 @@
                         "image": "image_data"
                     }
                 ]
+            }
+        ],
+        "image_data": [
+            {
+                "image": "image_data"
+            },
+            {
+                "image": "image_data"
             }
         ],
         "for_sale": true

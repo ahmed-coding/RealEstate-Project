@@ -92,50 +92,59 @@ class PropertyCreateAPIView(generics.CreateAPIView):
         To create a property with address, features, and images:
         ```
         {
-            "user": 1,
-            "category": 1,
-            "name": "Property Name",
-            "description": "Property Description",
-            "price": 100000,
-            "size": 2000,
-            "is_active": true,
-            "is_deleted": false,
-            "attribute_values": {
-                "1": "Value1",
-                "2": "Value2",
-                "3": "Value3"
+
+        "user": 1,
+        "category": 1,
+        "name": "Property Name",
+        "description": "Property Description",
+        "price": 100000,
+        "size": 2000,
+        "is_active": true,
+        "is_deleted": false,
+        "attribute_values": {
+            "1": "Value1",
+            "2": "Value2",
+            "3": "Value3"
+        },
+        "address": {
+            "state": 1,
+            "longitude": "20.354654",
+            "latitude": "32.354654"
+        },
+        "feature_data": [
+            {
+                "id": 1,
+                "images": [
+                    {
+                        "image": "image_data"
+                    },
+                    {
+                        "image": "image_data"
+                    }
+                ]
             },
-            "address_data": {
-                "state": 1,
-                "longitude": "longitude_value",
-                "latitude": "latitude_value"
+            {
+                "id": 2,
+                "images": [
+                    {
+                        "image": "image_data"
+                    },
+                    {
+                        "image": "image_data"
+                    }
+                ]
+            }
+        ],
+        "image_data": [
+            {
+                "image": "image_data"
             },
-            "feature_data": [
-                {
-                    "name": "Feature Name",
-                    "images": [
-                        {
-                            "image": "image_data"
-                        },
-                        {
-                            "image": "image_data"
-                        }
-                    ]
-                },
-                {
-                    "name": "Feature Name",
-                    "images": [
-                        {
-                            "image": "image_data"
-                        },
-                        {
-                            "image": "image_data"
-                        }
-                    ]
-                }
-            ],
-            "for_sale": true
-        }
+            {
+                "image": "image_data"
+            }
+        ],
+        "for_sale": true
+    }
         ```
 
     Note:
@@ -146,3 +155,14 @@ class PropertyCreateAPIView(generics.CreateAPIView):
     """
     serializer_class = serializers.CreatePropertySerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_context(self):
+        """
+        Extra context provided to the serializer class.
+        """
+        return {
+            'request': self.request,
+            'format': self.format_kwarg,
+            'view': self,
+            'user': self.request.user
+        }
