@@ -115,11 +115,19 @@ class CustomAdminUser(UserAdmin):
 admin.site.register(User, CustomAdminUser)
 
 
+
+class ImageInline(GenericTabularInline):
+    model = Image
+
+
 class CategoryAdmin(DraggableMPTTAdmin):
     mptt_indent_field = "name"
     list_display = ('tree_actions', 'indented_title',
                     'related_property_counts', 'related_property_cumulative_count')
     list_display_links = ('indented_title',)
+    inlines = [
+        ImageInline,
+    ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -192,8 +200,6 @@ class NotificationAdmin(admin.ModelAdmin):
 #     models.UnreadChatRoomMessages,
 # ])
 
-class ImageInline(GenericTabularInline):
-    model = Image
 
 
 
@@ -256,8 +262,9 @@ class FeatureCategoryAdmin(admin.ModelAdmin):
 
 
 # Admin class for Property
-class PropertyAdmin(admin.ModelAdmin):
-    list_display = ('user', 'category', 'address', 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
+# class PropertyAdmin(admin.ModelAdmin):
+#     list_display = ('user', 'category', 'address', 'name',
+#                      'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
 
 # Admin class for Feature_property
 class FeaturePropertyAdmin(admin.ModelAdmin):
@@ -345,6 +352,7 @@ class CategoryAttributeAdmin(admin.ModelAdmin):
 # Admin class for Rate
 class RateAdmin(admin.ModelAdmin):
     list_display = ('prop', 'user', 'rate', 'time_created')
+    list_filter = ['rate',]
 
 # Admin class for Favorite
 class FavoriteAdmin(admin.ModelAdmin):
@@ -353,10 +361,15 @@ class FavoriteAdmin(admin.ModelAdmin):
 # Admin class for Report
 class ReportAdmin(admin.ModelAdmin):
     list_display = ('prop', 'user', 'time_created', 'note')
+    search_fields = ['prop',]
+    list_filter = ['time_created', 'user',]
+    date_hierarchy = 'time_created'
+
 
 # Admin class for Review
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ('prop', 'user', 'time_created', 'review')
+    list_filter = ['time_created',]
 
 # Admin class for Ticket_type
 class TicketTypeAdmin(admin.ModelAdmin):
@@ -390,8 +403,6 @@ admin.site.register(Image, ImageAdmin)
 # admin.site.register(Category, CategoryAdmin)
 admin.site.register(Feature, FeatureAdmin)
 admin.site.register(Feature_category, FeatureCategoryAdmin)
-
-# Register admin classes
 admin.site.register(Property, PropertyAdmin)
 admin.site.register(Feature_property, FeaturePropertyAdmin)
 admin.site.register(Attribute, AttributeAdmin)

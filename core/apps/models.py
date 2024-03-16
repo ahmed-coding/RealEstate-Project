@@ -18,6 +18,8 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import string
 import random
+from django.core.exceptions import ValidationError
+
 
 # from django.contrib.auth.models import User
 
@@ -479,6 +481,9 @@ class Property(models.Model):
 
     class Meta:
         db_table = 'Property'
+    #add a speacial method to return the name of Property object     
+    def __str__(self) -> str:
+        return self.name
 
 
 # class Image_Property(models.Model):
@@ -598,7 +603,11 @@ class Category_attribute(models.Model):
 # End Property Models
 
 # Start Interaction Models
-
+        
+ #this mathod for make check the rate`s range that most be for 1 to 5       
+def validate_rate_range(value):
+    if value < 1 or value > 5:
+        raise ValidationError(_('Rate must be between 1 and 5.'))
 
 class Rate(models.Model):
     """
@@ -610,7 +619,7 @@ class Rate(models.Model):
         Property, verbose_name=_("prperty"), on_delete=models.CASCADE, related_name='rate')
     user = models.ForeignKey(
         "apps.User", verbose_name=_("user"), on_delete=models.CASCADE, related_name='rate')
-    rate = models.FloatField(_("Rating Number"), default=0.0)
+    rate = models.FloatField(_("Rating Number"), default=0.0, validators=[validate_rate_range])
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
 
@@ -652,6 +661,10 @@ class Report(models.Model):
     class Meta:
         db_table = 'Report'
 
+    #add a speacial method to return the name of Property object     
+    def __str__(self):
+        return self.prop.name
+
 
 class Review(models.Model):
     """
@@ -684,6 +697,8 @@ class Ticket_type(models.Model):
 
     class Meta:
         db_table = 'Ticket_type'
+    def __str__(self) -> str:
+        return self.type
 
 
 class Ticket_status(models.Model):
