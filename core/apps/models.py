@@ -319,6 +319,12 @@ class Country(models.Model):
 
     class Meta:
         db_table = 'Country'
+    def __str__(self):
+        return self.name
+    
+    
+
+    
 
 
 class City(models.Model):
@@ -329,10 +335,13 @@ class City(models.Model):
     """
     name = models.CharField(_("Name"), max_length=50)
     country = models.ForeignKey(
-        Country, verbose_name=_("Country"), on_delete=models.CASCADE, related_name='city')
+        Country, verbose_name=_("Country"), on_delete=models.CASCADE, related_name='cities')
 
     class Meta:
         db_table = 'City'
+    def __str__(self):
+        return self.name
+    
 
 
 class State(models.Model):
@@ -343,7 +352,7 @@ class State(models.Model):
     """
     name = models.CharField(_("Name"), max_length=50)
     city = models.ForeignKey(
-        City, verbose_name=_("City"), on_delete=models.CASCADE, related_name='state')
+        City, verbose_name=_("City"), on_delete=models.CASCADE, related_name='states')
 
     class Meta:
         db_table = 'State'
@@ -356,12 +365,13 @@ class Address(models.Model):
 
     """
     state = models.ForeignKey(
-        State, verbose_name=_("State "), on_delete=models.CASCADE, related_name='address')
+        State, verbose_name=_("State "), on_delete=models.CASCADE, related_name='addresses')
     longitude = models.CharField(_("longitude"), max_length=50)
     latitude = models.CharField(_("latitude"), max_length=50)
 
     class Meta:
         db_table = 'Address'
+    
 
 # End Address
 # Start Property Models
@@ -402,7 +412,8 @@ class Category(MPTTModel):
         order_insertion_by = ['name']
 
     def __str__(self):
-        return f"name: {self.name} parent {self.parent} id {self.id} "
+        return f"{self.name} "
+    
 
     class Meta:
         db_table = 'Category'
@@ -432,6 +443,9 @@ class Feature(models.Model):
 
     class Meta:
         db_table = 'Feature'
+    def __str__(self):
+        return self.name
+    
 
 
 class Feature_category(models.Model):
@@ -512,8 +526,13 @@ class Feature_property(models.Model):
         "Feature"), on_delete=models.CASCADE, related_name='feature_property')
     image = GenericRelation(Image, related_query_name='featuer_property')
 
+ 
+
     class Meta:
         db_table = 'Feature_property'
+    def __str__(self):
+       return self.feature.name
+   
 
 
 # class Image_Feature_property(models.Model):
@@ -596,9 +615,10 @@ class Category_attribute(models.Model):
         "category"), on_delete=models.CASCADE, related_name='category_attribute')
     attribute = models.ForeignKey(
         Attribute, verbose_name=_("attribute"), on_delete=models.CASCADE, related_name='category_attribute')
-
     class Meta:
         db_table = 'Category_attribute'
+    def __str__(self):
+        return self.category.name
 
 # End Property Models
 

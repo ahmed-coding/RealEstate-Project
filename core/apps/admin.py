@@ -22,6 +22,8 @@ from .models import (
     Review, Ticket_type, Ticket_status, Ticket, Solve_message,
 )
 
+
+
 class CustomUserChangeForm(forms.ModelForm):
     """
     Custom UserChangForm For AdminUser registertions
@@ -120,14 +122,28 @@ class ImageInline(GenericTabularInline):
     model = Image
 
 
+class Category_attributeInline(admin.TabularInline):
+    model = Category_attribute
+class Feature_propertyInline(admin.TabularInline):
+    model = Feature_property
+
+
+
 class CategoryAdmin(DraggableMPTTAdmin):
+   
     mptt_indent_field = "name"
     list_display = ('tree_actions', 'indented_title',
                     'related_property_counts', 'related_property_cumulative_count')
     list_display_links = ('indented_title',)
     inlines = [
         ImageInline,
+        Category_attributeInline,
+        
+       
+
     ]
+
+    
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -169,44 +185,10 @@ class NotificationAdmin(admin.ModelAdmin):
     add_form_templat = "admin/custom_add_form.html"
     list_display = ('verb',)
 
-
-# admin.site.register(model_or_iterable=[
-#     # models.City,
-#     models.Category_attribute,
-#     models.property_value,
-#     models.Property,
-#     models.Feature_property,
-#     # models.Country,
-#     models.Address,
-#     models.Feature_category,
-#     models.State,
-#     models.Feature,
-#     models.ValueModel,
-#     models.Attribute_value,
-#     models.Attribute,
-#     models.Image,
-#     models.Review,
-#     models.Rate,
-#     models.Favorite,
-#     models.Report,
-#     models.Ticket,
-#     models.Ticket_status,
-#     models.Ticket_type,
-#     models.Solve_message,
-#     models.FriendList,
-#     models.FriendRequest,
-#     models.RoomChatMessage,
-#     models.PrivateChatRoom,
-#     models.UnreadChatRoomMessages,
-# ])
-
-
-
-
-@admin.register(models.Country)
-class CountryAdmin(admin.ModelAdmin):
-    list_display = ['name',]
-    search_fields = ['name',]
+# @admin.register(models.Country)
+# class CountryAdmin(admin.ModelAdmin):
+#     list_display = ['name',]
+#     search_fields = ['name',]
 
 
 
@@ -238,9 +220,63 @@ class CityAdmin(admin.ModelAdmin):
 class StateAdmin(admin.ModelAdmin):
     list_display = ('name', 'city')
 
+class AddressForm(forms.ModelForm):
+    country = forms.ModelChoiceField(queryset=Country.objects.all(), label='Country')
+    city = forms.ModelChoiceField(queryset=City.objects.all(), label='City')
+    state = forms.ModelChoiceField(queryset=State.objects.all(), label='State')
+
+    class Meta:
+        model = Address
+        fields = ['country', 'city', 'state', 'longitude', 'latitude']
+
 # Admin class for Address
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ('state', 'longitude', 'latitude')
+    # list_display = ('state', 'longitude', 'latitude')
+    form = AddressForm
+    # list_display_links = ['id']
+    fieldsets = (
+        ('Location', {
+            'fields': ('country', 'city', 'state')
+        }),
+        ('Coordinates', {
+            'fields': ('longitude', 'latitude')
+        }),
+    )
+
+    list_display = ['id', 'get_country', 'get_city', 'get_state', 'longitude', 'latitude']
+    list_display_links = ['id']
+    search_fields = ['country__name', 'city__name', 'state__name']
+
+    def get_fields(self, request, obj=None):
+        if obj:
+            return ['country', 'city', 'state', 'longitude', 'latitude']
+        else:
+            return super().get_fields(request, obj)
+    def add_view(self, request, form_url='', extra_context=None):
+        self.fields = ['country', 'city', 'state', 'longitude', 'latitude']
+        return super().add_view(request, form_url, extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        self.fields = ['country', 'city', 'state', 'longitude', 'latitude']
+        return super().change_view(request, object_id, form_url, extra_context)
+    
+    def get_country(self, obj):
+        return obj.state.city.country.name if obj.state and obj.state.city else ''
+    get_country.admin_order_field = 'state__city__country__name'
+    get_country.short_description = 'Country'
+
+    def get_city(self, obj):
+        return obj.state.city.name if obj.state else ''
+    get_city.admin_order_field = 'state__city__name'
+    get_city.short_description = 'City'
+
+    def get_state(self, obj):
+        return obj.state.name if obj.state else ''
+    get_state.admin_order_field = 'state__name'
+    get_state.short_description = 'State'
+
+
+    
 
 # Admin class for Image
 class ImageAdmin(admin.ModelAdmin):
@@ -269,6 +305,9 @@ class FeatureCategoryAdmin(admin.ModelAdmin):
 # Admin class for Feature_property
 class FeaturePropertyAdmin(admin.ModelAdmin):
     list_display = ('property', 'feature')
+    inlines = [
+        ImageInline,
+    ]
 
 # Admin class for Attribute
 class AttributeAdmin(admin.ModelAdmin):
@@ -323,15 +362,35 @@ class SolveMessageAdmin(admin.ModelAdmin):
 
 # Admin class for Property
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ('user', 'category', 'address', 
-                    'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
+    # list_display = ('user', 'category', 'address', 
+    #                 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
+    fieldsets = (
+        (
+            'PropertyINFO',
+            {
+                'fields': ['name', 'category', 'address', 'price', 'size', 'description',],
+            },
+            
+
+        ),
+        (
+            'Property Status',
+            {
+                'fields': ['is_active', 'is_deleted',]
+            }
+            
+        ),
+        
+        
+        )
+    list_display = ['name', 'price', 'time_created',]
     inlines = [
         ImageInline,
     ]
 
-# Admin class for Feature_property
-class FeaturePropertyAdmin(admin.ModelAdmin):
-    list_display = ('property', 'feature')
+# # Admin class for Feature_property
+# class FeaturePropertyAdmin(admin.ModelAdmin):
+#     list_display = ('property', 'feature')
 
 # Admin class for Attribute
 class AttributeAdmin(admin.ModelAdmin):
@@ -396,6 +455,7 @@ admin.site.register(TypeModel, TypeModelAdmin)
 admin.site.register(Attribute_verify, AttributeVerifyAdmin)
 admin.site.register(Attribute_value, AttributeValueAdmin)
 # admin.site.register(Country, CountryAdmin)
+admin.site.register(Country)
 admin.site.register(City, CityAdmin)
 admin.site.register(State, StateAdmin)
 admin.site.register(Address, AddressAdmin)
