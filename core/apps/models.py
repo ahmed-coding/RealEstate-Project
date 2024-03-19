@@ -19,6 +19,11 @@ from asgiref.sync import async_to_sync
 import string
 import random
 from django.core.exceptions import ValidationError
+from import_export import resources, fields, widgets
+from import_export.fields import Field
+from django.core.files import File
+
+# from import_export.fields import FileField
 
 
 # from django.contrib.auth.models import User
@@ -356,6 +361,8 @@ class State(models.Model):
 
     class Meta:
         db_table = 'State'
+    def __str__(self) -> str:
+        return self.name
 
 
 class Address(models.Model):
@@ -499,6 +506,26 @@ class Property(models.Model):
     def __str__(self) -> str:
         return self.name
 
+class PropertyResource(resources.ModelResource):
+    user = fields.Field(column_name='user', attribute='user', widget=widgets.ForeignKeyWidget('auth.User'))
+    image = fields.Field(column_name='image', attribute='image')
+
+    class Meta:
+        model = Property
+        fields = ('id', 'user', 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
+        export_order = fields
+
+    def import_obj(self, obj, data, dry_run):
+        image_path = data.get('image_file')
+        if image_path:
+            try:
+                with open(image_path, 'rb') as f:
+                    image_file = File(f)
+                    obj.image.save(image_file.name, image_file, save=False)
+            except FileNotFoundError:
+                pass
+
+        super().import_obj(obj, data, dry_run)
 
 # class Image_Property(models.Model):
 #     """

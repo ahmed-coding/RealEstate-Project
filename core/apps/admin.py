@@ -19,9 +19,9 @@ from django.contrib.auth.forms import (
 from .models import (
     VerificationCode, TypeModel, Attribute_verify, Attribute_value, Country, City, State, Address, Image,
     Category, Feature, Feature_category, Property, Feature_property, Attribute, ValueModel, property_value, Category_attribute, Rate, Favorite, Report,
-    Review, Ticket_type, Ticket_status, Ticket, Solve_message,
+    Review, Ticket_type, Ticket_status, Ticket, Solve_message, PropertyResource,
 )
-
+from import_export.admin import ImportExportModelAdmin
 
 
 class CustomUserChangeForm(forms.ModelForm):
@@ -282,10 +282,6 @@ class AddressAdmin(admin.ModelAdmin):
 class ImageAdmin(admin.ModelAdmin):
     list_display = ('content_type', 'object_id', 'image')
 
-# # Admin class for Category
-# class CategoryAdmin(DraggableMPTTAdmin):
-#     list_display = ('name', 'parent')
-
 # Admin class for Feature
 class FeatureAdmin(admin.ModelAdmin):
     list_display = ('name',)
@@ -294,13 +290,6 @@ class FeatureAdmin(admin.ModelAdmin):
 class FeatureCategoryAdmin(admin.ModelAdmin):
     list_display = ('feature', 'category')
 
-
-
-
-# Admin class for Property
-# class PropertyAdmin(admin.ModelAdmin):
-#     list_display = ('user', 'category', 'address', 'name',
-#                      'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
 
 # Admin class for Feature_property
 class FeaturePropertyAdmin(admin.ModelAdmin):
@@ -388,6 +377,31 @@ class PropertyAdmin(admin.ModelAdmin):
         ImageInline,
     ]
 
+class PropertyAdminImport(ImportExportModelAdmin):
+    resource_class = PropertyResource
+    fieldsets = (
+        (
+            'PropertyINFO',
+            {
+                'fields': ['name', 'category', 'address', 'price', 'size', 'description',],
+            },
+            
+
+        ),
+        (
+            'Property Status',
+            {
+                'fields': ['is_active', 'is_deleted',]
+            }
+            
+        ),
+        
+        
+        )
+    list_display = ['name', 'price', 'time_created',]
+    inlines = [
+        ImageInline,
+       ]
 # # Admin class for Feature_property
 # class FeaturePropertyAdmin(admin.ModelAdmin):
 #     list_display = ('property', 'feature')
@@ -463,7 +477,7 @@ admin.site.register(Image, ImageAdmin)
 # admin.site.register(Category, CategoryAdmin)
 admin.site.register(Feature, FeatureAdmin)
 admin.site.register(Feature_category, FeatureCategoryAdmin)
-admin.site.register(Property, PropertyAdmin)
+admin.site.register(Property, PropertyAdminImport)
 admin.site.register(Feature_property, FeaturePropertyAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(ValueModel, ValueModelAdmin)
