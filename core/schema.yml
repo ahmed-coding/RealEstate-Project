@@ -265,6 +265,23 @@ paths:
                 items:
                   $ref: '#/components/schemas/AttributeSerializers'
           description: ''
+  /api/friends/:
+    get:
+      operationId: api_friends_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FrindList'
+          description: ''
   /api/image/{id}/delete/:
     delete:
       operationId: api_image_delete_destroy
@@ -349,6 +366,10 @@ paths:
   /api/property/:
     get:
       operationId: api_property_list
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
       parameters:
       - in: query
         name: name
@@ -442,6 +463,10 @@ paths:
   /api/property/{id}/:
     get:
       operationId: api_property_retrieve
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
       parameters:
       - in: path
         name: id
@@ -463,6 +488,10 @@ paths:
   /api/property/{id}/by-address/:
     get:
       operationId: api_property_by_address_retrieve
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
       parameters:
       - in: path
         name: id
@@ -577,6 +606,10 @@ paths:
   /api/property/high-rate/:
     get:
       operationId: api_property_high_rate_retrieve
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
       tags:
       - api
       security:
@@ -1424,6 +1457,23 @@ components:
       - id
       - image
       - property
+    FrindList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          $ref: '#/components/schemas/User'
+        friends:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+          readOnly: true
+      required:
+      - friends
+      - id
+      - user
     Image_Serializers:
       type: object
       properties:
