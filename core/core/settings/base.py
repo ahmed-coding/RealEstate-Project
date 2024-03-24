@@ -49,8 +49,6 @@ INSTALLED_APPS = [
     'schema_graph',
     'corsheaders',
     'channels',
-    'channels_redis',
-
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
