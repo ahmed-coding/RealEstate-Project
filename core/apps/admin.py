@@ -19,7 +19,7 @@ from django.contrib.auth.forms import (
 from .models import (
     VerificationCode, TypeModel, Attribute_verify, Attribute_value, Country, City, State, Address, Image,
     Category, Feature, Feature_category, Property, Feature_property, Attribute, ValueModel, property_value, Category_attribute, Rate, Favorite, Report,
-    Review, Ticket_type, Ticket_status, Ticket, Solve_message, PropertyResource,
+    Review, Ticket_type, Ticket_status, Ticket, Solve_message, PropertyResource, FriendList,
 )
 from import_export.admin import ImportExportModelAdmin
 
@@ -462,6 +462,11 @@ class SolveMessageAdmin(admin.ModelAdmin):
     list_display = ('ticket', 'message')
 
 
+class FriendListAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(FriendList, FriendListAdmin)
 
 # Register admin classes
 admin.site.register(VerificationCode, VerificationCodeAdmin)

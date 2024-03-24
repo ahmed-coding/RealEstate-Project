@@ -154,6 +154,7 @@ class PropertyCreateAPIView(generics.CreateAPIView):
     """
     serializer_class = serializers.CreatePropertySerializer
     permission_classes = [IsAuthenticated]
+    
 
     def get_serializer_context(self):
         """

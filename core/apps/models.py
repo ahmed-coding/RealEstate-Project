@@ -401,6 +401,8 @@ class Image(models.Model):
     #     if self.content_type:
     #         self.image.upload_to = f'{self.content_type.name}/'
     #     return super().save(*args, **kwargs)
+    def __str__(self):
+        return self.image.url
 
 
 class Category(MPTTModel):
@@ -502,30 +504,38 @@ class Property(models.Model):
 
     class Meta:
         db_table = 'Property'
-    #add a speacial method to return the name of Property object     
+    #add a speacial method to return the name of Property object
+    @property    
+    def image_url(self):
+        if self.image:
+            return self.image.url
+        return None        
     def __str__(self) -> str:
         return self.name
 
 class PropertyResource(resources.ModelResource):
     user = fields.Field(column_name='user', attribute='user', widget=widgets.ForeignKeyWidget('auth.User'))
-    image = fields.Field(column_name='image', attribute='image')
+    image_url = fields.Field(column_name='Image URL', attribute='image_url')
+    
 
     class Meta:
         model = Property
-        fields = ('id', 'user', 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
+        fields = ('id', 'user', 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'image_url')
         export_order = fields
 
-    def import_obj(self, obj, data, dry_run):
+    def import_obj(self, instance, data, dry_run):
         image_path = data.get('image_file')
         if image_path:
             try:
                 with open(image_path, 'rb') as f:
                     image_file = File(f)
-                    obj.image.save(image_file.name, image_file, save=False)
+                    instance.image.save(image_file.name, image_file, save=False)
             except FileNotFoundError:
                 pass
 
-        super().import_obj(obj, data, dry_run)
+        super().import_obj(instance, data, dry_run)
+    def dehydrate_image_url(self, property):
+        return property.image_url
 
 # class Image_Property(models.Model):
 #     """

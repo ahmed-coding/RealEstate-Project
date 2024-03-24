@@ -6,6 +6,7 @@ urlpatterns = [
     path('property/', include('apps.property.urls')),
     path('address/', include('apps.address.urls')),
     path('user/', include('apps.users.urls')),
+    path("friends/", include('apps.friend.urls')),
     path('ticket/', include('apps.ticket.urls')),
     path('image/<int:pk>/update/', views.ImageViewsets.as_view(
         {'put': 'partial_update', 'patch': 'partial_update'})),
