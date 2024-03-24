@@ -117,20 +117,20 @@ class CustomAdminUser(UserAdmin):
 admin.site.register(User, CustomAdminUser)
 
 
-
 class ImageInline(GenericTabularInline):
     model = Image
 
 
 class Category_attributeInline(admin.TabularInline):
     model = Category_attribute
+
+
 class Feature_propertyInline(admin.TabularInline):
     model = Feature_property
 
 
-
 class CategoryAdmin(DraggableMPTTAdmin):
-   
+
     mptt_indent_field = "name"
     list_display = ('tree_actions', 'indented_title',
                     'related_property_counts', 'related_property_cumulative_count')
@@ -138,12 +138,10 @@ class CategoryAdmin(DraggableMPTTAdmin):
     inlines = [
         ImageInline,
         Category_attributeInline,
-        
-       
+
+
 
     ]
-
-    
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -191,20 +189,25 @@ class NotificationAdmin(admin.ModelAdmin):
 #     search_fields = ['name',]
 
 
-
-
 class VerificationCodeAdmin(admin.ModelAdmin):
-    list_display = ('user_phone_num', 'random_code', 'time_created', 'expire_date')
+    list_display = ('user_phone_num', 'random_code',
+                    'time_created', 'expire_date')
 
 # Admin class for TypeModel
+
+
 class TypeModelAdmin(admin.ModelAdmin):
     list_display = ('type',)
 
 # Admin class for Attribute_verify
+
+
 class AttributeVerifyAdmin(admin.ModelAdmin):
     list_display = ('attribute', 'data_type', 'type')
 
 # Admin class for Attribute_value
+
+
 class AttributeValueAdmin(admin.ModelAdmin):
     list_display = ('attribute',)
 
@@ -213,15 +216,21 @@ class AttributeValueAdmin(admin.ModelAdmin):
 #     list_display = ('name',)
 
 # Admin class for City
+
+
 class CityAdmin(admin.ModelAdmin):
     list_display = ('name', 'country')
 
 # Admin class for State
+
+
 class StateAdmin(admin.ModelAdmin):
     list_display = ('name', 'city')
 
+
 class AddressForm(forms.ModelForm):
-    country = forms.ModelChoiceField(queryset=Country.objects.all(), label='Country')
+    country = forms.ModelChoiceField(
+        queryset=Country.objects.all(), label='Country')
     city = forms.ModelChoiceField(queryset=City.objects.all(), label='City')
     state = forms.ModelChoiceField(queryset=State.objects.all(), label='State')
 
@@ -230,6 +239,8 @@ class AddressForm(forms.ModelForm):
         fields = ['country', 'city', 'state', 'longitude', 'latitude']
 
 # Admin class for Address
+
+
 class AddressAdmin(admin.ModelAdmin):
     # list_display = ('state', 'longitude', 'latitude')
     form = AddressForm
@@ -243,7 +254,8 @@ class AddressAdmin(admin.ModelAdmin):
         }),
     )
 
-    list_display = ['id', 'get_country', 'get_city', 'get_state', 'longitude', 'latitude']
+    list_display = ['id', 'get_country', 'get_city',
+                    'get_state', 'longitude', 'latitude']
     list_display_links = ['id']
     search_fields = ['country__name', 'city__name', 'state__name']
 
@@ -252,6 +264,7 @@ class AddressAdmin(admin.ModelAdmin):
             return ['country', 'city', 'state', 'longitude', 'latitude']
         else:
             return super().get_fields(request, obj)
+
     def add_view(self, request, form_url='', extra_context=None):
         self.fields = ['country', 'city', 'state', 'longitude', 'latitude']
         return super().add_view(request, form_url, extra_context)
@@ -259,7 +272,7 @@ class AddressAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, form_url='', extra_context=None):
         self.fields = ['country', 'city', 'state', 'longitude', 'latitude']
         return super().change_view(request, object_id, form_url, extra_context)
-    
+
     def get_country(self, obj):
         return obj.state.city.country.name if obj.state and obj.state.city else ''
     get_country.admin_order_field = 'state__city__country__name'
@@ -276,17 +289,19 @@ class AddressAdmin(admin.ModelAdmin):
     get_state.short_description = 'State'
 
 
-    
-
 # Admin class for Image
 class ImageAdmin(admin.ModelAdmin):
     list_display = ('content_type', 'object_id', 'image')
 
 # Admin class for Feature
+
+
 class FeatureAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
 # Admin class for Feature_category
+
+
 class FeatureCategoryAdmin(admin.ModelAdmin):
     list_display = ('feature', 'category')
 
@@ -299,59 +314,82 @@ class FeaturePropertyAdmin(admin.ModelAdmin):
     ]
 
 # Admin class for Attribute
+
+
 class AttributeAdmin(admin.ModelAdmin):
     list_display = ('name', 'data_type')
 
 # Admin class for ValueModel
+
+
 class ValueModelAdmin(admin.ModelAdmin):
     list_display = ('attribute', 'value')
 
 # Admin class for property_value
+
+
 class PropertyValueAdmin(admin.ModelAdmin):
     list_display = ('property', 'value')
 
 # Admin class for Category_attribute
+
+
 class CategoryAttributeAdmin(admin.ModelAdmin):
     list_display = ('category', 'attribute')
 
 # Admin class for Rate
+
+
 class RateAdmin(admin.ModelAdmin):
     list_display = ('prop', 'user', 'rate', 'time_created')
 
 # Admin class for Favorite
+
+
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('prop', 'user', 'time_created')
 
 # Admin class for Report
+
+
 class ReportAdmin(admin.ModelAdmin):
     list_display = ('prop', 'user', 'time_created', 'note')
 
 # Admin class for Review
+
+
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ('prop', 'user', 'time_created', 'review')
 
 # Admin class for Ticket_type
+
+
 class TicketTypeAdmin(admin.ModelAdmin):
     list_display = ('type',)
 
 # Admin class for Ticket_status
+
+
 class TicketStatusAdmin(admin.ModelAdmin):
     list_display = ('status',)
 
 # Admin class for Ticket
+
+
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('type', 'status', 'ticket_solver', 
+    list_display = ('type', 'status', 'ticket_solver',
                     'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
 
 # Admin class for Solve_message
+
+
 class SolveMessageAdmin(admin.ModelAdmin):
     list_display = ('ticket', 'message')
 
 
-
 # Admin class for Property
 class PropertyAdmin(admin.ModelAdmin):
-    # list_display = ('user', 'category', 'address', 
+    # list_display = ('user', 'category', 'address',
     #                 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
     fieldsets = (
         (
@@ -359,7 +397,7 @@ class PropertyAdmin(admin.ModelAdmin):
             {
                 'fields': ['name', 'category', 'address', 'price', 'size', 'description',],
             },
-            
+
 
         ),
         (
@@ -367,15 +405,16 @@ class PropertyAdmin(admin.ModelAdmin):
             {
                 'fields': ['is_active', 'is_deleted',]
             }
-            
+
         ),
-        
-        
-        )
+
+
+    )
     list_display = ['name', 'price', 'time_created',]
     inlines = [
         ImageInline,
     ]
+
 
 class PropertyAdminImport(ImportExportModelAdmin):
     resource_class = PropertyResource
@@ -385,7 +424,7 @@ class PropertyAdminImport(ImportExportModelAdmin):
             {
                 'fields': ['name', 'category', 'address', 'price', 'size', 'description',],
             },
-            
+
 
         ),
         (
@@ -393,45 +432,59 @@ class PropertyAdminImport(ImportExportModelAdmin):
             {
                 'fields': ['is_active', 'is_deleted',]
             }
-            
+
         ),
-        
-        
-        )
+
+
+    )
     list_display = ['name', 'price', 'time_created',]
     inlines = [
         ImageInline,
-       ]
+    ]
 # # Admin class for Feature_property
 # class FeaturePropertyAdmin(admin.ModelAdmin):
 #     list_display = ('property', 'feature')
 
 # Admin class for Attribute
+
+
 class AttributeAdmin(admin.ModelAdmin):
     list_display = ('name', 'data_type')
 
 # Admin class for ValueModel
+
+
 class ValueModelAdmin(admin.ModelAdmin):
     list_display = ('attribute', 'value')
 
 # Admin class for property_value
+
+
 class PropertyValueAdmin(admin.ModelAdmin):
     list_display = ('property', 'value')
 
 # Admin class for Category_attribute
+
+
 class CategoryAttributeAdmin(admin.ModelAdmin):
     list_display = ('category', 'attribute')
 
 # Admin class for Rate
+
+
 class RateAdmin(admin.ModelAdmin):
     list_display = ('prop', 'user', 'rate', 'time_created')
     list_filter = ['rate',]
 
 # Admin class for Favorite
+
+
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('prop', 'user', 'time_created')
 
 # Admin class for Report
+
+
 class ReportAdmin(admin.ModelAdmin):
     list_display = ('prop', 'user', 'time_created', 'note')
     search_fields = ['prop',]
@@ -445,19 +498,27 @@ class ReviewAdmin(admin.ModelAdmin):
     list_filter = ['time_created',]
 
 # Admin class for Ticket_type
+
+
 class TicketTypeAdmin(admin.ModelAdmin):
     list_display = ('type',)
 
 # Admin class for Ticket_status
+
+
 class TicketStatusAdmin(admin.ModelAdmin):
     list_display = ('status',)
 
 # Admin class for Ticket
+
+
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('type', 'status', 'ticket_solver', 
+    list_display = ('type', 'status', 'ticket_solver',
                     'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
 
 # Admin class for Solve_message
+
+
 class SolveMessageAdmin(admin.ModelAdmin):
     list_display = ('ticket', 'message')
 

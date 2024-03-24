@@ -19,5 +19,18 @@
 2. `python manage.py createsuperuser`
 3. `exit`
 
+# [Ubuntu Setup]
+#### **Create venv for first time**
+- `python -m venv venv`
+#### **active venv**
+- `source venv/bin/activate`
+#### **install requierments**
+ - `cd core`
+ - `pip install -r requirements.txt`
+#### **run project**
+- `cd core`
+ - `python manage.py runserver`
+
+-------
 # [UvicornServer]
 `uvicorn core.asgi:application --port 8000 --workers 4 --log-level debug --reload`
