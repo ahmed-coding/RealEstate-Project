@@ -324,12 +324,9 @@ class Country(models.Model):
 
     class Meta:
         db_table = 'Country'
+
     def __str__(self):
         return self.name
-    
-    
-
-    
 
 
 class City(models.Model):
@@ -344,9 +341,9 @@ class City(models.Model):
 
     class Meta:
         db_table = 'City'
+
     def __str__(self):
         return self.name
-    
 
 
 class State(models.Model):
@@ -361,6 +358,7 @@ class State(models.Model):
 
     class Meta:
         db_table = 'State'
+
     def __str__(self) -> str:
         return self.name
 
@@ -378,7 +376,7 @@ class Address(models.Model):
 
     class Meta:
         db_table = 'Address'
-    
+
 
 # End Address
 # Start Property Models
@@ -422,7 +420,6 @@ class Category(MPTTModel):
 
     def __str__(self):
         return f"{self.name} "
-    
 
     class Meta:
         db_table = 'Category'
@@ -452,9 +449,9 @@ class Feature(models.Model):
 
     class Meta:
         db_table = 'Feature'
+
     def __str__(self):
         return self.name
-    
 
 
 class Feature_category(models.Model):
@@ -504,23 +501,28 @@ class Property(models.Model):
 
     class Meta:
         db_table = 'Property'
-    #add a speacial method to return the name of Property object
-    @property    
+    # add a speacial method to return the name of Property object
+
+    @property
     def image_url(self):
-        if self.image:
-            return self.image.url
-        return None        
+        content_type = ContentType.objects.get_for_model(self)
+        urls = [i.image.url for i in Image.objects.filter(
+            content_type=content_type, object_id=self.pk)]
+        return urls
+
     def __str__(self) -> str:
         return self.name
 
+
 class PropertyResource(resources.ModelResource):
-    user = fields.Field(column_name='user', attribute='user', widget=widgets.ForeignKeyWidget('auth.User'))
+    user = fields.Field(column_name='user', attribute='user',
+                        widget=widgets.ForeignKeyWidget('auth.User'))
     image_url = fields.Field(column_name='Image URL', attribute='image_url')
-    
 
     class Meta:
         model = Property
-        fields = ('id', 'user', 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'image_url')
+        fields = ('id', 'user', 'name', 'description', 'price',
+                  'size', 'is_active', 'is_deleted', 'image_url')
         export_order = fields
 
     def import_obj(self, instance, data, dry_run):
@@ -529,11 +531,13 @@ class PropertyResource(resources.ModelResource):
             try:
                 with open(image_path, 'rb') as f:
                     image_file = File(f)
-                    instance.image.save(image_file.name, image_file, save=False)
+                    instance.image.save(
+                        image_file.name, image_file, save=False)
             except FileNotFoundError:
                 pass
 
         super().import_obj(instance, data, dry_run)
+
     def dehydrate_image_url(self, property):
         return property.image_url
 
@@ -563,13 +567,11 @@ class Feature_property(models.Model):
         "Feature"), on_delete=models.CASCADE, related_name='feature_property')
     image = GenericRelation(Image, related_query_name='featuer_property')
 
- 
-
     class Meta:
         db_table = 'Feature_property'
+
     def __str__(self):
-       return self.feature.name
-   
+        return self.feature.name
 
 
 # class Image_Feature_property(models.Model):
@@ -652,19 +654,24 @@ class Category_attribute(models.Model):
         "category"), on_delete=models.CASCADE, related_name='category_attribute')
     attribute = models.ForeignKey(
         Attribute, verbose_name=_("attribute"), on_delete=models.CASCADE, related_name='category_attribute')
+
     class Meta:
         db_table = 'Category_attribute'
+
     def __str__(self):
         return self.category.name
 
 # End Property Models
 
 # Start Interaction Models
-        
- #this mathod for make check the rate`s range that most be for 1 to 5       
+
+ # this mathod for make check the rate`s range that most be for 1 to 5
+
+
 def validate_rate_range(value):
     if value < 1 or value > 5:
         raise ValidationError(_('Rate must be between 1 and 5.'))
+
 
 class Rate(models.Model):
     """
@@ -676,7 +683,8 @@ class Rate(models.Model):
         Property, verbose_name=_("prperty"), on_delete=models.CASCADE, related_name='rate')
     user = models.ForeignKey(
         "apps.User", verbose_name=_("user"), on_delete=models.CASCADE, related_name='rate')
-    rate = models.FloatField(_("Rating Number"), default=0.0, validators=[validate_rate_range])
+    rate = models.FloatField(_("Rating Number"), default=0.0, validators=[
+                             validate_rate_range])
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
 
@@ -718,7 +726,7 @@ class Report(models.Model):
     class Meta:
         db_table = 'Report'
 
-    #add a speacial method to return the name of Property object     
+    # add a speacial method to return the name of Property object
     def __str__(self):
         return self.prop.name
 
@@ -754,6 +762,7 @@ class Ticket_type(models.Model):
 
     class Meta:
         db_table = 'Ticket_type'
+
     def __str__(self) -> str:
         return self.type
 
