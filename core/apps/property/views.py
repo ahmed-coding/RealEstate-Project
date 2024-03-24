@@ -27,6 +27,10 @@ class BastSellerViewsets(viewsets.ModelViewSet):
 
 
 class PropertyViewsets(viewsets.ModelViewSet):
+    """Property Viewsets
+    Args:
+        `category`: for get all property from `Main Category` in `GET` method
+    """
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
@@ -38,16 +42,29 @@ class PropertyViewsets(viewsets.ModelViewSet):
         return {'user': self.request.user} if self.request.user.is_authenticated else {}
 
     def get_queryset(self):
-        if self.action == 'get_high_rate':
-            return Property.objects.annotate(
-                rating_count=Count('rate')
-            ).order_by('-rating_count')
-        elif self.action == 'get_by_address':
-            pk = self.kwargs.get('pk')
-            obj = Property.objects.get(id=pk)
-            return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
+        main_category = self.query_params.get("category") or None
+        if main_category:
+            if self.action == 'get_high_rate':
+                return Property.objects.filter(category__parnt).annotate(
+                    rating_count=Count('rate')
+                ).order_by('-rating_count')
+            elif self.action == 'get_by_address':
+                pk = self.kwargs.get('pk')
+                obj = Property.objects.get(id=pk)
+                return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
+            else:
+                return Property.objects.all().order_by('-id')
         else:
-            return Property.objects.all().order_by('-id')
+            if self.action == 'get_high_rate':
+                return Property.objects.annotate(
+                    rating_count=Count('rate')
+                ).order_by('-rating_count')
+            elif self.action == 'get_by_address':
+                pk = self.kwargs.get('pk')
+                obj = Property.objects.get(id=pk)
+                return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
+            else:
+                return Property.objects.all().order_by('-id')
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -154,7 +171,6 @@ class PropertyCreateAPIView(generics.CreateAPIView):
     """
     serializer_class = serializers.CreatePropertySerializer
     permission_classes = [IsAuthenticated]
-    
 
     def get_serializer_context(self):
         """

@@ -21,7 +21,9 @@
 3. `exit`
 ## from terminal
 1. `cd core`
-2. `python manage.py createsuperuser`
+2. `python manage.py makemigrations`
+3. `python manage.py migrate`
+4. `python manage.py createsuperuser`
 
 # [Ubuntu Setup]
 #### **Create venv for first time**
