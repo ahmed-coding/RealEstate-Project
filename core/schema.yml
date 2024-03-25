@@ -201,7 +201,7 @@ paths:
         CategoryViewsets
 
         Argament:
-            parent: parent id to get all sup Categorie in `GET Method`
+            `parent`: parent id to get all sup Categorie in `GET Method`
       parameters:
       - in: query
         name: name
@@ -250,7 +250,7 @@ paths:
         AttributeByCategorieViewsets
 
         Argament:
-            category: categorie id to get all attribute in `GET Method`
+            `category`: categorie id to get all attribute in `GET Method`
       tags:
       - api
       security:
