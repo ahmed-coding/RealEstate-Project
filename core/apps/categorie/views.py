@@ -17,7 +17,7 @@ class CategoryViewsets(viewsets.ModelViewSet):
     """CategoryViewsets
 
     Argament:
-        parent: parent id to get all sup Categorie in `GET Method`
+        `parent`: parent id to get all sup Categorie in `GET Method`
     """
     serializer_class = serializers.CategorySerializers
     pagination_class = StandardResultsSetPagination
@@ -37,7 +37,7 @@ class AttributeByCategorieViewsets(viewsets.ModelViewSet):
     """AttributeByCategorieViewsets
 
     Argament:
-        category: categorie id to get all attribute in `GET Method` 
+        `category`: categorie id to get all attribute in `GET Method` 
     """
     serializer_class = serializers.AttributeSerializers
 
