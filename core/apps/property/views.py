@@ -52,7 +52,7 @@ class PropertyViewsets(viewsets.ModelViewSet):
             "main_category", None) or None
         if self.main_category:
             if self.action == 'get_high_rate':
-                return Property.objects.filter(category__parent_id=self.main_category).annotate(
+                return Property.objects.filter(category__parent__id=self.main_category).annotate(
                     rating_count=Count('rate')
                 ).order_by('-rating_count')
             elif self.action == 'get_by_address':
@@ -60,7 +60,7 @@ class PropertyViewsets(viewsets.ModelViewSet):
                 obj = Property.objects.get(id=pk)
                 return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
             else:
-                return Property.objects.filter(category__parent_id=self.main_category).order_by('-id')
+                return Property.objects.filter(category__parent__id=self.main_category).order_by('-id')
         else:
             if self.action == 'get_high_rate':
                 return Property.objects.annotate(
