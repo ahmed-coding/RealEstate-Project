@@ -22,7 +22,7 @@ class FriendView(viewsets.ModelViewSet):
         # return FriendList.objects.filter(
         #     Q(user1=user) | Q(user2=user)
         # )
-        return FriendList.objects.filter(user=user)
+        return FriendList.objects.filter(user=user).order_by('-id')
 
     def get_serializer_context(self):
         return {'user': self.request.user}
