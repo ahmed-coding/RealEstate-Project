@@ -990,7 +990,7 @@ class UnreadChatRoomMessages(models.Model):
         PrivateChatRoom, on_delete=models.CASCADE, related_name="room")
 
     user = models.ForeignKey(User,
-                             on_delete=models.CASCADE)
+                             on_delete=models.CASCADE, related_name='unread_message')
 
     count = models.IntegerField(default=0)
 

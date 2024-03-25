@@ -2,7 +2,7 @@ from statistics import mode
 from django.contrib import admin
 from . import models
 from django import forms
-from .models import Category
+from .models import Category, PrivateChatRoom, UnreadChatRoomMessages
 from .models import User
 from django.contrib.contenttypes.admin import GenericTabularInline
 # Register your models here.
@@ -526,6 +526,17 @@ class SolveMessageAdmin(admin.ModelAdmin):
 class FriendListAdmin(admin.ModelAdmin):
     pass
 
+
+class PrivateChatRoomAdmin(admin.ModelAdmin):
+    pass
+
+
+class UnradChateMessageAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(UnreadChatRoomMessages, UnradChateMessageAdmin)
+admin.site.register(PrivateChatRoom, PrivateChatRoomAdmin)
 
 admin.site.register(FriendList, FriendListAdmin)
 

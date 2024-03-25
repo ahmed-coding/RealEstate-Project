@@ -8,17 +8,21 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework import filters
 from . import serializers
-from ..models import FriendList, User
+from ..models import FriendList, PrivateChatRoom, User
+from django.db.models import Q
+
 
 class FriendView(viewsets.ModelViewSet):
 
-    queryset = FriendList.objects.all()
-    print()
     serializer_class = serializers.FrindListSerializer
-    print()
+    permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        # Set the user for the newly created FriendList instance
-        serializer.save(user=self.request.user)
+    def get_queryset(self):
+        user = self.request.user
+        # return FriendList.objects.filter(
+        #     Q(user1=user) | Q(user2=user)
+        # )
+        return FriendList.objects.filter(user=user)
 
-
+    def get_serializer_context(self):
+        return {'user': self.request.user}
