@@ -15,7 +15,7 @@ from rest_framework import generics
 
 
 class BastSellerViewsets(viewsets.ModelViewSet):
-    serializer_class = serializers.PropertyDetailsSerializers
+    serializer_class = serializers.UserSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
