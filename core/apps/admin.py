@@ -422,7 +422,7 @@ class PropertyAdminImport(ImportExportModelAdmin):
         (
             'PropertyINFO',
             {
-                'fields': ['name', 'category', 'address', 'price', 'size', 'description',],
+                'fields': ['name', 'category', 'address', 'price', 'size', 'description', 'user'],
             },
 
 
