@@ -9,8 +9,11 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from rest_framework import filters
 from . import serializers
 from ..models import FriendList, User
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+
 
 class FriendView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
 
     queryset = FriendList.objects.all()
     print()

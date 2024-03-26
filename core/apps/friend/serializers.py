@@ -6,9 +6,9 @@ from ..users.serializers import *
 
 
 class FrindListSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = serializers.SerializerMethodField()
     friends = UserSerializer(many=True, read_only=True)
-    
+
     class Meta:
         model = FriendList
         fields = ['id', 'user', 'friends']
@@ -21,4 +21,7 @@ class FrindListSerializer(serializers.ModelSerializer):
         friend = User.objects.create(**friend_data)
         user.friends.add(friend)
      return user
+    def get_user(self, obj):
+        user = obj.user
+        return UserSerializer(user).data.get('name') if user else ''
 

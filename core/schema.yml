@@ -68,6 +68,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateAddress'
           description: ''
+  /api/friends/:
+    get:
+      operationId: api_freind_Liste
+       tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FriendListSerializers'
+          description: ''
+      post:
+        operationId: Create_freind_lsit
+
   /api/address/city/:
     get:
       operationId: api_address_city_list
@@ -193,7 +213,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserAuth'
-          description: ''
+          description: ''        
   /api/categorie/:
     get:
       operationId: api_categorie_list
