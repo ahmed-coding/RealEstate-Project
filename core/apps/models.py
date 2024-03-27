@@ -437,6 +437,7 @@ class Banner(models.Model):
     category = models.ForeignKey(Category, verbose_name=_(
         "category"), on_delete=models.CASCADE, related_name='banner')
     image = models.ImageField(_("Image"), upload_to='banners/',)
+    is_active = models.BooleanField(_("Active status"), default=False)
 
     class Meta:
         db_table = 'Banner'
