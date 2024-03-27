@@ -449,6 +449,9 @@ class Banner(models.Model):
             self.is_active = False
         super().save(*args, **kwargs)
 
+    def __call__(self, *args, **kwds):
+        return super().__call__(*args, **kwds)
+
     class Meta:
         db_table = 'Banner'
 

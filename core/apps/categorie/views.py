@@ -29,6 +29,7 @@ class CategoryViewsets(viewsets.ModelViewSet):
 
     def get_queryset(self):
         parent = self.request.query_params.get("parent") or None
+        parent = None if parent == '0' else parent
         return Category.objects.filter(parent=parent).order_by('id')
 
 
