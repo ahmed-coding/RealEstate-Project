@@ -9,6 +9,7 @@ urlpatterns = [
     path("friends/", include('apps.friend.urls')),
     path('ticket/', include('apps.ticket.urls')),
     path('friend/', include('apps.friend.urls')),
+    path('banners/', include('apps.banners.urls')),
 
     # image method
     path('image/<int:pk>/update/', views.ImageViewsets.as_view(

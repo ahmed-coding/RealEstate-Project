@@ -213,7 +213,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserAuth'
-          description: ''        
+          description: ''
   /api/categorie/:
     get:
       operationId: api_categorie_list
@@ -1217,6 +1217,44 @@ components:
       - password
       - token
       - username
+    BannerSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        end_time:
+          type: string
+          format: date-time
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        image:
+          type: string
+          format: uri
+        is_active:
+          type: boolean
+          title: Active status
+        category:
+          type: integer
+      required:
+      - category
+      - end_time
+      - id
+      - image
+      - start_time
+      - time_created
     CategorySerializers:
       type: object
       properties:
@@ -1614,6 +1652,26 @@ components:
       required:
       - id
       - image
+    PaginatedBannerSerializersList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BannerSerializers'
     PaginatedCategorySerializersList:
       type: object
       properties:
