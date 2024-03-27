@@ -429,15 +429,25 @@ class Banner(models.Model):
     time_created = models.DateTimeField(
         _("time created"), auto_now=False, auto_now_add=True)
     end_time = models.DateTimeField(
-        _("time created"),)
+        _("end_time"),)
     start_time = models.DateTimeField(
-        _("time created"),)
+        _("start_time"),)
     title = models.CharField(_("Title"), max_length=100, default="")
     description = models.TextField(_("description"), default="")
     category = models.ForeignKey(Category, verbose_name=_(
         "category"), on_delete=models.CASCADE, related_name='banner')
     image = models.ImageField(_("Image"), upload_to='banners/',)
     is_active = models.BooleanField(_("Active status"), default=False)
+
+    def refresh_from_db(self, *args, **kwargs):
+        if self.end_time.date() >= timezone.now().date():
+            self.is_active = False
+        return super().refresh_from_db(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if self.end_time.date() >= timezone.now().date():
+            self.is_active = False
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = 'Banner'
