@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from rest_framework.decorators import action
 from rest_framework import viewsets
 from rest_framework import status
@@ -14,7 +15,7 @@ from rest_framework import generics
 
 
 class BastSellerViewsets(viewsets.ModelViewSet):
-    serializer_class = serializers.PropertyDetailsSerializers
+    serializer_class = serializers.UserSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
@@ -27,27 +28,50 @@ class BastSellerViewsets(viewsets.ModelViewSet):
 
 
 class PropertyViewsets(viewsets.ModelViewSet):
+    """Property Viewsets
+    Args:
+        `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+    """
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', ]
     filterset_fields = ['name',]
     ordering_fields = '__all__'
+    # Description of params
+    main_category = None
+    main_category_query_param = 'main_category'
+    main_category_query_description = _(
+        "for get all property from `Main Category` in `GET` method from tow levels")
 
     def get_serializer_context(self):
         return {'user': self.request.user} if self.request.user.is_authenticated else {}
 
     def get_queryset(self):
-        if self.action == 'get_high_rate':
-            return Property.objects.annotate(
-                rating_count=Count('rate')
-            ).order_by('-rating_count')
-        elif self.action == 'get_by_address':
-            pk = self.kwargs.get('pk')
-            obj = Property.objects.get(id=pk)
-            return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
+        self.main_category = self.request.query_params.get(
+            "main_category", None) or None
+        if self.main_category:
+            if self.action == 'get_high_rate':
+                return Property.objects.filter(category__parent__id=self.main_category).annotate(
+                    rating_count=Count('rate')
+                ).order_by('-rating_count')
+            elif self.action == 'get_by_address':
+                pk = self.kwargs.get('pk')
+                obj = Property.objects.get(id=pk)
+                return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
+            else:
+                return Property.objects.filter(category__parent__id=self.main_category).order_by('-id')
         else:
-            return Property.objects.all().order_by('-id')
+            if self.action == 'get_high_rate':
+                return Property.objects.annotate(
+                    rating_count=Count('rate')
+                ).order_by('-rating_count')
+            elif self.action == 'get_by_address':
+                pk = self.kwargs.get('pk')
+                obj = Property.objects.get(id=pk)
+                return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
+            else:
+                return Property.objects.all().order_by('-id')
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -154,7 +178,6 @@ class PropertyCreateAPIView(generics.CreateAPIView):
     """
     serializer_class = serializers.CreatePropertySerializer
     permission_classes = [IsAuthenticated]
-    
 
     def get_serializer_context(self):
         """

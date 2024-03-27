@@ -221,7 +221,7 @@ paths:
         CategoryViewsets
 
         Argament:
-            parent: parent id to get all sup Categorie in `GET Method`
+            `parent`: parent id to get all sup Categorie in `GET Method`
       parameters:
       - in: query
         name: name
@@ -270,7 +270,7 @@ paths:
         AttributeByCategorieViewsets
 
         Argament:
-            category: categorie id to get all attribute in `GET Method`
+            `category`: categorie id to get all attribute in `GET Method`
       tags:
       - api
       security:
@@ -284,6 +284,40 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AttributeSerializers'
+          description: ''
+  /api/friend/:
+    get:
+      operationId: api_friend_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FrindList'
+          description: ''
+  /api/friends/:
+    get:
+      operationId: api_friends_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FrindList'
           description: ''
   /api/image/{id}/delete/:
     delete:
@@ -369,6 +403,10 @@ paths:
   /api/property/:
     get:
       operationId: api_property_list
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
       parameters:
       - in: query
         name: name
@@ -462,6 +500,10 @@ paths:
   /api/property/{id}/:
     get:
       operationId: api_property_retrieve
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
       parameters:
       - in: path
         name: id
@@ -483,6 +525,10 @@ paths:
   /api/property/{id}/by-address/:
     get:
       operationId: api_property_by_address_retrieve
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
       parameters:
       - in: path
         name: id
@@ -500,6 +546,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SinglePropertySerializers'
+          description: ''
+  /api/property/bast-seller/:
+    get:
+      operationId: api_property_bast_seller_list
+      parameters:
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
           description: ''
   /api/property/create/:
     post:
@@ -597,6 +687,10 @@ paths:
   /api/property/high-rate/:
     get:
       operationId: api_property_high_rate_retrieve
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
       tags:
       - api
       security:
@@ -1444,6 +1538,70 @@ components:
       - id
       - image
       - property
+    FrindList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        friends:
+          type: array
+          items:
+            $ref: '#/components/schemas/FrindsSerializers'
+      required:
+      - friends
+      - id
+    FrindsSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        username:
+          type: string
+          nullable: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+        name:
+          type: string
+          title: Full name
+          maxLength: 60
+        register_data:
+          type: string
+          maxLength: 20
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        image:
+          type: string
+          format: uri
+          nullable: true
+        is_deleted:
+          type: boolean
+          title: Deleted
+        unread_messages:
+          type: integer
+          readOnly: true
+      required:
+      - email
+      - id
+      - password
+      - unread_messages
     Image_Serializers:
       type: object
       properties:
@@ -1536,6 +1694,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SinglePropertySerializers'
+    PaginatedUserList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
     PatchedCreateAddress:
       type: object
       description: |-
