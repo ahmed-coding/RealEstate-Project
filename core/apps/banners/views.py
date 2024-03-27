@@ -14,7 +14,6 @@ from . import serializers
 
 class BannerViewSetst(viewsets.ModelViewSet):
     serializer_class = serializers.BannerSerializers
-    pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', ]
