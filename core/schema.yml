@@ -1254,11 +1254,11 @@ components:
         end_time:
           type: string
           format: date-time
-          title: Time created
+          readOnly: true
         start_time:
           type: string
           format: date-time
-          title: Time created
+          readOnly: true
         title:
           type: string
           maxLength: 100
