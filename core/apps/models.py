@@ -425,6 +425,22 @@ class Category(MPTTModel):
         db_table = 'Category'
 
 
+class Banner(models.Model):
+    time_created = models.DateTimeField(
+        _("time created"), auto_now=False, auto_now_add=True)
+    end_time = models.DateTimeField(
+        _("time created"),)
+    start_time = models.DateTimeField(
+        _("time created"),)
+    title = models.CharField(_("Title"), max_length=100, default="")
+    description = models.TextField(_("description"), default="")
+    category = models.ForeignKey(Category, verbose_name=_(
+        "category"), on_delete=models.CASCADE, related_name='banner')
+    image = models.ImageField(_("Image"), upload_to='banners/',)
+
+    class Meta:
+        db_table = 'Banner'
+
 # class Image_Category(models.Model):
 #     """
 #     Image_Category model .
