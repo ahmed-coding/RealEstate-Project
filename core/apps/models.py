@@ -563,6 +563,7 @@ class Property(models.Model):
     unique_number = models.SlugField(_("unique_number"), editable=False)
     image = GenericRelation(Image, related_query_name='property')
     for_sale = models.BooleanField(_("Is For sale"), default=False)
+    is_featured = models.BooleanField(_("is_featured"), default=False)
 
     def save(self, *args, **kwargs):
         if not self.id:
