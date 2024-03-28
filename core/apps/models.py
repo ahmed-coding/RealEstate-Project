@@ -424,6 +424,7 @@ class Category(MPTTModel):
     class Meta:
         db_table = 'Category'
 
+from django.db.models.signals import pre_save
 
 class Banner(models.Model):
     time_created = models.DateTimeField(
@@ -439,18 +440,32 @@ class Banner(models.Model):
     image = models.ImageField(_("Image"), upload_to='banners/',)
     is_active = models.BooleanField(_("Active status"), default=False)
 
-    def refresh_from_db(self, *args, **kwargs):
-        if self.end_time.date() >= timezone.now().date():
-            self.is_active = False
-        return super().refresh_from_db(*args, **kwargs)
+    # def refresh_from_db(self, *args, **kwargs):
+    #     if self.end_time.date() >= timezone.now().date():
+    #         self.is_active = False
+    #     return super().refresh_from_db(*args, **kwargs)
 
-    def save(self, *args, **kwargs):
-        if self.end_time.date() >= timezone.now().date():
-            self.is_active = False
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.end_time.date() >= timezone.now().date():
+    #         self.is_active = False
+    #     super().save(*args, **kwargs)
 
     def __call__(self, *args, **kwds):
-        return super().__call__(*args, **kwds)
+        # return super().__call__(*args, **kwds)
+        print(self.is_active)
+        return self
+    # @receiver(pre_save, sender='apps.Banner')
+    # def update_banner_status(sender, instance, **kwargs):
+    #     """
+    #     Signal receiver function to update the is_active field based on end_time.
+    #     """
+    #     if instance.end_time:
+    #         now = timezone.now()
+    #         if now >= instance.end_time:
+    #             instance.is_active = False
+    #         else:
+    #             instance.is_active = True
+
 
     class Meta:
         db_table = 'Banner'
