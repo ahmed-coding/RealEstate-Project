@@ -16,7 +16,14 @@ from ..review.serializers import ReviewSerializers
 
 
 class BastSellerSerializers(UserSerializer):
+    """Bast Sellers
 
+    Args:
+        category (int): to get all sellers by categorys
+
+    Returns:
+        User: _description_
+    """
     property_count = serializers.SerializerMethodField()
 
     def get_property_count(self, obj):
