@@ -19,4 +19,4 @@ class BannerViewSetst(viewsets.ModelViewSet):
     search_fields = ['title', ]
     filterset_fields = ['title',]
     ordering_fields = '__all__'
-    queryset = Banner.objects.all()
+    queryset = Banner.objects.filter(is_active=True)
