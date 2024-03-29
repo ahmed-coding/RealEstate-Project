@@ -17,6 +17,6 @@ class BannerViewSetst(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', ]
-    filterset_fields = ['title',]
+    filterset_fields = ['title', 'category']
     ordering_fields = '__all__'
-    queryset = Banner.objects.all()
+    queryset = Banner.objects.filter(is_active=True)

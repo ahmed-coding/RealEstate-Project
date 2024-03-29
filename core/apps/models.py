@@ -1,3 +1,5 @@
+from django.db.models import Q
+from django.db.models.signals import pre_save
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.fields import GenericForeignKey
 from mptt.models import MPTTModel, TreeForeignKey
@@ -424,7 +426,18 @@ class Category(MPTTModel):
     class Meta:
         db_table = 'Category'
 
-from django.db.models.signals import pre_save
+
+class CustomBannerManager(models.Manager):
+
+    """Automatically update is active to false if end time is over"""
+
+    def get_queryset(self):
+        queryset = super(CustomBannerManager,
+                         self).get_queryset().filter(Q(end_date__lte=timezone.now()))
+        queryset.update(is_active=False)
+
+        return queryset
+
 
 class Banner(models.Model):
     time_created = models.DateTimeField(
@@ -439,7 +452,17 @@ class Banner(models.Model):
         "category"), on_delete=models.CASCADE, related_name='banner')
     image = models.ImageField(_("Image"), upload_to='banners/',)
     is_active = models.BooleanField(_("Active status"), default=False)
+    objects = CustomBannerManager
 
+    # def get_absolute_url(self):
+    #     self.get_deferred_fields
+    #     return reverse("model_detail", kwargs={"pk": self.pk})
+
+    # def get_url(self):
+    #     return reverse()
+    # def get_queryset(self):
+    #     queryset = ''
+    #     return queryset
     # def refresh_from_db(self, *args, **kwargs):
     #     if self.end_time.date() >= timezone.now().date():
     #         self.is_active = False
@@ -450,10 +473,12 @@ class Banner(models.Model):
     #         self.is_active = False
     #     super().save(*args, **kwargs)
 
-    def __call__(self, *args, **kwds):
-        # return super().__call__(*args, **kwds)
-        print(self.is_active)
-        return self
+    def __str__(self) -> str:
+        if self.end_time <= timezone.now():
+            self.is_active = False
+            self.save()
+        return self.title
+
     # @receiver(pre_save, sender='apps.Banner')
     # def update_banner_status(sender, instance, **kwargs):
     #     """
@@ -472,9 +497,9 @@ class Banner(models.Model):
       
         return self.title
 
-
     class Meta:
         db_table = 'Banner'
+        default_manager_name = 'objects'
 
 # class Image_Category(models.Model):
 #     """
@@ -544,6 +569,7 @@ class Property(models.Model):
     unique_number = models.SlugField(_("unique_number"), editable=False)
     image = GenericRelation(Image, related_query_name='property')
     for_sale = models.BooleanField(_("Is For sale"), default=False)
+    is_featured = models.BooleanField(_("is_featured"), default=False)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -563,8 +589,6 @@ class Property(models.Model):
 
     def __str__(self) -> str:
         return self.name
-
-
 
 
 # class Image_Property(models.Model):

@@ -210,8 +210,6 @@ class AttributeValueAdmin(admin.ModelAdmin):
     list_display = ('attribute',)
 
 
-
-
 class CityAdmin(admin.ModelAdmin):
     list_display = ('name', 'country')
 
@@ -408,6 +406,8 @@ class PropertyAdmin(admin.ModelAdmin):
     inlines = [
         ImageInline,
     ]
+
+
 class PropertyResource(resources.ModelResource):
     user = fields.Field(column_name='user', attribute='user',
                         widget=widgets.ForeignKeyWidget('auth.User'))
@@ -434,6 +434,7 @@ class PropertyResource(resources.ModelResource):
 
     def dehydrate_image_url(self, property):
         return property.image_url
+
 
 class PropertyAdminImport(ImportExportModelAdmin):
     resource_class = PropertyResource
@@ -555,6 +556,7 @@ class UnradChateMessageAdmin(admin.ModelAdmin):
 
 
 class BannerAdmin(admin.ModelAdmin):
+    # pass
     list_display = ['title', 'end_time', 'start_time', 'is_active']
     
     # pass

@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from ..serializers import Image_Serializers
 from ..users.serializers import UserSerializer
-from ..models import Address, Attribute, Image,  Property, Feature, Feature_property, property_value, ValueModel
+from ..models import Address, Attribute, Image,  Property, Feature, Feature_property, User, property_value, ValueModel
 from ..categorie.serializers import CategorySerializers
 from ..address.serializers import AddressSerializers, CreateAddressSerializer
 from ..review.serializers import ReviewSerializers
@@ -13,6 +13,26 @@ from ..review.serializers import ReviewSerializers
 #     class Meta:
 #         model = Image
 #         fiels = ('image',)
+
+
+class BastSellerSerializers(UserSerializer):
+    """Bast Sellers
+
+    Args:
+        category (int): to get all sellers by categorys
+
+    Returns:
+        User: _description_
+    """
+    property_count = serializers.SerializerMethodField()
+
+    def get_property_count(self, obj):
+        return obj.property_count
+
+    class Meta:
+        fields = ['id', 'email', 'phone_number',
+                  'username',   'name', 'is_active', 'image', 'property_count']
+        model = User
 
 
 class SinglePropertySerializers(serializers.ModelSerializer):
