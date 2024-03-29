@@ -225,4 +225,8 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': 60,  # Check every minute (adjust as needed)
     },
 }
+
+CRONJOBS = [
+('*/1 * * * *', 'apps.management.commands.Command',['update_banner_stat']),
+]
 # Channels settings

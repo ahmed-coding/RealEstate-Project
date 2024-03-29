@@ -465,6 +465,12 @@ class Banner(models.Model):
     #             instance.is_active = False
     #         else:
     #             instance.is_active = True
+    def __str__(self) -> str:
+        now = timezone.now()
+        if self.end_time < now :
+            self.is_active = False
+      
+        return self.title
 
 
     class Meta:

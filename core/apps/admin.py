@@ -556,6 +556,8 @@ class UnradChateMessageAdmin(admin.ModelAdmin):
 
 class BannerAdmin(admin.ModelAdmin):
     list_display = ['title', 'end_time', 'start_time', 'is_active']
+    
+    # pass
 
 
 admin.site.register(Banner, BannerAdmin)
