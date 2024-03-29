@@ -33,6 +33,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     # image = serializers.ImageField(use_url=True)
     password = serializers.CharField(write_only=True)
+    # property_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = User

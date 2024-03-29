@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED 1
 
 RUN apk update && \
     apk add --no-cache build-base linux-headers musl-dev && \
-    apk add --no-cache gdal-dev geos-dev postgresql-dev cairo-dev libffi-dev && \
+    apk add --no-cache  postgresql-dev cairo-dev libffi-dev && \
     apk add --no-cache dos2unix && \
     rm -rf /var/cache/apk/*
 

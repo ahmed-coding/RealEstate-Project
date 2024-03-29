@@ -1,0 +1,54 @@
+{
+    "create_property_request": {
+        "category": 1,
+        "name": "Property Name",
+        "description": "Property Description",
+        "price": 100000,
+        "size": 2000,
+        "is_active": true,
+        "is_deleted": false,
+        "attribute_values": {
+            "1": "Value1",
+            "2": "Value2",
+            "3": "Value3"
+        },
+        "address": {
+            "state": 1,
+            "longitude": "20.354654",
+            "latitude": "32.354654"
+        },
+        "feature_data": [
+            {
+                "id": 1,
+                "images": [
+                    {
+                        "image": "image_data"
+                    },
+                    {
+                        "image": "image_data"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "images": [
+                    {
+                        "image": "image_data"
+                    },
+                    {
+                        "image": "image_data"
+                    }
+                ]
+            }
+        ],
+        "image_data": [
+            {
+                "image": "image_data"
+            },
+            {
+                "image": "image_data"
+            }
+        ],
+        "for_sale": true
+    }
+}

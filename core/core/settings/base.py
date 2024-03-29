@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+from celery import Celery
+from django.conf import settings
 import os
 
 load_dotenv()
@@ -21,6 +23,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-%m2=vfc6yd@^m_qmg1@bubht_kg!8j)g!g_8^ex1*za+=u@si)'
 
 # DEBUG = os.environ.get('DEBUG')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
+app = Celery('core')
+app.config_from_object('django.conf:settings')
+app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
+
+# Configure Celery Beat
+app.conf.beat_schedule = {
+    'update_banner_status': {
+        'task': 'your_app.tasks.update_banner_status_task',
+        'schedule': 60,  # Check every minute (adjust as needed)
+    },
+}
+
+@app.task(bind=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')
 DEBUG = True
 
 AUTH_USER_MODEL = 'apps.User'
@@ -29,7 +48,8 @@ DEFAULT_CHARSET = 'utf-8'
 
 
 INSTALLED_APPS = [
-    'daphne',
+    # 'daphne',
+    'import_export',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,8 +68,6 @@ INSTALLED_APPS = [
     'schema_graph',
     'corsheaders',
     'channels',
-    'channels_redis',
-
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -113,7 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Aden'
 
 USE_I18N = True
 
@@ -201,5 +219,14 @@ CORS_ORIGIN_ALLOW_ALL = True  # -> Cors Header
 #     'http://localhost:8000',
 #     'http://192.168.1.100:8080',
 # )
+CELERY_BEAT_SCHEDULE = {
+    'update-banner-status': {
+        'task': 'your_app.tasks.update_banner_status_task',
+        'schedule': 60,  # Check every minute (adjust as needed)
+    },
+}
 
+CRONJOBS = [
+('*/1 * * * *', 'apps.management.commands.Command',['update_banner_stat']),
+]
 # Channels settings

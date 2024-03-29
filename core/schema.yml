@@ -4,40 +4,29 @@ info:
   version: 1.0.0
   description: RealEstate project description
 paths:
-  /api/address/state/:
-    get:
-      operationId: address_state_list
+  /api/address/{id}/update/:
+    put:
+      operationId: api_address_update_update
       parameters:
-      - in: query
-        name: name
-        schema:
-          type: string
-      - name: ordering
-        required: false
-        in: query
-        description: Which field to use when ordering the results.
-        schema:
-          type: string
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
+      - in: path
+        name: id
         schema:
           type: integer
-      - name: page_size
-        required: false
-        in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: search
-        required: false
-        in: query
-        description: A search term.
-        schema:
-          type: string
+        required: true
       tags:
-      - address
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAddress'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateAddress'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateAddress'
+        required: true
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -46,13 +35,105 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedStateSerializersList'
+                $ref: '#/components/schemas/CreateAddress'
+          description: ''
+    patch:
+      operationId: api_address_update_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAddress'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAddress'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAddress'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAddress'
+          description: ''
+  /api/address/city/:
+    get:
+      operationId: api_address_city_list
+      description: |-
+        CityViewsets
+
+        Argament:
+            country: country id to get all City in `GET Method`
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CitySerializers'
+          description: ''
+  /api/address/country/:
+    get:
+      operationId: api_address_country_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountrySerializers'
+          description: ''
+  /api/address/state/:
+    get:
+      operationId: api_address_state_list
+      description: |-
+        StateViewsets
+
+        Argament:
+            city: city id to get all State in `GET Method`
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StateSerializers'
           description: ''
   /api/auth/login/:
     post:
-      operationId: auth_login_create
+      operationId: api_auth_login_create
       tags:
-      - auth
+      - api
       requestBody:
         content:
           application/json:
@@ -77,7 +158,7 @@ paths:
           description: ''
   /api/auth/sginup/:
     post:
-      operationId: auth_sginup_create
+      operationId: api_auth_sginup_create
       description: |-
         Reigster User View to signup after verify the ``email`` or ``phone number`` (just email for new).
         Returns:
@@ -90,7 +171,7 @@ paths:
             - status: 401 when come bafore verify the ``email`` or ``phone_number``.
             - status: 400 when data isn't correct or somthing go to by wrong.
       tags:
-      - auth
+      - api
       requestBody:
         content:
           application/json:
@@ -113,9 +194,52 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserAuth'
           description: ''
+  /api/banners/:
+    get:
+      operationId: api_banners_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: title
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BannerSerializers'
+          description: ''
   /api/categorie/:
     get:
-      operationId: categorie_list
+      operationId: api_categorie_list
+      description: |-
+        CategoryViewsets
+
+        Argament:
+            `parent`: parent id to get all sup Categorie in `GET Method`
       parameters:
       - in: query
         name: name
@@ -146,7 +270,7 @@ paths:
         schema:
           type: string
       tags:
-      - categorie
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -157,10 +281,159 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedCategorySerializersList'
           description: ''
+  /api/categorie/attributes/:
+    get:
+      operationId: api_categorie_attributes_list
+      description: |-
+        AttributeByCategorieViewsets
+
+        Argament:
+            `category`: categorie id to get all attribute in `GET Method`
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttributeSerializers'
+          description: ''
+  /api/friend/:
+    get:
+      operationId: api_friend_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FrindList'
+          description: ''
+  /api/friends/:
+    get:
+      operationId: api_friends_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FrindList'
+          description: ''
+  /api/image/{id}/delete/:
+    delete:
+      operationId: api_image_delete_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/image/{id}/update/:
+    put:
+      operationId: api_image_update_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Image_Serializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Image_Serializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Image_Serializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image_Serializers'
+          description: ''
+    patch:
+      operationId: api_image_update_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedImage_Serializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedImage_Serializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedImage_Serializers'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image_Serializers'
+          description: ''
   /api/property/:
     get:
-      operationId: property_list
+      operationId: api_property_list
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
       parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - in: query
+        name: is_featured
+        schema:
+          type: boolean
       - in: query
         name: name
         schema:
@@ -190,7 +463,7 @@ paths:
         schema:
           type: string
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -201,30 +474,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedSinglePropertySerializersList'
           description: ''
-  /api/property/{pkpk}/by-address/:
-    get:
-      operationId: property_by_address_retrieve
-      parameters:
-      - in: path
-        name: pkpk
-        schema:
-          type: integer
-        required: true
-      tags:
-      - property
-      security:
-      - cookieAuth: []
-      - tokenAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SinglePropertySerializers'
-          description: ''
   /api/property/{pkprop}/reviews/:
     get:
-      operationId: property_reviews_list
+      operationId: api_property_reviews_list
       parameters:
       - name: ordering
         required: false
@@ -260,7 +512,7 @@ paths:
         schema:
           type: string
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -273,7 +525,11 @@ paths:
           description: ''
   /api/property/{id}/:
     get:
-      operationId: property_retrieve
+      operationId: api_property_retrieve
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
       parameters:
       - in: path
         name: id
@@ -281,7 +537,7 @@ paths:
           type: integer
         required: true
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -292,11 +548,177 @@ paths:
               schema:
                 $ref: '#/components/schemas/PropertyDetailsSerializers'
           description: ''
+  /api/property/{id}/by-address/:
+    get:
+      operationId: api_property_by_address_retrieve
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePropertySerializers'
+          description: ''
+  /api/property/bast-seller/:
+    get:
+      operationId: api_property_bast_seller_list
+      parameters:
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+          description: ''
+  /api/property/create/:
+    post:
+      operationId: api_property_create_create
+      description: |-
+        API view class for creating a new property along with address and images.
+
+        This view class provides an endpoint for creating a new property along with associated address and images.
+
+        Example Usage:
+            To create a property with address, features, and images:
+            ```
+            {
+
+            "category": 1,
+            "name": "Property Name",
+            "description": "Property Description",
+            "price": 100000,
+            "size": 2000,
+            "is_active": true,
+            "is_deleted": false,
+            "attribute_values": {
+                "1": "Value1",
+                "2": "Value2",
+                "3": "Value3"
+            },
+            "address": {
+                "state": 1,
+                "longitude": "20.354654",
+                "latitude": "32.354654"
+            },
+            "feature_data": [
+                {
+                    "id": 1,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                }
+            ],
+            "image_data": [
+                {
+                    "image": "image_data"
+                },
+                {
+                    "image": "image_data"
+                }
+            ],
+            "for_sale": true
+        }
+            ```
+
+        Note:
+            Ensure that the user and `category` IDs provided exist in the database.
+            Ensure that the attribute IDs provided in `attribute_values` exist in the database.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProperty'
+          description: ''
   /api/property/high-rate/:
     get:
-      operationId: property_high_rate_retrieve
+      operationId: api_property_high_rate_retrieve
+      description: |-
+        Property Viewsets
+        Args:
+            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
       tags:
-      - property
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -309,7 +731,7 @@ paths:
           description: ''
   /api/schema/:
     get:
-      operationId: schema_retrieve
+      operationId: api_schema_retrieve
       description: |-
         OpenApi3 schema for this API. Format can be selected via content negotiation.
 
@@ -427,7 +849,7 @@ paths:
           - zh-hans
           - zh-hant
       tags:
-      - schema
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -454,9 +876,9 @@ paths:
           description: ''
   /api/ticket/create/:
     post:
-      operationId: ticket_create_create
+      operationId: api_ticket_create_create
       tags:
-      - ticket
+      - api
       requestBody:
         content:
           application/json:
@@ -481,9 +903,9 @@ paths:
           description: ''
   /api/ticket/ticket-type/:
     get:
-      operationId: ticket_ticket_type_list
+      operationId: api_ticket_ticket_type_list
       tags:
-      - ticket
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -498,7 +920,7 @@ paths:
           description: ''
   /api/user/favorite/:
     get:
-      operationId: user_favorite_list
+      operationId: api_user_favorite_list
       parameters:
       - name: ordering
         required: false
@@ -529,7 +951,7 @@ paths:
         schema:
           type: string
       tags:
-      - user
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -542,7 +964,7 @@ paths:
           description: ''
   /api/user/favorite/{prop_id}/delete/:
     delete:
-      operationId: user_favorite_delete_destroy
+      operationId: api_user_favorite_delete_destroy
       parameters:
       - in: path
         name: prop_id
@@ -550,7 +972,7 @@ paths:
           type: integer
         required: true
       tags:
-      - user
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -559,9 +981,9 @@ paths:
           description: No response body
   /api/user/favorite/create/:
     post:
-      operationId: user_favorite_create_create
+      operationId: api_user_favorite_create_create
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -586,7 +1008,7 @@ paths:
           description: ''
   /api/user/favorite/delete-all/:
     post:
-      operationId: user_favorite_delete_all_create
+      operationId: api_user_favorite_delete_all_create
       description: |-
         _summary_
 
@@ -596,7 +1018,7 @@ paths:
         Returns:
             _type_: _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -620,7 +1042,7 @@ paths:
           description: ''
   /api/user/favorite/delete-list/:
     post:
-      operationId: user_favorite_delete_list_create
+      operationId: api_user_favorite_delete_list_create
       description: |-
         _summary_
 
@@ -630,7 +1052,7 @@ paths:
         Returns:
             _type_: _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -654,7 +1076,7 @@ paths:
           description: ''
   /api/user/profile/:
     get:
-      operationId: user_profile_list
+      operationId: api_user_profile_list
       description: |-
         _summary_
 
@@ -671,7 +1093,7 @@ paths:
         schema:
           type: string
       tags:
-      - user
+      - api
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -686,14 +1108,14 @@ paths:
           description: ''
   /api/user/profile/update/:
     put:
-      operationId: user_profile_update_update
+      operationId: api_user_profile_update_update
       description: |-
         _summary_
 
         Args:
             viewsets (_type_): _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -717,14 +1139,14 @@ paths:
                 $ref: '#/components/schemas/UpdateUser'
           description: ''
     patch:
-      operationId: user_profile_update_partial_update
+      operationId: api_user_profile_update_partial_update
       description: |-
         _summary_
 
         Args:
             viewsets (_type_): _description_
       tags:
-      - user
+      - api
       requestBody:
         content:
           application/json:
@@ -775,12 +1197,32 @@ components:
         id:
           type: integer
           readOnly: true
+        value_attribute:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueModelSerializers'
+          readOnly: true
         name:
           type: string
           maxLength: 50
         data_type:
+          $ref: '#/components/schemas/DataTypeEnum'
+      required:
+      - data_type
+      - id
+      - name
+      - value_attribute
+    AttributeVlaueSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
           type: string
           maxLength: 50
+        data_type:
+          $ref: '#/components/schemas/DataTypeEnum'
       required:
       - data_type
       - id
@@ -801,6 +1243,44 @@ components:
       - password
       - token
       - username
+    BannerSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        end_time:
+          type: string
+          format: date-time
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        image:
+          type: string
+          format: uri
+        is_active:
+          type: boolean
+          title: Active status
+        category:
+          type: integer
+      required:
+      - category
+      - end_time
+      - id
+      - image
+      - start_time
+      - time_created
     CategorySerializers:
       type: object
       properties:
@@ -848,29 +1328,72 @@ components:
         id:
           type: integer
           readOnly: true
-        country:
-          allOf:
-          - $ref: '#/components/schemas/CountrySerializers'
+        state:
+          type: array
+          items:
+            $ref: '#/components/schemas/StateSerializers'
           readOnly: true
         name:
           type: string
           maxLength: 50
+        country:
+          type: integer
       required:
       - country
       - id
       - name
+      - state
     CountrySerializers:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
+        city:
+          type: array
+          items:
+            $ref: '#/components/schemas/CitySerializers'
+          readOnly: true
         name:
           type: string
           maxLength: 50
       required:
+      - city
       - id
       - name
+    CreateAddress:
+      type: object
+      description: |-
+        Serializer class for creating a new address.
+
+        This serializer allows creating a new address.
+
+        Example Usage:
+            To create an address:
+            ```
+            {
+                "state": 1,
+                "longitude": "longitude_value",
+                "latitude": "latitude_value"
+            }
+            ```
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        longitude:
+          type: string
+          maxLength: 50
+        latitude:
+          type: string
+          maxLength: 50
+        state:
+          type: integer
+      required:
+      - id
+      - latitude
+      - longitude
+      - state
     CreateFavoriteSerializers:
       type: object
       properties:
@@ -878,6 +1401,156 @@ components:
           type: integer
       required:
       - prop
+    CreateProperty:
+      type: object
+      description: |-
+        Serializer class for creating a new property along with associated address, features, and images.
+
+        This serializer allows creating a new property along with an address, features, and images in a single request.
+
+        Attributes:
+            address_data (dict): A dictionary containing address details.
+            feature_data (list): A list of dictionaries containing feature details.
+            attribute_values (dict): A dictionary containing attribute IDs as keys and their corresponding values.
+            image_data (list): A list of dictionaries containing image details.
+
+
+        Example Usage:
+            To create a property with address, features, and images:
+            ```
+        {
+
+            "category": 1,
+            "name": "Property Name",
+            "description": "Property Description",
+            "price": 100000,
+            "size": 2000,
+            "is_active": true,
+            "is_deleted": false,
+            "attribute_values": {
+                "1": "Value1",
+                "2": "Value2",
+                "3": "Value3"
+            },
+            "address": {
+                "state": 1,
+                "longitude": "20.354654",
+                "latitude": "32.354654"
+            },
+            "feature_data": [
+                {
+                    "id": 1,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                }
+            ],
+            "image_data": [
+                {
+                    "image": "image_data"
+                },
+                {
+                    "image": "image_data"
+                }
+            ],
+            "for_sale": true
+        }
+
+            ```
+
+        Note:
+            Ensure that the user and `category` IDs provided exist in the database.
+            Ensure that the attribute IDs provided in `attribute_values` exist in the database.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        attribute_values:
+          type: object
+          additionalProperties: {}
+          writeOnly: true
+        address:
+          $ref: '#/components/schemas/CreateAddress'
+        feature_data:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          writeOnly: true
+        image_data:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          writeOnly: true
+        name:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        size:
+          type: integer
+        is_active:
+          type: boolean
+        is_deleted:
+          type: boolean
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        unique_number:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        for_sale:
+          type: boolean
+          title: Is For sale
+        is_featured:
+          type: boolean
+        category:
+          type: integer
+      required:
+      - address
+      - attribute_values
+      - category
+      - description
+      - feature_data
+      - id
+      - image_data
+      - name
+      - size
+      - time_created
+      - unique_number
+    DataTypeEnum:
+      enum:
+      - string
+      - int
+      - char
+      - bool
+      - date
+      - float
+      type: string
     FavoriteSerializers:
       type: object
       properties:
@@ -931,13 +1604,81 @@ components:
       - id
       - image
       - property
+    FrindList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        friends:
+          type: array
+          items:
+            $ref: '#/components/schemas/FrindsSerializers'
+      required:
+      - friends
+      - id
+    FrindsSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        username:
+          type: string
+          nullable: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+        name:
+          type: string
+          title: Full name
+          maxLength: 60
+        register_data:
+          type: string
+          maxLength: 20
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        image:
+          type: string
+          format: uri
+          nullable: true
+        is_deleted:
+          type: boolean
+          title: Deleted
+        unread_messages:
+          type: integer
+          readOnly: true
+      required:
+      - email
+      - id
+      - password
+      - unread_messages
     Image_Serializers:
       type: object
       properties:
         image:
           type: string
           format: uri
+        id:
+          type: integer
+          readOnly: true
       required:
+      - id
       - image
     PaginatedCategorySerializersList:
       type: object
@@ -1019,7 +1760,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SinglePropertySerializers'
-    PaginatedStateSerializersList:
+    PaginatedUserList:
       type: object
       properties:
         count:
@@ -1038,7 +1779,44 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/StateSerializers'
+            $ref: '#/components/schemas/User'
+    PatchedCreateAddress:
+      type: object
+      description: |-
+        Serializer class for creating a new address.
+
+        This serializer allows creating a new address.
+
+        Example Usage:
+            To create an address:
+            ```
+            {
+                "state": 1,
+                "longitude": "longitude_value",
+                "latitude": "latitude_value"
+            }
+            ```
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        longitude:
+          type: string
+          maxLength: 50
+        latitude:
+          type: string
+          maxLength: 50
+        state:
+          type: integer
+    PatchedImage_Serializers:
+      type: object
+      properties:
+        image:
+          type: string
+          format: uri
+        id:
+          type: integer
+          readOnly: true
     PatchedUpdateUser:
       type: object
       properties:
@@ -1109,6 +1887,7 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
         size:
           type: integer
         is_active:
@@ -1123,6 +1902,11 @@ components:
           type: string
           readOnly: true
           pattern: ^[-a-zA-Z0-9_]+$
+        for_sale:
+          type: boolean
+          title: Is For sale
+        is_featured:
+          type: boolean
       required:
       - address
       - category
@@ -1132,7 +1916,6 @@ components:
       - image
       - in_favorite
       - name
-      - price
       - property_value
       - rate
       - size
@@ -1191,6 +1974,7 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
         size:
           type: integer
         is_active:
@@ -1205,21 +1989,25 @@ components:
           type: string
           readOnly: true
           pattern: ^[-a-zA-Z0-9_]+$
+        for_sale:
+          type: boolean
+          title: Is For sale
+        is_featured:
+          type: boolean
         user:
           type: integer
         category:
           type: integer
         address:
           type: integer
+          nullable: true
       required:
-      - address
       - category
       - description
       - id
       - image
       - in_favorite
       - name
-      - price
       - rate
       - size
       - time_created
@@ -1231,13 +2019,11 @@ components:
         id:
           type: integer
           readOnly: true
-        city:
-          allOf:
-          - $ref: '#/components/schemas/CitySerializers'
-          readOnly: true
         name:
           type: string
           maxLength: 50
+        city:
+          type: integer
       required:
       - city
       - id
@@ -1450,6 +2236,21 @@ components:
       required:
       - email
       - id
+    ValueModelSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        value:
+          type: string
+          maxLength: 50
+        attribute:
+          type: integer
+      required:
+      - attribute
+      - id
+      - value
     ValueSerializers:
       type: object
       properties:
@@ -1458,7 +2259,7 @@ components:
           readOnly: true
         attribute:
           allOf:
-          - $ref: '#/components/schemas/AttributeSerializers'
+          - $ref: '#/components/schemas/AttributeVlaueSerializers'
           readOnly: true
         value:
           type: string

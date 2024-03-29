@@ -2,8 +2,9 @@ from statistics import mode
 from django.contrib import admin
 from . import models
 from django import forms
-from .models import Category
+from .models import Banner, Category, PrivateChatRoom, UnreadChatRoomMessages
 from .models import User
+from django.contrib.contenttypes.admin import GenericTabularInline
 # Register your models here.
 from django.utils.translation import gettext_lazy as _
 from mptt.admin import DraggableMPTTAdmin
@@ -15,6 +16,15 @@ from django.contrib.auth.forms import (
     ReadOnlyPasswordHashField,
     UsernameField,
 )  # Register your models here.
+from .models import (
+    VerificationCode, TypeModel, Attribute_verify, Attribute_value, Country, City, State, Address, Image,
+    Category, Feature, Feature_category, Property, Feature_property, Attribute, ValueModel, property_value, Category_attribute, Rate, Favorite, Report,
+    Review, Ticket_type, Ticket_status, Ticket, Solve_message, FriendList,
+)
+from import_export.admin import ImportExportModelAdmin
+from import_export import resources, fields, widgets
+from import_export.fields import Field
+from django.core.files import File
 
 
 class CustomUserChangeForm(forms.ModelForm):
@@ -110,11 +120,31 @@ class CustomAdminUser(UserAdmin):
 admin.site.register(User, CustomAdminUser)
 
 
+class ImageInline(GenericTabularInline):
+    model = Image
+
+
+class Category_attributeInline(admin.TabularInline):
+    model = Category_attribute
+
+
+class Feature_propertyInline(admin.TabularInline):
+    model = Feature_property
+
+
 class CategoryAdmin(DraggableMPTTAdmin):
+
     mptt_indent_field = "name"
     list_display = ('tree_actions', 'indented_title',
                     'related_property_counts', 'related_property_cumulative_count')
     list_display_links = ('indented_title',)
+    inlines = [
+        ImageInline,
+        Category_attributeInline,
+
+
+
+    ]
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -157,32 +187,412 @@ class NotificationAdmin(admin.ModelAdmin):
     list_display = ('verb',)
 
 
-admin.site.register(model_or_iterable=[
-    models.City,
-    models.Category_attribute,
-    models.property_value,
-    models.Property,
-    models.Feature_property,
-    models.Country,
-    models.Address,
-    models.Feature_category,
-    models.State,
-    models.Feature,
-    models.ValueModel,
-    models.Attribute_value,
-    models.Attribute,
-    models.Image,
-    models.Review,
-    models.Rate,
-    models.Favorite,
-    models.Report,
-    models.Ticket,
-    models.Ticket_status,
-    models.Ticket_type,
-    models.Solve_message,
-    models.FriendList,
-    models.FriendRequest,
-    models.RoomChatMessage,
-    models.PrivateChatRoom,
-    models.UnreadChatRoomMessages,
-])
+class VerificationCodeAdmin(admin.ModelAdmin):
+    list_display = ('user_phone_num', 'random_code',
+                    'time_created', 'expire_date')
+
+# Admin class for TypeModel
+
+
+class TypeModelAdmin(admin.ModelAdmin):
+    list_display = ('type',)
+
+# Admin class for Attribute_verify
+
+
+class AttributeVerifyAdmin(admin.ModelAdmin):
+    list_display = ('attribute', 'data_type', 'type')
+
+# Admin class for Attribute_value
+
+
+class AttributeValueAdmin(admin.ModelAdmin):
+    list_display = ('attribute',)
+
+
+class CityAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country')
+
+# Admin class for State
+
+
+class StateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'city')
+
+
+class AddressForm(forms.ModelForm):
+    country = forms.ModelChoiceField(
+        queryset=Country.objects.all(), label='Country')
+    city = forms.ModelChoiceField(queryset=City.objects.all(), label='City')
+    state = forms.ModelChoiceField(queryset=State.objects.all(), label='State')
+
+    class Meta:
+        model = Address
+        fields = ['country', 'city', 'state', 'longitude', 'latitude']
+
+# Admin class for Address
+
+
+class AddressAdmin(admin.ModelAdmin):
+    # list_display = ('state', 'longitude', 'latitude')
+    form = AddressForm
+    # list_display_links = ['id']
+    fieldsets = (
+        ('Location', {
+            'fields': ('country', 'city', 'state')
+        }),
+        ('Coordinates', {
+            'fields': ('longitude', 'latitude')
+        }),
+    )
+
+    list_display = ['id', 'get_country', 'get_city',
+                    'get_state', 'longitude', 'latitude']
+    list_display_links = ['id']
+    search_fields = ['country__name', 'city__name', 'state__name']
+
+    def get_fields(self, request, obj=None):
+        if obj:
+            return ['country', 'city', 'state', 'longitude', 'latitude']
+        else:
+            return super().get_fields(request, obj)
+
+    def add_view(self, request, form_url='', extra_context=None):
+        self.fields = ['country', 'city', 'state', 'longitude', 'latitude']
+        return super().add_view(request, form_url, extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        self.fields = ['country', 'city', 'state', 'longitude', 'latitude']
+        return super().change_view(request, object_id, form_url, extra_context)
+
+    def get_country(self, obj):
+        return obj.state.city.country.name if obj.state and obj.state.city else ''
+    get_country.admin_order_field = 'state__city__country__name'
+    get_country.short_description = 'Country'
+
+    def get_city(self, obj):
+        return obj.state.city.name if obj.state else ''
+    get_city.admin_order_field = 'state__city__name'
+    get_city.short_description = 'City'
+
+    def get_state(self, obj):
+        return obj.state.name if obj.state else ''
+    get_state.admin_order_field = 'state__name'
+    get_state.short_description = 'State'
+
+
+# Admin class for Image
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ('content_type', 'object_id', 'image')
+
+# Admin class for Feature
+
+
+class FeatureAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+# Admin class for Feature_category
+
+
+class FeatureCategoryAdmin(admin.ModelAdmin):
+    list_display = ('feature', 'category')
+
+
+# Admin class for Feature_property
+class FeaturePropertyAdmin(admin.ModelAdmin):
+    list_display = ('property', 'feature')
+    inlines = [
+        ImageInline,
+    ]
+
+# Admin class for Attribute
+
+
+class AttributeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'data_type')
+
+# Admin class for ValueModel
+
+
+class ValueModelAdmin(admin.ModelAdmin):
+    list_display = ('attribute', 'value')
+
+# Admin class for property_value
+
+
+class PropertyValueAdmin(admin.ModelAdmin):
+    list_display = ('property', 'value')
+
+# Admin class for Category_attribute
+
+
+class CategoryAttributeAdmin(admin.ModelAdmin):
+    list_display = ('category', 'attribute')
+
+# Admin class for Rate
+
+
+class RateAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'rate', 'time_created')
+
+# Admin class for Favorite
+
+
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created')
+
+# Admin class for Report
+
+
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created', 'note')
+
+# Admin class for Review
+
+
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created', 'review')
+
+# Admin class for Ticket_type
+
+
+class TicketTypeAdmin(admin.ModelAdmin):
+    list_display = ('type',)
+
+# Admin class for Ticket_status
+
+
+class TicketStatusAdmin(admin.ModelAdmin):
+    list_display = ('status',)
+
+# Admin class for Ticket
+
+
+class TicketAdmin(admin.ModelAdmin):
+    list_display = ('type', 'status', 'ticket_solver',
+                    'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
+
+# Admin class for Solve_message
+
+
+class SolveMessageAdmin(admin.ModelAdmin):
+    list_display = ('ticket', 'message')
+
+
+# Admin class for Property
+class PropertyAdmin(admin.ModelAdmin):
+    # list_display = ('user', 'category', 'address',
+    #                 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
+    fieldsets = (
+        (
+            'PropertyINFO',
+            {
+                'fields': ['name', 'category', 'address', 'price', 'size', 'description', 'user'],
+            },
+
+
+        ),
+        (
+            'Property Status',
+            {
+                'fields': ['is_active', 'is_deleted',]
+            }
+
+        ),
+
+
+    )
+    list_display = ['name', 'price', 'time_created',]
+    inlines = [
+        ImageInline,
+    ]
+
+
+class PropertyResource(resources.ModelResource):
+    user = fields.Field(column_name='user', attribute='user',
+                        widget=widgets.ForeignKeyWidget('auth.User'))
+    image_url = fields.Field(column_name='Image URL', attribute='image_url')
+
+    class Meta:
+        model = Property
+        fields = ('id', 'user', 'name', 'description', 'price',
+                  'size', 'is_active', 'is_deleted', 'image_url')
+        export_order = fields
+
+    def import_obj(self, instance, data, dry_run):
+        image_path = data.get('image_file')
+        if image_path:
+            try:
+                with open(image_path, 'rb') as f:
+                    image_file = File(f)
+                    instance.image.save(
+                        image_file.name, image_file, save=False)
+            except FileNotFoundError:
+                pass
+
+        super().import_obj(instance, data, dry_run)
+
+    def dehydrate_image_url(self, property):
+        return property.image_url
+
+
+class PropertyAdminImport(ImportExportModelAdmin):
+    resource_class = PropertyResource
+    fieldsets = (
+        (
+            'PropertyINFO',
+            {
+                'fields': ['name', 'category', 'address', 'price', 'size', 'description', 'user'],
+            },
+
+
+        ),
+        (
+            'Property Status',
+            {
+                'fields': ['is_active', 'is_deleted', 'is_featured']
+            }
+
+        ),
+
+
+    )
+    list_display = ['name', 'price', 'time_created',]
+    inlines = [
+        ImageInline,
+    ]
+# # Admin class for Feature_property
+# class FeaturePropertyAdmin(admin.ModelAdmin):
+#     list_display = ('property', 'feature')
+
+# Admin class for Attribute
+
+
+class AttributeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'data_type')
+
+# Admin class for ValueModel
+
+
+class ValueModelAdmin(admin.ModelAdmin):
+    list_display = ('attribute', 'value')
+
+# Admin class for property_value
+
+
+class PropertyValueAdmin(admin.ModelAdmin):
+    list_display = ('property', 'value')
+
+# Admin class for Category_attribute
+
+
+class CategoryAttributeAdmin(admin.ModelAdmin):
+    list_display = ('category', 'attribute')
+
+# Admin class for Rate
+
+
+class RateAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'rate', 'time_created')
+    list_filter = ['rate',]
+
+# Admin class for Favorite
+
+
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created')
+
+# Admin class for Report
+
+
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created', 'note')
+    search_fields = ['prop',]
+    list_filter = ['time_created', 'user',]
+    date_hierarchy = 'time_created'
+
+
+# Admin class for Review
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('prop', 'user', 'time_created', 'review')
+    list_filter = ['time_created',]
+
+# Admin class for Ticket_type
+
+
+class TicketTypeAdmin(admin.ModelAdmin):
+    list_display = ('type',)
+
+# Admin class for Ticket_status
+
+
+class TicketStatusAdmin(admin.ModelAdmin):
+    list_display = ('status',)
+
+# Admin class for Ticket
+
+
+class TicketAdmin(admin.ModelAdmin):
+    list_display = ('type', 'status', 'ticket_solver',
+                    'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
+
+# Admin class for Solve_message
+
+
+class SolveMessageAdmin(admin.ModelAdmin):
+    list_display = ('ticket', 'message')
+
+
+class FriendListAdmin(admin.ModelAdmin):
+    pass
+
+
+class PrivateChatRoomAdmin(admin.ModelAdmin):
+    pass
+
+
+class UnradChateMessageAdmin(admin.ModelAdmin):
+    pass
+
+
+class BannerAdmin(admin.ModelAdmin):
+    # pass
+    list_display = ['title', 'end_time', 'start_time', 'is_active']
+    
+    # pass
+
+
+admin.site.register(Banner, BannerAdmin)
+admin.site.register(UnreadChatRoomMessages, UnradChateMessageAdmin)
+admin.site.register(PrivateChatRoom, PrivateChatRoomAdmin)
+
+admin.site.register(FriendList, FriendListAdmin)
+
+# Register admin classes
+admin.site.register(VerificationCode, VerificationCodeAdmin)
+admin.site.register(TypeModel, TypeModelAdmin)
+admin.site.register(Attribute_verify, AttributeVerifyAdmin)
+admin.site.register(Attribute_value, AttributeValueAdmin)
+# admin.site.register(Country, CountryAdmin)
+admin.site.register(Country)
+admin.site.register(City, CityAdmin)
+admin.site.register(State, StateAdmin)
+admin.site.register(Address, AddressAdmin)
+admin.site.register(Image, ImageAdmin)
+# admin.site.register(Category, CategoryAdmin)
+admin.site.register(Feature, FeatureAdmin)
+admin.site.register(Feature_category, FeatureCategoryAdmin)
+admin.site.register(Property, PropertyAdminImport)
+admin.site.register(Feature_property, FeaturePropertyAdmin)
+admin.site.register(Attribute, AttributeAdmin)
+admin.site.register(ValueModel, ValueModelAdmin)
+admin.site.register(property_value, PropertyValueAdmin)
+admin.site.register(Category_attribute, CategoryAttributeAdmin)
+admin.site.register(Rate, RateAdmin)
+admin.site.register(Favorite, FavoriteAdmin)
+admin.site.register(Report, ReportAdmin)
+admin.site.register(Review, ReviewAdmin)
+admin.site.register(Ticket_type, TicketTypeAdmin)
+admin.site.register(Ticket_status, TicketStatusAdmin)
+admin.site.register(Ticket, TicketAdmin)
+admin.site.register(Solve_message, SolveMessageAdmin)
