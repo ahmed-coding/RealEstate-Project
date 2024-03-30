@@ -231,7 +231,7 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 CRONJOBS = [
-    ('*/1 * * * *', 'apps.management.commands.Command',
+    ('* * * * *', 'apps.management.commands.Command',
      ['update_banner_stat']),
 ]
 # Channels settings

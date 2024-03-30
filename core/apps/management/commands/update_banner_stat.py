@@ -11,6 +11,7 @@ class Command(BaseCommand):
 
         # banner = Banner.objects.filter(
         #     Q(end_time__lte=timezone.now())).update(is_active=False)
-        file = io.open('test.txt', 'w')
-        file.write("True in time :"+f"{timezone.now()}")
+        file = io.open(
+            '/home/ahmed/Desktop/realEstate-Project/core/test.txt', 'a')
+        file.write("True in time :"+f"{timezone.now()}\n")
         # print(banner)
