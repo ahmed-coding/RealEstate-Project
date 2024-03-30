@@ -22,9 +22,14 @@ class CityViewsets(viewsets.ModelViewSet):
     """CityViewsets
 
     Argament:
-        country: country id to get all City in `GET Method`
+        `country`: country id to get all City in `GET Method`
     """
     serializer_class = serializers.CitySerializers
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'country']
+    ordering_fields = '__all__'
+    filterset_fields = ['name', 'country', ]
 
     def get_queryset(self):
         country = self.request.query_params.get("country") or None
@@ -38,15 +43,15 @@ class StateViewsets(viewsets.ModelViewSet):
     """StateViewsets
 
     Argament:
-        city: city id to get all State in `GET Method`
+        `city`: city id to get all State in `GET Method`
     """
     serializer_class = serializers.StateSerializers
     # pagination_class = StandardResultsSetPagination
-    # filter_backends = [DjangoFilterBackend,
-    #                    filters.SearchFilter, filters.OrderingFilter]
-    # search_fields = ['name', ]
-    # filterset_fields = ['name',]
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'city']
     ordering_fields = '__all__'
+    filterset_fields = ['name', 'city', ]
 
     def get_queryset(self):
         city = self.request.query_params.get("city") or None
