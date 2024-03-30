@@ -395,7 +395,7 @@ class PropertyAdmin(admin.ModelAdmin):
         (
             'Property Status',
             {
-                'fields': ['is_active', 'is_deleted',]
+                'fields': ['is_active', 'is_deleted', 'for_sale']
             }
 
         ),
@@ -450,7 +450,7 @@ class PropertyAdminImport(ImportExportModelAdmin):
         (
             'Property Status',
             {
-                'fields': ['is_active', 'is_deleted', 'is_featured']
+                'fields': ['is_active', 'is_deleted', 'is_featured', 'for_sale']
             }
 
         ),
@@ -558,7 +558,7 @@ class UnradChateMessageAdmin(admin.ModelAdmin):
 class BannerAdmin(admin.ModelAdmin):
     # pass
     list_display = ['title', 'end_time', 'start_time', 'is_active']
-    
+
     # pass
 
 

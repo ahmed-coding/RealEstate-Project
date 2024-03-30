@@ -37,9 +37,12 @@ app.conf.beat_schedule = {
     },
 }
 
+
 @app.task(bind=True)
 def debug_task(self):
     print(f'Request: {self.request!r}')
+
+
 DEBUG = True
 
 AUTH_USER_MODEL = 'apps.User'
@@ -49,6 +52,7 @@ DEFAULT_CHARSET = 'utf-8'
 
 INSTALLED_APPS = [
     # 'daphne',
+    'django_crontab',
     'import_export',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -227,6 +231,7 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 CRONJOBS = [
-('*/1 * * * *', 'apps.management.commands.Command',['update_banner_stat']),
+    ('*/1 * * * *', 'apps.management.commands.Command',
+     ['update_banner_stat']),
 ]
 # Channels settings
