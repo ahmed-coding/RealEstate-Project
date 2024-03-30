@@ -1251,6 +1251,14 @@ components:
         latitude:
           type: string
           maxLength: 50
+        line1:
+          type: string
+          title: Line 1
+          maxLength: 255
+        line2:
+          type: string
+          title: Line 2
+          maxLength: 255
       required:
       - id
       - latitude
@@ -1501,6 +1509,14 @@ components:
         latitude:
           type: string
           maxLength: 50
+        line1:
+          type: string
+          title: Line 1
+          maxLength: 255
+        line2:
+          type: string
+          title: Line 2
+          maxLength: 255
         state:
           type: integer
       required:
@@ -1920,6 +1936,14 @@ components:
         latitude:
           type: string
           maxLength: 50
+        line1:
+          type: string
+          title: Line 1
+          maxLength: 255
+        line2:
+          type: string
+          title: Line 2
+          maxLength: 255
         state:
           type: integer
     PatchedImage_Serializers:
