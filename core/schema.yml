@@ -75,7 +75,28 @@ paths:
         CityViewsets
 
         Argament:
-            country: country id to get all City in `GET Method`
+            `country`: country id to get all City in `GET Method`
+      parameters:
+      - in: query
+        name: country
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       tags:
       - address
       security:
@@ -114,7 +135,28 @@ paths:
         StateViewsets
 
         Argament:
-            city: city id to get all State in `GET Method`
+            `city`: city id to get all State in `GET Method`
+      parameters:
+      - in: query
+        name: city
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       tags:
       - address
       security:
@@ -2091,6 +2133,11 @@ components:
         id:
           type: integer
           readOnly: true
+        image:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image_Serializers'
+          readOnly: true
         name:
           type: string
           maxLength: 50
@@ -2099,6 +2146,7 @@ components:
       required:
       - city
       - id
+      - image
       - name
     TicketSerializers:
       type: object
