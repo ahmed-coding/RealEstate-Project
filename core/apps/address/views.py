@@ -65,6 +65,18 @@ class AddressViewsets(viewsets.ModelViewSet):
     queryset = Address.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.CreateAddressSerializer
+    
+    # def list(self, request):
+    #     addresses = self.queryset
+    #     serializer = self.serializer_class(addresses, many=True)
+    #     return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

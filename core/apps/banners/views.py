@@ -15,6 +15,7 @@ from . import serializers
 
 class BannerViewSetst(viewsets.ModelViewSet):
     serializer_class = serializers.BannerSerializers
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', ]

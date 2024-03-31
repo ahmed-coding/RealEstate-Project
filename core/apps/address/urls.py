@@ -7,5 +7,8 @@ urlpatterns = [
     path('state/', views.StateViewsets.as_view({'get': 'list'})),
     path('<int:pk>/update/',
          views.AddressViewsets.as_view({'put': 'partial_update', 'patch': 'partial_update'})),
+    path('create/', views.AddressViewsets.as_view({'post': 'create'})),
+    # path('', views.AddressViewsets.as_view({'get': 'list'})),
+    
 
 ]
