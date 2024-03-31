@@ -242,7 +242,7 @@ class AddressAdmin(admin.ModelAdmin):
             'fields': ('country', 'city', 'state')
         }),
         ('Coordinates', {
-            'fields': ('longitude', 'latitude')
+            'fields': ('longitude', 'latitude', 'line1', 'line2')
         }),
     )
 
@@ -253,16 +253,18 @@ class AddressAdmin(admin.ModelAdmin):
 
     def get_fields(self, request, obj=None):
         if obj:
-            return ['country', 'city', 'state', 'longitude', 'latitude']
+            return ['country', 'city', 'state', 'longitude', 'latitude', 'line1', 'line2']
         else:
             return super().get_fields(request, obj)
 
     def add_view(self, request, form_url='', extra_context=None):
-        self.fields = ['country', 'city', 'state', 'longitude', 'latitude']
+        self.fields = ['country', 'city', 'state',
+                       'longitude', 'latitude', 'line1', 'line2']
         return super().add_view(request, form_url, extra_context)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        self.fields = ['country', 'city', 'state', 'longitude', 'latitude']
+        self.fields = ['country', 'city', 'state',
+                       'longitude', 'latitude', 'line1', 'line2']
         return super().change_view(request, object_id, form_url, extra_context)
 
     def get_country(self, obj):
