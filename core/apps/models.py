@@ -397,8 +397,10 @@ class Address(models.Model):
         State, verbose_name=_("State "), on_delete=models.CASCADE, related_name='addresses')
     longitude = models.CharField(_("longitude"), max_length=50)
     latitude = models.CharField(_("latitude"), max_length=50)
-    line1 = models.CharField(_("Line 1"), max_length=255, default="")
-    line2 = models.CharField(_("Line 2"), max_length=255, default="")
+    line1 = models.CharField(
+        _("Line 1"), max_length=255, default="", blank=True)
+    line2 = models.CharField(
+        _("Line 2"), max_length=255, default="", blank=True)
 
     class Meta:
         db_table = 'Address'
