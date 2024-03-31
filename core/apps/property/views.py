@@ -52,7 +52,8 @@ class BastSellerViewsets(viewsets.ModelViewSet):
 class PropertyViewsets(viewsets.ModelViewSet):
     """Property Viewsets
     Args:
-        `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+        - `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+        - `state`: `state id` for get all property in thet sate.
     """
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
@@ -81,6 +82,12 @@ class PropertyViewsets(viewsets.ModelViewSet):
                 pk = self.kwargs.get('pk')
                 obj = Property.objects.get(id=pk)
                 return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
+
+            elif self.action == 'get_by_state':
+                state = self.request.query_params.get(
+                    "state", None) or None
+                return Property.objects.filter(address__state=obj).order_by('-id')
+
             else:
                 return Property.objects.filter(category__parent__id=self.main_category).order_by('-id')
         else:
@@ -92,6 +99,12 @@ class PropertyViewsets(viewsets.ModelViewSet):
                 pk = self.kwargs.get('pk')
                 obj = Property.objects.get(id=pk)
                 return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
+
+            elif self.action == 'get_by_state':
+                state = self.request.query_params.get(
+                    "state", None) or None
+                return Property.objects.filter(address__state=state).order_by('-id')
+
             else:
                 return Property.objects.all().order_by('-id')
 
@@ -111,7 +124,7 @@ class PropertyViewsets(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response({
-            'data': serializer.data
+            serializer.data
         })
 
     @action(detail=True, methods=['list'])
@@ -124,7 +137,23 @@ class PropertyViewsets(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response({
-            'data': serializer.data
+            serializer.data
+        })
+
+    @action(detail=True, methods=['list'])
+    def get_by_state(self, request, *args, **kwargs):
+        """State Viewsets
+    Args:
+        - `state`: `state id` for get all property in thet sate.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            serializer.data
         })
 
 

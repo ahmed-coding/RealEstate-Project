@@ -316,6 +316,27 @@ class Attribute_value(models.Model):
 # Start Address
 
 
+def generate_upload_to_path(instance, filename):
+    if instance.content_type:
+        return f'{instance.content_type.name}-images/{filename}'
+    return f'images/unknown/{filename}'
+
+
+class Image(models.Model):
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey()
+    image = models.ImageField(_("Image"), upload_to=generate_upload_to_path)
+    # def save(self, *args, **kwargs):
+
+    #     if self.content_type:
+    #         self.image.upload_to = f'{self.content_type.name}/'
+    #     return super().save(*args, **kwargs)
+    def __str__(self):
+        return self.image.url
+
+
 class Country(models.Model):
     """
     Country model .
@@ -357,6 +378,7 @@ class State(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     city = models.ForeignKey(
         City, verbose_name=_("City"), on_delete=models.CASCADE, related_name='states')
+    image = GenericRelation(Image, related_query_name='state')
 
     class Meta:
         db_table = 'State'
@@ -375,6 +397,10 @@ class Address(models.Model):
         State, verbose_name=_("State "), on_delete=models.CASCADE, related_name='addresses')
     longitude = models.CharField(_("longitude"), max_length=50)
     latitude = models.CharField(_("latitude"), max_length=50)
+    line1 = models.CharField(
+        _("Line 1"), max_length=255, default="", blank=True)
+    line2 = models.CharField(
+        _("Line 2"), max_length=255, default="", blank=True)
 
     class Meta:
         db_table = 'Address'
@@ -382,27 +408,6 @@ class Address(models.Model):
 
 # End Address
 # Start Property Models
-
-
-def generate_upload_to_path(instance, filename):
-    if instance.content_type:
-        return f'{instance.content_type.name}-images/{filename}'
-    return f'images/unknown/{filename}'
-
-
-class Image(models.Model):
-
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey()
-    image = models.ImageField(_("Image"), upload_to=generate_upload_to_path)
-    # def save(self, *args, **kwargs):
-
-    #     if self.content_type:
-    #         self.image.upload_to = f'{self.content_type.name}/'
-    #     return super().save(*args, **kwargs)
-    def __str__(self):
-        return self.image.url
 
 
 class Category(MPTTModel):
@@ -495,9 +500,9 @@ class Banner(models.Model):
     #             instance.is_active = True
     def __str__(self) -> str:
         now = timezone.now()
-        if self.end_time < now :
+        if self.end_time < now:
             self.is_active = False
-      
+
         return self.title
 
     class Meta:

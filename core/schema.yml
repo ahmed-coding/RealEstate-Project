@@ -75,7 +75,28 @@ paths:
         CityViewsets
 
         Argament:
-            country: country id to get all City in `GET Method`
+            `country`: country id to get all City in `GET Method`
+      parameters:
+      - in: query
+        name: country
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -114,7 +135,28 @@ paths:
         StateViewsets
 
         Argament:
-            city: city id to get all State in `GET Method`
+            `city`: city id to get all State in `GET Method`
+      parameters:
+      - in: query
+        name: city
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -424,7 +466,8 @@ paths:
       description: |-
         Property Viewsets
         Args:
-            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+            - `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+            - `state`: `state id` for get all property in thet sate.
       parameters:
       - in: query
         name: category
@@ -529,7 +572,8 @@ paths:
       description: |-
         Property Viewsets
         Args:
-            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+            - `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+            - `state`: `state id` for get all property in thet sate.
       parameters:
       - in: path
         name: id
@@ -554,7 +598,8 @@ paths:
       description: |-
         Property Viewsets
         Args:
-            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+            - `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+            - `state`: `state id` for get all property in thet sate.
       parameters:
       - in: path
         name: id
@@ -615,7 +660,26 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedUserList'
+                $ref: '#/components/schemas/PaginatedBastSellerSerializersList'
+          description: ''
+  /api/property/by-state/:
+    get:
+      operationId: api_property_by_state_retrieve
+      description: |-
+        State Viewsets
+        Args:
+            - `state`: `state id` for get all property in thet sate.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePropertySerializers'
           description: ''
   /api/property/create/:
     post:
@@ -716,7 +780,8 @@ paths:
       description: |-
         Property Viewsets
         Args:
-            `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+            - `main_category`: for get all property from `Main Category` in `GET` method from tow levels
+            - `state`: `state id` for get all property in thet sate.
       tags:
       - api
       security:
@@ -1170,27 +1235,6 @@ paths:
           description: ''
 components:
   schemas:
-    AddressSerializers:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        state:
-          allOf:
-          - $ref: '#/components/schemas/StateSerializers'
-          readOnly: true
-        longitude:
-          type: string
-          maxLength: 50
-        latitude:
-          type: string
-          maxLength: 50
-      required:
-      - id
-      - latitude
-      - longitude
-      - state
     AttributeSerializers:
       type: object
       properties:
@@ -1281,6 +1325,55 @@ components:
       - image
       - start_time
       - time_created
+    BastSellerSerializers:
+      type: object
+      description: |-
+        Bast Sellers
+
+        Args:
+            category (int): to get all sellers by categorys
+
+        Returns:
+            User: _description_
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 50
+        username:
+          type: string
+          nullable: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          maxLength: 150
+        name:
+          type: string
+          title: Full name
+          maxLength: 60
+        is_active:
+          type: boolean
+          title: Active
+          description: Designates whether this user should be treated as active. Unselect
+            this instead of deleting accounts.
+        image:
+          type: string
+          format: uri
+          nullable: true
+        property_count:
+          type: string
+          readOnly: true
+      required:
+      - email
+      - id
+      - property_count
     CategorySerializers:
       type: object
       properties:
@@ -1387,6 +1480,14 @@ components:
         latitude:
           type: string
           maxLength: 50
+        line1:
+          type: string
+          title: Line 1
+          maxLength: 255
+        line2:
+          type: string
+          title: Line 2
+          maxLength: 255
         state:
           type: integer
       required:
@@ -1680,6 +1781,26 @@ components:
       required:
       - id
       - image
+    PaginatedBastSellerSerializersList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BastSellerSerializers'
     PaginatedCategorySerializersList:
       type: object
       properties:
@@ -1760,26 +1881,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SinglePropertySerializers'
-    PaginatedUserList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
     PatchedCreateAddress:
       type: object
       description: |-
@@ -1806,6 +1907,14 @@ components:
         latitude:
           type: string
           maxLength: 50
+        line1:
+          type: string
+          title: Line 1
+          maxLength: 255
+        line2:
+          type: string
+          title: Line 2
+          maxLength: 255
         state:
           type: integer
     PatchedImage_Serializers:
@@ -1863,7 +1972,7 @@ components:
           readOnly: true
         address:
           allOf:
-          - $ref: '#/components/schemas/AddressSerializers'
+          - $ref: '#/components/schemas/propertyAddressSerializersI'
           readOnly: true
         category:
           allOf:
@@ -1965,6 +2074,10 @@ components:
           items:
             $ref: '#/components/schemas/Image_Serializers'
           readOnly: true
+        address:
+          allOf:
+          - $ref: '#/components/schemas/propertyAddressSerializersI'
+          readOnly: true
         name:
           type: string
           maxLength: 50
@@ -1998,10 +2111,8 @@ components:
           type: integer
         category:
           type: integer
-        address:
-          type: integer
-          nullable: true
       required:
+      - address
       - category
       - description
       - id
@@ -2019,6 +2130,11 @@ components:
         id:
           type: integer
           readOnly: true
+        image:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image_Serializers'
+          readOnly: true
         name:
           type: string
           maxLength: 50
@@ -2027,6 +2143,7 @@ components:
       required:
       - city
       - id
+      - image
       - name
     TicketSerializers:
       type: object
@@ -2268,6 +2385,35 @@ components:
       - attribute
       - id
       - value
+    propertyAddressSerializersI:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        state:
+          allOf:
+          - $ref: '#/components/schemas/StateSerializers'
+          readOnly: true
+        longitude:
+          type: string
+          maxLength: 50
+        latitude:
+          type: string
+          maxLength: 50
+        line1:
+          type: string
+          title: Line 1
+          maxLength: 255
+        line2:
+          type: string
+          title: Line 2
+          maxLength: 255
+      required:
+      - id
+      - latitude
+      - longitude
+      - state
     property_valueSerializers:
       type: object
       properties:

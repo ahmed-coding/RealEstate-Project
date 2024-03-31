@@ -1,8 +1,11 @@
 from rest_framework import serializers
+
+from ..serializers import Image_Serializers
 from ..models import Address, City, Country, State
 
 
 class StateSerializers(serializers.ModelSerializer):
+    image = Image_Serializers(many=True, read_only=True)
 
     class Meta:
         model = State
