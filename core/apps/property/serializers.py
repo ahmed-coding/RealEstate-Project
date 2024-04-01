@@ -17,7 +17,7 @@ from ..review.serializers import ReviewSerializers
 
 class propertyAddressSerializersI(AddressSerializers):
     def to_representation(self, instance):
-        return instance.line1 if instance.line1 != "" else instance.line2
+        return instance.line1
 
 
 class BastSellerSerializers(UserSerializer):
