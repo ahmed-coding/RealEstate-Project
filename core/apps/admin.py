@@ -311,7 +311,7 @@ class FeaturePropertyAdmin(admin.ModelAdmin):
 
 
 class AttributeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'data_type')
+    list_display = ('name', 'data_type', 'category')
 
 # Admin class for ValueModel
 
