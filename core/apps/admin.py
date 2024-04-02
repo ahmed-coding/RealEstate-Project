@@ -288,10 +288,18 @@ class ImageAdmin(admin.ModelAdmin):
     list_display = ('content_type', 'object_id', 'image')
 
 # Admin class for Feature
-
+class FeatureAttributeInline(admin.TabularInline):
+    model = Feature_category
+    extra = 1
+class FeatureAdminForm(forms.ModelForm):
+    class Meta:
+        model = Feature
+        fields = '__all__'
 
 class FeatureAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    form = FeatureAdminForm
+    inlines = [FeatureAttributeInline]
+    
 
 # Admin class for Feature_category
 
@@ -308,10 +316,33 @@ class FeaturePropertyAdmin(admin.ModelAdmin):
     ]
 
 # Admin class for Attribute
+class CategoryAttributeInline(admin.TabularInline):
+    model = Category_attribute
+    extra = 1
 
+class AttributeAdminForm(forms.ModelForm):
+    class Meta:
+        model = Attribute
+        fields = '__all__'
 
 class AttributeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'data_type', 'category')
+    # list_display = ('name', 'data_type',)
+    # fieldsets = (
+    #     (None, {'fields': ("")}),
+
+    #     ('categores', {'fields': ('categores',)}),
+    # )
+    # fieldsets = (
+    #    (None, {'fields': ('categores',)})
+    # )
+    form = AttributeAdminForm
+    inlines = [CategoryAttributeInline]
+    # filter_horizontal = ['category']
+    # def get_form(self, request, obj=None, **kwargs):
+    #     form = super().get_form(request, obj, **kwargs)
+    #     form.base_fields['category'].widget.can_add_related = False  # Disable adding new categories
+    #     return form
+
 
 # Admin class for ValueModel
 
@@ -470,8 +501,8 @@ class PropertyAdminImport(ImportExportModelAdmin):
 # Admin class for Attribute
 
 
-class AttributeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'data_type')
+# class AttributeAdmin(admin.ModelAdmin):
+#     list_display = ('name', 'data_type', 'categores')
 
 # Admin class for ValueModel
 
@@ -583,13 +614,13 @@ admin.site.register(Address, AddressAdmin)
 admin.site.register(Image, ImageAdmin)
 # admin.site.register(Category, CategoryAdmin)
 admin.site.register(Feature, FeatureAdmin)
-admin.site.register(Feature_category, FeatureCategoryAdmin)
+# admin.site.register(Feature_category, FeatureCategoryAdmin)
 admin.site.register(Property, PropertyAdminImport)
 admin.site.register(Feature_property, FeaturePropertyAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(ValueModel, ValueModelAdmin)
 admin.site.register(property_value, PropertyValueAdmin)
-admin.site.register(Category_attribute, CategoryAttributeAdmin)
+# admin.site.register(Category_attribute, CategoryAttributeAdmin)
 admin.site.register(Rate, RateAdmin)
 admin.site.register(Favorite, FavoriteAdmin)
 admin.site.register(Report, ReportAdmin)

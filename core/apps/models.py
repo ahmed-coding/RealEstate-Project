@@ -530,10 +530,12 @@ class Feature(models.Model):
 
     """
     name = models.CharField(_("feature Name"), max_length=50)
-    cate = models.ManyToManyField(Category, verbose_name=_(""))
+    cate = models.ManyToManyField(Category, verbose_name=_("category"), through='Feature_category',)
 
     class Meta:
         db_table = 'Feature'
+    def get_category(self):
+        return self.cate
 
     def __str__(self):
         return self.name
@@ -663,7 +665,7 @@ class Attribute(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     data_type = models.CharField(
         _("data_type"), max_length=50, choices=choices)
-    category = models.ManyToManyField(Category, verbose_name=_(""))
+    category = models.ManyToManyField(Category, verbose_name=_("categores"), blank=True, through='Category_attribute')
 
     def __str__(self) -> str:
         return self.name
