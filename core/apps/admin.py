@@ -295,6 +295,11 @@ class FeatureAdminForm(forms.ModelForm):
     class Meta:
         model = Feature
         fields = '__all__'
+    
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     # Filter the category field to display only sub-categories
+    #     self.fields['category'].queryset = Category.objects.filter(level=2)
 
 class FeatureAdmin(admin.ModelAdmin):
     form = FeatureAdminForm
@@ -317,10 +322,12 @@ class FeaturePropertyAdmin(admin.ModelAdmin):
 
 # Admin class for Attribute
 class CategoryAttributeInline(admin.TabularInline):
-    model = Category_attribute
+    model = Attribute.category.through
     extra = 1
 
+
 class AttributeAdminForm(forms.ModelForm):
+    
     class Meta:
         model = Attribute
         fields = '__all__'
@@ -336,12 +343,19 @@ class AttributeAdmin(admin.ModelAdmin):
     #    (None, {'fields': ('categores',)})
     # )
     form = AttributeAdminForm
-    inlines = [CategoryAttributeInline]
+    inlines = (CategoryAttributeInline,)
     # filter_horizontal = ['category']
     # def get_form(self, request, obj=None, **kwargs):
     #     form = super().get_form(request, obj, **kwargs)
     #     form.base_fields['category'].widget.can_add_related = False  # Disable adding new categories
     #     return form
+  
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        print(db_field)
+        if db_field.name == 'category':
+            kwargs['queryset'] = Category.objects.filter(level=2)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
 
 
 # Admin class for ValueModel
