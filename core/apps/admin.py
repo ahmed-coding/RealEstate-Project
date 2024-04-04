@@ -561,7 +561,7 @@ class ReportAdmin(admin.ModelAdmin):
 
 # Admin class for Review
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('prop', 'user', 'time_created', 'review')
+    list_display = ('prop', 'user', 'time_created', 'review', 'rate_review')
     list_filter = ['time_created',]
 
 # Admin class for Ticket_type
