@@ -806,6 +806,8 @@ class Review(models.Model):
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
     review = models.TextField(_("Note"))
+    rate_review = models.FloatField(_("Rating Number"), default=0.0, validators=[
+                             validate_rate_range])
 
     class Meta:
         db_table = 'Review'
