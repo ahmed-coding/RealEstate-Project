@@ -28,7 +28,11 @@ class ReviewViewsets(viewsets.ModelViewSet):
     def get_queryset(self):
         prop = self.kwargs.get('prop')
         if prop:
-            return Review.objects.filter(prop=prop)
+            queryset = Review.objects.filter(prop=prop)
+            if queryset.exists():
+                return queryset
+            else:
+                return None
         return Review.objects.all()
 
     def get_serializer_context(self):
