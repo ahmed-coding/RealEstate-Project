@@ -395,8 +395,8 @@ class Address(models.Model):
     """
     state = models.ForeignKey(
         State, verbose_name=_("State "), on_delete=models.CASCADE, related_name='addresses')
-    longitude = models.CharField(_("longitude"), max_length=50)
-    latitude = models.CharField(_("latitude"), max_length=50)
+    longitude = models.FloatField(_("Longitude"))
+    latitude = models.FloatField(_("Latitude"))
     line1 = models.CharField(
         _("Line 1"), max_length=255, default="", blank=True)
     line2 = models.CharField(
