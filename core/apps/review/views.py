@@ -12,6 +12,8 @@ from ..pagination import StandardResultsSetPagination
 
 from django_filters.rest_framework import DjangoFilterBackend
 from . import serializers
+from rest_framework.views import Response
+
 
 
 class ReviewViewsets(viewsets.ModelViewSet):
@@ -30,10 +32,15 @@ class ReviewViewsets(viewsets.ModelViewSet):
         if prop:
             queryset = Review.objects.filter(prop=prop)
             if queryset.exists():
+                print(queryset)
                 return queryset
+                
             else:
-                return None
-        return Review.objects.all()
+                return  Response({'error': 'Ther is no review for this proprety.'}, status=status.HTTP_400_BAD_REQUEST)
+  
+        else:
+           return Review.objects.all()
+        
 
     def get_serializer_context(self):
         return {'user': self.request.user}
