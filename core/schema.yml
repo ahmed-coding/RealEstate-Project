@@ -128,6 +128,33 @@ paths:
                 items:
                   $ref: '#/components/schemas/CountrySerializers'
           description: ''
+  /api/address/create/:
+    post:
+      operationId: api_address_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAddress'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateAddress'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateAddress'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAddress'
+          description: ''
   /api/address/state/:
     get:
       operationId: api_address_state_list
@@ -198,6 +225,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthToken'
           description: ''
+  /api/auth/logout/:
+    post:
+      operationId: api_auth_logout_create
+      description: |-
+        >>> LOGIN REQUIRD WITH JWT:
+        - Try to get Authentication from User it's self by JWT[refresh].
+        - then fo get AUTHORIZATION from request[META],
+
+        Returns:
+        - data: login done if the logiut success.
+        - status: 200 or 401
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/auth/sginup/:
     post:
       operationId: api_auth_sginup_create
@@ -273,6 +319,33 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/BannerSerializers'
+          description: ''
+  /api/banners/create/:
+    post:
+      operationId: api_banners_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BannerSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BannerSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BannerSerializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BannerSerializers'
           description: ''
   /api/categorie/:
     get:
@@ -794,6 +867,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/SinglePropertySerializers'
           description: ''
+  /api/review/:
+    get:
+      operationId: api_review_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: prop
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReviewSerializersList'
+          description: ''
   /api/schema/:
     get:
       operationId: api_schema_retrieve
@@ -1235,6 +1352,35 @@ paths:
           description: ''
 components:
   schemas:
+    AddressSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        state:
+          allOf:
+          - $ref: '#/components/schemas/StateSerializers'
+          readOnly: true
+        longitude:
+          type: number
+          format: double
+        latitude:
+          type: number
+          format: double
+        line1:
+          type: string
+          title: Line 1
+          maxLength: 255
+        line2:
+          type: string
+          title: Line 2
+          maxLength: 255
+      required:
+      - id
+      - latitude
+      - longitude
+      - state
     AttributeSerializers:
       type: object
       properties:
@@ -1251,7 +1397,15 @@ components:
           maxLength: 50
         data_type:
           $ref: '#/components/schemas/DataTypeEnum'
+        category:
+          type: array
+          items:
+            type: integer
+            title: Categores
+          readOnly: true
+          title: Categores
       required:
+      - category
       - data_type
       - id
       - name
@@ -1267,7 +1421,15 @@ components:
           maxLength: 50
         data_type:
           $ref: '#/components/schemas/DataTypeEnum'
+        category:
+          type: array
+          items:
+            type: integer
+            title: Categores
+          readOnly: true
+          title: Categores
       required:
+      - category
       - data_type
       - id
       - name
@@ -1475,11 +1637,11 @@ components:
           type: integer
           readOnly: true
         longitude:
-          type: string
-          maxLength: 50
+          type: number
+          format: double
         latitude:
-          type: string
-          maxLength: 50
+          type: number
+          format: double
         line1:
           type: string
           title: Line 1
@@ -1680,7 +1842,15 @@ components:
           type: string
           title: Feature Name
           maxLength: 50
+        cate:
+          type: array
+          items:
+            type: integer
+            title: Category
+          readOnly: true
+          title: Category
       required:
+      - cate
       - id
       - name
     Feature_propertySerializers:
@@ -1902,11 +2072,11 @@ components:
           type: integer
           readOnly: true
         longitude:
-          type: string
-          maxLength: 50
+          type: number
+          format: double
         latitude:
-          type: string
-          maxLength: 50
+          type: number
+          format: double
         line1:
           type: string
           title: Line 1
@@ -1963,16 +2133,15 @@ components:
           items:
             $ref: '#/components/schemas/property_valueSerializers'
           readOnly: true
-        rate:
-          type: number
-          format: double
+        rate_review:
+          type: string
           readOnly: true
         in_favorite:
           type: boolean
           readOnly: true
         address:
           allOf:
-          - $ref: '#/components/schemas/propertyAddressSerializersI'
+          - $ref: '#/components/schemas/AddressSerializers'
           readOnly: true
         category:
           allOf:
@@ -2026,7 +2195,7 @@ components:
       - in_favorite
       - name
       - property_value
-      - rate
+      - rate_review
       - size
       - time_created
       - unique_number
@@ -2047,6 +2216,10 @@ components:
         review:
           type: string
           title: Note
+        rate_review:
+          type: number
+          format: double
+          title: Rating Number
         prop:
           type: integer
           title: Property
@@ -2062,9 +2235,8 @@ components:
         id:
           type: integer
           readOnly: true
-        rate:
-          type: number
-          format: double
+        rate_review:
+          type: string
           readOnly: true
         in_favorite:
           type: boolean
@@ -2119,7 +2291,7 @@ components:
       - image
       - in_favorite
       - name
-      - rate
+      - rate_review
       - size
       - time_created
       - unique_number
@@ -2396,11 +2568,11 @@ components:
           - $ref: '#/components/schemas/StateSerializers'
           readOnly: true
         longitude:
-          type: string
-          maxLength: 50
+          type: number
+          format: double
         latitude:
-          type: string
-          maxLength: 50
+          type: number
+          format: double
         line1:
           type: string
           title: Line 1
