@@ -15,32 +15,32 @@ from . import serializers
 from rest_framework.views import Response
 
 
-
 class ReviewViewsets(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
     search_fields = 'prop'
     serializer_class = serializers.ReviewSerializers
-    lookup_field = ('prop',)
+    lookup_field = ('pkprop',)
     filterset_fields = ['prop',]
     ordering_fields = '__all__'
     queryset = Review.objects.all()
 
     def get_queryset(self):
-        prop = self.kwargs.get('prop')
-        if prop:
-            queryset = Review.objects.filter(prop=prop)
-            if queryset.exists():
-                print(queryset)
-                return queryset
-                
-            else:
-                return  Response({'error': 'Ther is no review for this proprety.'}, status=status.HTTP_400_BAD_REQUEST)
-  
-        else:
-           return Review.objects.all()
-        
+        prop = self.kwargs.get('pkprop', None) or None
+
+        queryset = Review.objects.filter(prop=prop)
+        #     if queryset.exists():
+        #         print(queryset)
+        #         return queryset
+
+        #     else:
+        #         # return Response({'error': 'Ther is no review for this proprety.'}, status=status.HTTP_400_BAD_REQUEST)
+        #         return queryset
+
+        # else:
+        #     return Review.objects.all()
+        return queryset
 
     def get_serializer_context(self):
         return {'user': self.request.user}
