@@ -28,7 +28,7 @@ class ReviewSerializers(serializers.ModelSerializer):
             'user': f"{instance.user.get_full_name()}",
             'time_created': formatted_review_date,
             'review': instance.review,
-            'rating': r,
+            'rating': instance.rate_review,
             'profile': image,
             # 'likes_count': likes,
             # 'is_liked': is_likes
