@@ -93,7 +93,7 @@ class PropertyViewsets(viewsets.ModelViewSet):
         else:
             if self.action == 'get_high_rate':
                 return Property.objects.annotate(
-                    rating_count=Count('rate')
+                    rating_count=Count('rate_review')
                 ).order_by('-rating_count')
             elif self.action == 'get_by_address':
                 pk = self.kwargs.get('pk')

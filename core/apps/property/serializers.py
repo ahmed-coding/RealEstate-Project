@@ -114,7 +114,7 @@ class property_valueSerializers(serializers.ModelSerializer):
 class PropertyDetailsSerializers(serializers.ModelSerializer):
     feature_property = Feature_propertySerializers(many=True, read_only=True)
     property_value = property_valueSerializers(many=True, read_only=True)
-    rate = serializers.SerializerMethodField(read_only=True)
+    rate_review = serializers.SerializerMethodField(read_only=True)
     in_favorite = serializers.SerializerMethodField(read_only=True)
     address = propertyAddressSerializersI(read_only=True)
     category = CategorySerializers(read_only=True)
@@ -126,20 +126,27 @@ class PropertyDetailsSerializers(serializers.ModelSerializer):
         # if isinstance(user, User) else False
         return obj.favorites.filter(user=user).exists()
 
-    def get_rate(self, obj) -> float:
-        # user = self.context.get('user' or None)
-        rat = obj.rate.all()
-        sub = 0.0
-        if rat.exists():
-            try:
-                for s in rat:
-                    sub += s.rate
-                return round(sub / rat.count(), 1)
-            except:
-                sub = 0
-                return round(sub, 1)
+    # def get_rate_review(self, obj) -> float:
+    #     # user = self.context.get('user' or None)
+    #     rat = obj.review.all()
+    #     sub = 0.0
+    #     if rat.exists():
+    #         try:
+    #             for s in rat:
+    #                 sub += s.review
+    #             return round(sub / rat.count(), 1)
+    #         except:
+    #             sub = 0
+    #             return round(sub, 1)
+    #     else:
+    #         return round(sub, 1)
+    def get_rate_review (self, obj):
+        ratings = obj.review.all().values_list('rate_review', flat=True)
+        if ratings:
+            average_rating = sum(ratings) / len(ratings)
+            return round(average_rating, 1)
         else:
-            return round(sub, 1)
+            return 0.0
 
     class Meta:
         model = Property
