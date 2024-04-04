@@ -17,7 +17,7 @@ from ..review.serializers import ReviewSerializers
 
 class propertyAddressSerializersI(AddressSerializers):
     def to_representation(self, instance):
-        return instance.line1
+        return instance
 
 
 class BastSellerSerializers(UserSerializer):
@@ -123,9 +123,11 @@ class PropertyDetailsSerializers(serializers.ModelSerializer):
     property_value = property_valueSerializers(many=True, read_only=True)
     rate_review = serializers.SerializerMethodField(read_only=True)
     in_favorite = serializers.SerializerMethodField(read_only=True)
-    address = propertyAddressSerializersI(read_only=True)
+    # address = propertyAddressSerializersI(read_only=True)
+    address = AddressSerializers(read_only=True)
     category = CategorySerializers(read_only=True)
     user = UserSerializer(read_only=True)
+    
     image = Image_Serializers(many=True, read_only=True)
 
     def get_in_favorite(self, obj) -> bool:
