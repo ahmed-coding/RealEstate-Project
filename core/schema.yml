@@ -621,6 +621,11 @@ paths:
         name: prop
         schema:
           type: integer
+      - in: query
+        name: rate_review
+        schema:
+          type: number
+          format: float
       - name: search
         required: false
         in: query
@@ -893,6 +898,11 @@ paths:
         name: prop
         schema:
           type: integer
+      - in: query
+        name: rate_review
+        schema:
+          type: number
+          format: float
       - name: search
         required: false
         in: query
