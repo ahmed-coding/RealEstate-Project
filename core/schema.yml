@@ -597,6 +597,16 @@ paths:
   /api/property/{pkprop}/reviews/:
     get:
       operationId: api_property_reviews_list
+      description: |-
+        Review Viewsets
+
+        Args:
+            (max_rate_review): to get all review by max rate
+            (min_rate_review): to get all review by min rate
+        Usege:
+        it's used togther to get review in range like `?min_rate_review=1&max_rate_review=2`
+        Returns:
+            _type_: _description_
       parameters:
       - name: ordering
         required: false
@@ -879,6 +889,16 @@ paths:
   /api/review/:
     get:
       operationId: api_review_list
+      description: |-
+        Review Viewsets
+
+        Args:
+            (max_rate_review): to get all review by max rate
+            (min_rate_review): to get all review by min rate
+        Usege:
+        it's used togther to get review in range like `?min_rate_review=1&max_rate_review=2`
+        Returns:
+            _type_: _description_
       parameters:
       - name: ordering
         required: false
