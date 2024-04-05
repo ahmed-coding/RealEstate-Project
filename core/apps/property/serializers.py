@@ -17,7 +17,7 @@ from ..review.serializers import ReviewSerializers
 
 class propertyAddressSerializersI(AddressSerializers):
     def to_representation(self, instance):
-        return instance.line1
+        return instance.line1 if instance.line1.split(" ") != "" else instance.line2
 
 
 class BastSellerSerializers(UserSerializer):
@@ -127,7 +127,7 @@ class PropertyDetailsSerializers(serializers.ModelSerializer):
     address = AddressSerializers(read_only=True)
     category = CategorySerializers(read_only=True)
     user = UserSerializer(read_only=True)
-    
+
     image = Image_Serializers(many=True, read_only=True)
 
     def get_in_favorite(self, obj) -> bool:
