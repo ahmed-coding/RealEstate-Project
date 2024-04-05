@@ -106,6 +106,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     EMAIL = 'email'
     GOOGLE = 'google'
     FACEBOOB = 'facebook'
+    user_type_choices = [
+        ("owner", "Property owner"),
+        ("agent", "Real-estate agent"),
+        ("promoter", "Property promoter"),
+        ("customer", "customer"),
+        ("admin", "Admin"),
+    ]
+    user_type = models.CharField(
+        _("User Type"), max_length=50, choices=user_type_choices, default="customer")
     username = models.CharField(
         _("username"),
         max_length=150,
@@ -401,8 +410,7 @@ class Address(models.Model):
         _("Line 1"), max_length=255, default="", blank=True)
     line2 = models.CharField(
         _("Line 2"), max_length=255, default="", blank=True)
-    
-    
+
     def __str__(self) -> str:
         return f'{self.state.name} {self.state.city.name} {self.state.city.country.name}'
 
@@ -483,7 +491,8 @@ class Banner(models.Model):
     #     super().save(*args, **kwargs)
     def clean(self):
         if self.end_time < timezone.now():
-            raise ValidationError({'end_time': 'End time should be in the future.'})
+            raise ValidationError(
+                {'end_time': 'End time should be in the future.'})
 
     def __str__(self) -> str:
         if self.end_time <= timezone.now():
@@ -534,10 +543,12 @@ class Feature(models.Model):
 
     """
     name = models.CharField(_("feature Name"), max_length=50)
-    cate = models.ManyToManyField(Category, verbose_name=_("category"), through='Feature_category',)
+    cate = models.ManyToManyField(Category, verbose_name=_(
+        "category"), through='Feature_category',)
 
     class Meta:
         db_table = 'Feature'
+
     def get_category(self):
         return self.cate
 
@@ -669,7 +680,8 @@ class Attribute(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     data_type = models.CharField(
         _("data_type"), max_length=50, choices=choices)
-    category = models.ManyToManyField(Category, verbose_name=_("categores"), blank=True, through='Category_attribute')
+    category = models.ManyToManyField(Category, verbose_name=_(
+        "categores"), blank=True, through='Category_attribute')
 
     def __str__(self) -> str:
         return self.name
@@ -811,7 +823,7 @@ class Review(models.Model):
         _("time_created"), auto_now=False, auto_now_add=True)
     review = models.TextField(_("Note"))
     rate_review = models.FloatField(_("Rating Number"), default=0.0, validators=[
-                             validate_rate_range])
+        validate_rate_range])
 
     class Meta:
         db_table = 'Review'

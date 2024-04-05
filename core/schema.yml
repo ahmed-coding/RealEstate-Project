@@ -2127,6 +2127,8 @@ components:
         image:
           type: string
           format: uri
+        user_type:
+          $ref: '#/components/schemas/UserTypeEnum'
     PropertyDetailsSerializers:
       type: object
       properties:
@@ -2404,6 +2406,8 @@ components:
         image:
           type: string
           format: uri
+        user_type:
+          $ref: '#/components/schemas/UserTypeEnum'
       required:
       - email
       - id
@@ -2455,6 +2459,8 @@ components:
         is_deleted:
           type: boolean
           title: Deleted
+        user_type:
+          $ref: '#/components/schemas/UserTypeEnum'
       required:
       - email
       - id
@@ -2495,6 +2501,8 @@ components:
           type: object
           additionalProperties: {}
           readOnly: true
+        user_type:
+          $ref: '#/components/schemas/UserTypeEnum'
       required:
       - email
       - id
@@ -2532,9 +2540,19 @@ components:
           type: string
           format: uri
           nullable: true
+        user_type:
+          $ref: '#/components/schemas/UserTypeEnum'
       required:
       - email
       - id
+    UserTypeEnum:
+      enum:
+      - owner
+      - agent
+      - promoter
+      - customer
+      - admin
+      type: string
     ValueModelSerializers:
       type: object
       properties:

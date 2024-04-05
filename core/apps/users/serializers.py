@@ -20,14 +20,14 @@ class UpdateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'phone_number',
-                  'username', 'name', 'register_data', 'image']
+                  'username', 'name', 'register_data', 'image', 'user_type']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'phone_number',
-                  'username', 'name', 'register_data', 'image',]
+                  'username', 'name', 'register_data', 'image', 'user_type']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -38,7 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'phone_number',
-                  'username', 'password',  'name', 'register_data', 'is_active', 'image', 'is_deleted']
+                  'username', 'password',  'name', 'register_data', 'is_active', 'image', 'is_deleted', 'user_type']
 
     def create(self, validated_data):
 
