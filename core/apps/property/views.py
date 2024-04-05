@@ -59,7 +59,7 @@ class PropertyViewsets(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', ]
-    filterset_fields = ['name', 'is_featured', 'category']
+    filterset_fields = ['name', 'is_featured', 'category', 'user']
     ordering_fields = '__all__'
     # Description of params
     main_category = None
