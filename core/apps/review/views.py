@@ -22,7 +22,7 @@ class ReviewViewsets(viewsets.ModelViewSet):
     search_fields = 'prop'
     serializer_class = serializers.ReviewSerializers
     lookup_field = ('pkprop',)
-    filterset_fields = ['prop',]
+    filterset_fields = ['prop', 'rate_review']
     ordering_fields = '__all__'
     queryset = Review.objects.all()
 
