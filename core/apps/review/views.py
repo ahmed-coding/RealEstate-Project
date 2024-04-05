@@ -23,8 +23,10 @@ class ReviewViewsets(viewsets.ModelViewSet):
         (min_rate_review): to get all review by min rate
     Usege:
     it's used togther to get review in range like `?min_rate_review=1&max_rate_review=2`
+
+
     Returns:
-        _type_: _description_
+        queryset: Review queryset
     """
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
