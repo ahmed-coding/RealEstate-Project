@@ -34,9 +34,22 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return obj.review.all().count()
 
     def get_reting(self, obj) -> int:
-        average_rating = obj.review.aggregate(Avg('rate_review'))[
-            'rate_review__avg']
-        return average_rating if average_rating else 0.0
+        # average_rating = obj.review.aggregate(Avg('rate_review'))[
+        #     'rate_review__avg']
+        # return average_rating if average_rating else 0.0
+
+        properties = obj.property.all()
+        total_rating = 0.0
+        total_properties = 0
+
+        for property in properties:
+            avg_rating = property.review.aggregate(Avg('rate_review'))[
+                'rate_review__avg']
+            if avg_rating:
+                total_rating += avg_rating
+                total_properties += 1
+
+        return total_rating / total_properties if total_properties > 0 else 0.0
 
     def get_sold_property(self, obj) -> int:
         return obj.property.filter(is_active=False).count()
