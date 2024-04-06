@@ -31,7 +31,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
     property_count = serializers.SerializerMethodField(read_only=True)
 
     def get_count_review(self, obj) -> int:
-        return obj.review.all().count()
+        properties = obj.property.all()
+        total_reviews = 0
+
+        for property in properties:
+            total_reviews += property.review.count()
+
+        return total_reviews
 
     def get_reting(self, obj) -> int:
         # average_rating = obj.review.aggregate(Avg('rate_review'))[
