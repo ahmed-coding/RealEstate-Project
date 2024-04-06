@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from rest_framework import serializers
 from ..models import User
 
@@ -24,10 +25,29 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    count_review = serializers.SerializerMethodField(read_only=True)
+    reting = serializers.SerializerMethodField(read_only=True)
+    sold_property = serializers.SerializerMethodField(read_only=True)
+    property_count = serializers.SerializerMethodField(read_only=True)
+
+    def get_count_review(self, obj) -> int:
+        return obj.review.all().count()
+
+    def get_reting(self, obj) -> int:
+        average_rating = obj.review.aggregate(Avg('rate_review'))[
+            'rate_review__avg']
+        return average_rating if average_rating else 0.0
+
+    def get_sold_property(self, obj) -> int:
+        return obj.property.filter(is_active=False).count()
+
+    def get_property_count(self, obj) -> int:
+        return obj.property.all().count()
+
     class Meta:
         model = User
         fields = ['id', 'email', 'phone_number',
-                  'username', 'name', 'register_data', 'image', 'user_type']
+                  'username', 'name', 'register_data', 'image', 'user_type', 'count_review', 'reting', 'sold_property', 'property_count']
 
 
 class UserSerializer(serializers.ModelSerializer):
