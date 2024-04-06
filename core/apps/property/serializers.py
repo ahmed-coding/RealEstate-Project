@@ -31,7 +31,7 @@ class BastSellerSerializers(UserSerializer):
     """
     property_count = serializers.SerializerMethodField()
 
-    def get_property_count(self, obj):
+    def get_property_count(self, obj) -> int:
         return obj.property_count
 
     class Meta:
@@ -67,7 +67,7 @@ class SinglePropertySerializers(serializers.ModelSerializer):
     #             return round(sub, 1)
     #     else:
     #         return round(sub, 1)
-    def get_rate_review(self, obj):
+    def get_rate_review(self, obj) -> float:
         ratings = obj.review.all().values_list('rate_review', flat=True)
         if ratings:
             average_rating = sum(ratings) / len(ratings)
@@ -149,7 +149,7 @@ class PropertyDetailsSerializers(serializers.ModelSerializer):
     #             return round(sub, 1)
     #     else:
     #         return round(sub, 1)
-    def get_rate_review(self, obj):
+    def get_rate_review(self, obj) -> float:
         ratings = obj.review.all().values_list('rate_review', flat=True)
         if ratings:
             average_rating = sum(ratings) / len(ratings)

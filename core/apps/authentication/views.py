@@ -76,7 +76,7 @@ class LogoutView(APIView):
     """
     # authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    # serializer_class =
+    serializer_class = None
 
     def post(self, request: Request):
         """

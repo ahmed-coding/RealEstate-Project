@@ -15,13 +15,11 @@ from django.db.models import Q
 
 
 class FriendView(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-
     serializer_class = serializers.FrindListSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
+        user = self.request.user or None
         # return FriendList.objects.filter(
         #     Q(user1=user) | Q(user2=user)
         # )

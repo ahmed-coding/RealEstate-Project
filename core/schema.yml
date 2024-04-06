@@ -1568,7 +1568,7 @@ components:
           format: uri
           nullable: true
         property_count:
-          type: string
+          type: integer
           readOnly: true
       required:
       - email
@@ -2174,7 +2174,8 @@ components:
             $ref: '#/components/schemas/property_valueSerializers'
           readOnly: true
         rate_review:
-          type: string
+          type: number
+          format: double
           readOnly: true
         in_favorite:
           type: boolean
@@ -2276,7 +2277,8 @@ components:
           type: integer
           readOnly: true
         rate_review:
-          type: string
+          type: number
+          format: double
           readOnly: true
         in_favorite:
           type: boolean
