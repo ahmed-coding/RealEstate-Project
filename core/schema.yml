@@ -605,8 +605,10 @@ paths:
             (min_rate_review): to get all review by min rate
         Usege:
         it's used togther to get review in range like `?min_rate_review=1&max_rate_review=2`
+
+
         Returns:
-            _type_: _description_
+            queryset: Review queryset
       parameters:
       - name: ordering
         required: false
@@ -897,8 +899,10 @@ paths:
             (min_rate_review): to get all review by min rate
         Usege:
         it's used togther to get review in range like `?min_rate_review=1&max_rate_review=2`
+
+
         Returns:
-            _type_: _description_
+            queryset: Review queryset
       parameters:
       - name: ordering
         required: false
@@ -2566,9 +2570,25 @@ components:
           nullable: true
         user_type:
           $ref: '#/components/schemas/UserTypeEnum'
+        count_review:
+          type: integer
+          readOnly: true
+        reting:
+          type: integer
+          readOnly: true
+        sold_property:
+          type: integer
+          readOnly: true
+        property_count:
+          type: integer
+          readOnly: true
       required:
+      - count_review
       - email
       - id
+      - property_count
+      - reting
+      - sold_property
     UserTypeEnum:
       enum:
       - owner
