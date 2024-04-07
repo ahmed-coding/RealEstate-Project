@@ -29,6 +29,8 @@ class UserProfileViewset(viewsets.ModelViewSet):
     ordering_fields = '__all__'
 
     def get_queryset(self):
+        if self.action == 'retrieve':
+            return User.objects.all()
         return User.objects.filter(is_deleted=False, is_active=True, id=self.request.user.id)
 
 
