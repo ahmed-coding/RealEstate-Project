@@ -24,7 +24,7 @@ class UserProfileViewset(viewsets.ModelViewSet):
         _type_: _description_
     """
     serializer_class = serializers.UserProfileSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.OrderingFilter]
     ordering_fields = '__all__'
 
