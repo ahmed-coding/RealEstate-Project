@@ -1326,6 +1326,35 @@ paths:
                 items:
                   $ref: '#/components/schemas/UserProfile'
           description: ''
+  /api/user/profile/{id}/:
+    get:
+      operationId: api_user_profile_retrieve
+      description: |-
+        _summary_
+
+        Args:
+            viewsets (_type_): _description_
+
+        Returns:
+            _type_: _description_
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
   /api/user/profile/update/:
     put:
       operationId: api_user_profile_update_update
