@@ -1364,3 +1364,25 @@ class FriendRequest(models.Model):
 
 
 # End Chats Models
+class Alarm(models.Model):
+    user = models.ForeignKey(User, verbose_name=_(
+        "User"), on_delete=models.CASCADE, related_name='alarm')
+    attribute = models.ForeignKey(Attribute, verbose_name=_(
+        "Attribute"), on_delete=models.CASCADE, related_name='alarm')
+    value = models.CharField(_("Value"), max_length=50)
+    state = models.ForeignKey(State, verbose_name=_(
+        "State"), on_delete=models.CASCADE, related_name='alarm')
+    time_created = models.DateTimeField(
+        _("time_created"), auto_now=False, auto_now_add=True)
+
+    time_updated = models.DateTimeField(
+        _("time_updated"), auto_now=True, auto_now_add=False)
+    max_price = models.DecimalField(
+        _("Max Price"), max_digits=10, decimal_places=2, blank=True, null=True)
+    min_price = models.DecimalField(
+        _("Min Price"), max_digits=10, decimal_places=2, blank=True, null=True)
+    for_sale = models.BooleanField(_("For Sale"), default=True)
+
+    class Meta:
+        db_table = 'Alarm'
+# Start Alarm Models
