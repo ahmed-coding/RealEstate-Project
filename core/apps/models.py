@@ -1399,7 +1399,7 @@ class Alarm_value(models.Model):
     value = models.CharField(_("Value"), max_length=50)
 
     class Meta:
-        db_table = 'Alarm_Attribute'
+        db_table = 'Alarm_value'
 
 
 # Start Alarm Models
