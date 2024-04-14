@@ -121,13 +121,14 @@ def create_notification_on_property_save(sender, instance, **kwargs):
     """
     old = Property.objects.filter(id=instance.id).first()
     if instance.is_active == True and old.is_active == False:  # Check if a new property is updated
+
         for_rent = True if instance.for_sale == False else False
         alarms = Alarm.objects.filter(
             state=instance.address.state,
             category=instance.category,
             is_active=True,
-            # for_sale=instance.for_sale,
-            # for_rent=for_rent,
+            for_sale=instance.for_sale,
+            for_rent=instance.for_rent,
             min_price__lte=instance.price,
             max_price__gte=instance.price,
         )

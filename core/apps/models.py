@@ -596,6 +596,7 @@ class Property(models.Model):
     image = GenericRelation(Image, related_query_name='property')
     for_sale = models.BooleanField(_("Is For sale"), default=False)
     is_featured = models.BooleanField(_("is_featured"), default=False)
+    for_rent = models.BooleanField(_("Is For Rent?"), default=False)
 
     def save(self, *args, **kwargs):
         if not self.id:
