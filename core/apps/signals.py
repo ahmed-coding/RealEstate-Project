@@ -127,8 +127,8 @@ def create_notification_on_property_save(sender, instance, **kwargs):
             state=instance.address.state,
             category=instance.category,
             is_active=True,
-            for_sale=instance.for_sale,
-            for_rent=instance.for_rent,
+            # for_sale=instance.for_sale,
+            # for_rent=instance.for_rent,
             min_price__lte=instance.price,
             max_price__gte=instance.price,
         )
