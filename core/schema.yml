@@ -1138,6 +1138,61 @@ paths:
                 items:
                   $ref: '#/components/schemas/TicketTypeSerilalizers'
           description: ''
+  /api/user/alarms/create:
+    post:
+      operationId: user_alarms_create_create
+      description: |-
+        Creates a new alarm along with associated alarm values.
+        Example Request Body:
+        ```
+            {
+                "state": 1,
+                "category": 1,
+                "is_active": true,
+                "max_price": 100000,
+                "min_price": 50000,
+                "for_sale": true,
+                "for_rent": false,
+                "alarm_values": [
+                    {
+                        "attribute_id": 1,
+                        "value": "3"
+                    },
+                    {
+                        "attribute_id": 2,
+                        "value": "200.5"
+                    },
+                    {
+                        "attribute_id": 3,
+                        "value": "true"
+                    }
+                ]
+            }
+        ```
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAlarm'
+          description: ''
   /api/user/favorite/:
     get:
       operationId: user_favorite_list
@@ -1726,6 +1781,91 @@ components:
       - latitude
       - longitude
       - state
+    CreateAlarm:
+      type: object
+      description: |-
+        Creates a new alarm along with associated alarm values.
+        Example Request Body:
+        ```
+            {
+                "state": 1,
+                "category": 1,
+                "is_active": true,
+                "max_price": 100000,
+                "min_price": 50000,
+                "for_sale": true,
+                "for_rent": false,
+                "alarm_values": [
+                    {
+                        "attribute_id": 1,
+                        "value": "3"
+                    },
+                    {
+                        "attribute_id": 2,
+                        "value": "200.5"
+                    },
+                    {
+                        "attribute_id": 3,
+                        "value": "true"
+                    }
+                ]
+            }
+        ```
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        alarm_values:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        is_active:
+          type: boolean
+          title: Activite?
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        time_updated:
+          type: string
+          format: date-time
+          readOnly: true
+        max_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        min_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        for_sale:
+          type: boolean
+          title: For Sale?
+        for_rent:
+          type: boolean
+          title: For Rent?
+        state:
+          type: integer
+        category:
+          type: integer
+        value:
+          type: array
+          items:
+            type: integer
+            title: Alarm_value
+          readOnly: true
+          title: Alarm_value
+      required:
+      - alarm_values
+      - category
+      - id
+      - state
+      - time_created
+      - time_updated
+      - value
     CreateFavoriteSerializers:
       type: object
       properties:
