@@ -1384,7 +1384,7 @@ class Alarm(models.Model):
         _("Min Price"), max_digits=10, decimal_places=2, blank=True, null=True)
     for_sale = models.BooleanField(_("For Sale?"), default=True)
     for_rent = models.BooleanField(_("For Rent?"), default=True)
-    alarm_value = models.ManyToManyField(
+    value = models.ManyToManyField(
         Attribute, verbose_name=_("alarm_value"), through="Alarm_value")
 
     class Meta:
