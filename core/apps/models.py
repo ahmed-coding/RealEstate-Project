@@ -1367,22 +1367,39 @@ class FriendRequest(models.Model):
 class Alarm(models.Model):
     user = models.ForeignKey(User, verbose_name=_(
         "User"), on_delete=models.CASCADE, related_name='alarm')
-    attribute = models.ForeignKey(Attribute, verbose_name=_(
-        "Attribute"), on_delete=models.CASCADE, related_name='alarm')
-    value = models.CharField(_("Value"), max_length=50)
+
     state = models.ForeignKey(State, verbose_name=_(
         "State"), on_delete=models.CASCADE, related_name='alarm')
+    category = models.ForeignKey(Category, verbose_name=_(
+        "Category"), on_delete=models.CASCADE, related_name='alarm')
+
+    is_active = models.BooleanField(_("Activite?"), default=True)
     time_created = models.DateTimeField(
         _("time_created"), auto_now=False, auto_now_add=True)
-
     time_updated = models.DateTimeField(
         _("time_updated"), auto_now=True, auto_now_add=False)
     max_price = models.DecimalField(
         _("Max Price"), max_digits=10, decimal_places=2, blank=True, null=True)
     min_price = models.DecimalField(
         _("Min Price"), max_digits=10, decimal_places=2, blank=True, null=True)
-    for_sale = models.BooleanField(_("For Sale"), default=True)
+    for_sale = models.BooleanField(_("For Sale?"), default=True)
+    for_rent = models.BooleanField(_("For Rent?"), default=True)
+    alarm_value = models.ManyToManyField(
+        Attribute, verbose_name=_("alarm_value"), through="Alarm_value")
 
     class Meta:
         db_table = 'Alarm'
+
+
+class Alarm_value(models.Model):
+    alarm = models.ForeignKey(Alarm, verbose_name=_(
+        "Alarm"), on_delete=models.CASCADE, related_name='alarm_value')
+    attribute = models.ForeignKey(Attribute, verbose_name=_(
+        "Attribute"), on_delete=models.CASCADE, related_name='alarm_value')
+    value = models.CharField(_("Value"), max_length=50)
+
+    class Meta:
+        db_table = 'Alarm_Attribute'
+
+
 # Start Alarm Models
