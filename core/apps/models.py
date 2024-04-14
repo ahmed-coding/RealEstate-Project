@@ -1386,6 +1386,25 @@ class Alarm(models.Model):
     for_rent = models.BooleanField(_("For Rent?"), default=True)
     value = models.ManyToManyField(
         Attribute, verbose_name=_("alarm_value"), through="Alarm_value")
+    notifications = GenericRelation(Notification)
+
+    @property
+    def get_cname(self):
+        """
+        For determining what kind of object is associated with a Notification
+        """
+        return "Alarm"
+
+    def send_notification(self):
+        content_type = ContentType.objects.get_for_model(self)
+        notification = self.notifications.create(
+            target=self.user,
+            from_user=None,  # You may set this to a specific user if needed
+            verb="Your alarm matched a new property!",
+            timestamp=timezone.now(),
+            content_object=content_type
+        )
+        return notification
 
     class Meta:
         db_table = 'Alarm'

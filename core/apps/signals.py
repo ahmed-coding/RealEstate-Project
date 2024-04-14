@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from .notifications.utils import LazyNotificationEncoder
 
 from .notifications.constants import CHAT_MSG_TYPE_GET_NEW_NOTIFICATIONS
-from .models import FriendRequest, Notification, PrivateChatRoom, UnreadChatRoomMessages, User, FriendList
+from .models import Alarm, FriendRequest, Notification, PrivateChatRoom, Property, UnreadChatRoomMessages, User, FriendList
 
 # create user frindlist
 
@@ -112,3 +112,65 @@ def create_notification_messages_brodcast(sender, instance, created, **kwargs):
                 'notifications': notifications,
             },
         )
+
+
+@receiver(pre_save, sender=Property)
+def create_notification_on_property_save(sender, instance, **kwargs):
+    """
+    Signal receiver function to create notifications when a property is saved.
+    """
+    old = Property.objects.filter(id=instance.id).first()
+    if instance.is_active == True and old.is_active == False:  # Check if a new property is updated
+        for_rent = True if instance.for_sale == False else False
+        alarms = Alarm.objects.filter(
+            state=instance.address.state,
+            category=instance.category,
+            is_active=True,
+            # for_sale=instance.for_sale,
+            # for_rent=for_rent,
+            min_price__lte=instance.price,
+            max_price__gte=instance.price,
+        )
+        # for alarm in alarms:
+        #     alarm_values = alarm.alarm_value.all()
+        #     property_values = instance.property_value.all()
+        #     matching_values = []
+        #     for alarm_value in alarm_values:
+        #         for property_value in property_values:
+        #             if alarm_value.attribute == property_value.attribute and alarm_value.value == property_value.value.value:
+        #                 matching_values.append(alarm_value)
+        #                 break
+
+        #     if len(matching_values) == len(alarm_values):
+        #         # Create notification
+        #         alarm.send_notification()
+
+        for alarm in alarms:
+            alarm_values = alarm.alarm_value.all()
+            property_values = instance.property_value.all()
+
+            # Get all attributes associated with the property
+            property_attributes = set(
+                pv.value.attribute for pv in property_values
+            )
+
+            # Check if all attribute values of the alarm are satisfied by the property
+            if alarm_values.count() == len(property_attributes):
+                matched_values = alarm_values.filter(
+                    attribute__in=property_attributes,
+                    value__in=[pv.value.value for pv in property_values]
+                )
+
+                if matched_values.count() == alarm_values.count():
+                    # Create notification
+                    # alarm.send_notification()
+                    Notification.objects.create(
+                        target=alarm.user,
+                        from_user=None,  # You may set this to a specific user if needed
+                        verb="Your alarm matched a new property!",
+                        timestamp=timezone.now(),
+                        content_type=ContentType.objects.get_for_model(
+                            Alarm),  # Use Alarm model content type
+                        object_id=alarm.id,  # Pass the ID of the alarm
+                        content_object=alarm,  # Pass the alarm instance
+                    )
