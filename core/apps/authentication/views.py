@@ -58,7 +58,8 @@ class ReigsterView(CreateAPIView):
         # print(generit_random_code())
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            user = serializer.save()
+            user_data = serializer.validated_data  
                  # Synchronize user data with Firebase Realtime Database or Firestore
             db = firestore.client()
             users_ref = db.collection('Users')

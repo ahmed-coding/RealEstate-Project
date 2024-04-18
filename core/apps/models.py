@@ -24,6 +24,8 @@ from django.core.exceptions import ValidationError
 from import_export import resources, fields, widgets
 from import_export.fields import Field
 from django.core.files import File
+import firebase_admin
+from firebase_admin import firestore
 
 # from import_export.fields import FileField
 
@@ -208,6 +210,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         if not self.id:
             self.unique_no = f"{slugify(self.name.strip())}-{str(uuid.uuid4())[:5]}"
+            # db = firestore.client()
+            # users_ref = db.collection('Users')
+            # users_ref.document(self.id).set({
+            #     'email': self.email,
+            #     'fullName': self.name,
+            #     'userType' : self.user_type,
+            #     'phone_number': self.phone_number,
+            #     'imageUrl' : self.image.url if self.image else None,
+            #     # Add other fields as needed
+            #  }, merge=True)
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
