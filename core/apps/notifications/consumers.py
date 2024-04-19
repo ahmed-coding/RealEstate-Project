@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 from ..models import Notification, FriendRequest, FriendList, UnreadChatRoomMessages
-from .utils import LazyNotificationEncoder
+from .utils import LazyNotificationEncoder, NotificationsSerializers
 from .constants import *
 from ..chat.exceptions import ClientError
 
@@ -308,8 +308,6 @@ def get_general_notifications(user, page_number):
     2. FriendList
     """
     if user.is_authenticated:
-        friend_request_ct = ContentType.objects.get_for_model(FriendRequest)
-        friend_list_ct = ContentType.objects.get_for_model(FriendList)
         notifications = Notification.objects.filter(
             target=user).order_by('-timestamp')
         p = Paginator(notifications, DEFAULT_NOTIFICATION_PAGE_SIZE)
@@ -319,9 +317,9 @@ def get_general_notifications(user, page_number):
         # if len(notifications) > 0:
         if int(page_number) <= p.num_pages:
             s = LazyNotificationEncoder()
-            serialized_notifications = s.serialize(
-                p.page(page_number).object_list)
-            payload['notifications'] = serialized_notifications
+            serialized_notifications = NotificationsSerializers(
+                instance=notifications, many=True)
+            payload['notifications'] = serialized_notifications.data
             new_page_number = int(page_number) + 1
         else:
             payload['notifications'] = "None"
