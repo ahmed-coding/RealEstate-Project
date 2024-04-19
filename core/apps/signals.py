@@ -10,9 +10,8 @@ from .notifications.utils import LazyNotificationEncoder
 from .notifications.constants import CHAT_MSG_TYPE_GET_NEW_NOTIFICATIONS
 from .models import Alarm, FriendRequest, Notification, PrivateChatRoom, Property, UnreadChatRoomMessages, User, FriendList
 
-# create user frindlist
 
-
+# create user frindlist and migrate it to firebase
 @receiver(post_save, sender=User)
 def user_save(sender, instance, **kwargs):
     FriendList.objects.get_or_create(user=instance)
