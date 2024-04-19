@@ -30,9 +30,9 @@ app = Celery('core')
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
-cred = credentials.Certificate('C:\\Users\\USERWD\\RealEstate-Project\\core\\core\\settings\\real-estate-app-ee644-firebase-adminsdk-nc9u9-9a54a7b302.json')
+cred = credentials.Certificate(
+    f'{BASE_DIR}/../real-estate-app-ee644-firebase-adminsdk-nc9u9-9a54a7b302.json')
 firebase_admin.initialize_app(cred)
-
 
 
 # Configure Celery Beat

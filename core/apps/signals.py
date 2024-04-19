@@ -13,7 +13,7 @@ from .models import Alarm, FriendRequest, Notification, PrivateChatRoom, Propert
 
 # create user frindlist and migrate it to firebase
 @receiver(post_save, sender=User)
-def user_save(sender, instance, **kwargs):
+def user_save(sender, instance, created, **kwargs):
     FriendList.objects.get_or_create(user=instance)
 
 
