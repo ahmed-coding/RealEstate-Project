@@ -39,6 +39,7 @@ djangorestframework==3.14.0
 drf-spectacular==0.25.1
 et-xmlfile==1.1.0
 exceptiongroup==1.2.0
+firebase-admin==6.5.0
 freetype-py==2.3.0
 h11==0.14.0
 html5lib==1.1
