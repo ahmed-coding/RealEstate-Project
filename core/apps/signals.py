@@ -9,12 +9,26 @@ from .notifications.utils import LazyNotificationEncoder
 
 from .notifications.constants import CHAT_MSG_TYPE_GET_NEW_NOTIFICATIONS
 from .models import Alarm, FriendRequest, Notification, PrivateChatRoom, Property, UnreadChatRoomMessages, User, FriendList
+from firebase_admin import firestore
 
+# Get a Firestore client
+db = firestore.client()
 
 # create user frindlist and migrate it to firebase
+
+
 @receiver(post_save, sender=User)
 def user_save(sender, instance, created, **kwargs):
     FriendList.objects.get_or_create(user=instance)
+    data = {
+        'userId': instance.id,
+        'phoneNumber': instance.phone_number,
+        'imageUrl': instance.get_profile_image_filename,
+        'fullName': instance.name,
+        'userType': instance.user_type,
+    }
+    doc_ref = db.collection("Users").document(str(data["userId"])).set(data)
+    print(doc_ref)
 
 
 # create notifications
