@@ -27,7 +27,8 @@ def user_save(sender, instance, created, **kwargs):
         'fullName': instance.name,
         'userType': instance.user_type,
     }
-    doc_ref = db.collection("Users").document(str(data["userId"])).set(data)
+    doc_ref = db.collection("Users").document(
+        str(data["userId"])).set(data, merge=True)
     print(doc_ref)
 
 

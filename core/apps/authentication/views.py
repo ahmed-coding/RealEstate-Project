@@ -59,18 +59,18 @@ class ReigsterView(CreateAPIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
-            user_data = serializer.validated_data  
-                 # Synchronize user data with Firebase Realtime Database or Firestore
-            db = firestore.client()
-            users_ref = db.collection('Users')
-            users_ref.document(user.id).set({
-                'email': user_data['email'],
-                'fullName': user_data.get('name', ''),
-                'userType' : user_data.get('user_type', ''),
-                'phone_number': user_data.get('phone_number', ''),
-                'imageUrl' : user_data.get('image', ''),
-                # Add other fields as needed
-            }, merge=True)
+            user_data = serializer.validated_data
+            # Synchronize user data with Firebase Realtime Database or Firestore
+            # db = firestore.client()
+            # users_ref = db.collection('Users')
+            # users_ref.document(user.id).set({
+            #     'email': user_data['email'],
+            #     'fullName': user_data.get('name', ''),
+            #     'userType' : user_data.get('user_type', ''),
+            #     'phone_number': user_data.get('phone_number', ''),
+            #     'imageUrl' : user_data.get('image', ''),
+            #     # Add other fields as needed
+            # }, merge=True)
             return Response(
                 serializer.data, status=status.HTTP_200_OK)
         else:
