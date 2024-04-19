@@ -429,8 +429,8 @@ def get_new_general_notifications(user, newest_timestamp):
         timestamp = datetime.strptime(timestamp, '%Y-%m-%d %H:%M')
         friend_request_ct = ContentType.objects.get_for_model(FriendRequest)
         friend_list_ct = ContentType.objects.get_for_model(FriendList)
-        notifications = Notification.objects.filter(target=user, content_type__in=[
-                                                    friend_request_ct, friend_list_ct], timestamp__gt=timestamp, read=False).order_by('-timestamp')
+        notifications = Notification.objects.filter(
+            target=user, timestamp__gt=timestamp, read=False).order_by('-timestamp')
         s = LazyNotificationEncoder()
         payload['notifications'] = s.serialize(notifications)
     else:
