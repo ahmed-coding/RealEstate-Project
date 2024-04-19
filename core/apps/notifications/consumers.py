@@ -310,8 +310,8 @@ def get_general_notifications(user, page_number):
     if user.is_authenticated:
         friend_request_ct = ContentType.objects.get_for_model(FriendRequest)
         friend_list_ct = ContentType.objects.get_for_model(FriendList)
-        notifications = Notification.objects.filter(target=user, content_type__in=[
-                                                    friend_request_ct, friend_list_ct]).order_by('-timestamp')
+        notifications = Notification.objects.filter(
+            target=user).order_by('-timestamp')
         p = Paginator(notifications, DEFAULT_NOTIFICATION_PAGE_SIZE)
 
         new_page_number = int(page_number)
