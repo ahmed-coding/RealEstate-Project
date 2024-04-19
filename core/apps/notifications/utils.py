@@ -2,7 +2,7 @@ from django.core.serializers.python import Serializer
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from rest_framework import serializers
 
-from core.apps.models import Notification
+from ..models import Notification
 
 
 class NotificationsSerializers(serializers.ModelSerializer):
