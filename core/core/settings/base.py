@@ -57,7 +57,7 @@ DEFAULT_CHARSET = 'utf-8'
 
 
 INSTALLED_APPS = [
-    # 'daphne',
+    'daphne',
     # 'django_crontab',
     'import_export',
     'django.contrib.admin',
