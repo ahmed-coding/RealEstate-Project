@@ -430,7 +430,7 @@ def get_new_general_notifications(user, newest_timestamp):
         friend_request_ct = ContentType.objects.get_for_model(FriendRequest)
         friend_list_ct = ContentType.objects.get_for_model(FriendList)
         notifications = Notification.objects.filter(
-            target=user, timestamp__gt=timestamp, read=False).order_by('-timestamp')
+            target=user, read=False).order_by('-timestamp')
         s = LazyNotificationEncoder()
         payload['notifications'] = s.serialize(notifications)
     else:
@@ -458,7 +458,7 @@ def get_unread_general_notification_count(user):
 
         # New style
         unread_count = Notification.objects.filter(
-            target=user, content_type__in=[friend_request_ct, friend_list_ct], read=False).count()
+            target=user, read=False).count()
         payload['count'] = unread_count
         return json.dumps(payload)
     else:
