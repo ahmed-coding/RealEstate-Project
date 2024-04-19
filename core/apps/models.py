@@ -272,6 +272,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         pass
         # End Method for Class
 
+    @property
+    def get_cname(self):
+        """
+        For determining what kind of object is associated with a Notification
+        """
+        return "User"
+
     class Meta:
         db_table = 'User'
 
