@@ -25,6 +25,8 @@ from import_export.admin import ImportExportModelAdmin
 from import_export import resources, fields, widgets
 from import_export.fields import Field
 from django.core.files import File
+from firebase_admin import firestore
+
 
 
 class CustomUserChangeForm(forms.ModelForm):
@@ -93,6 +95,25 @@ class CustomAdminUser(UserAdmin):
         ),
     )
     form = CustomUserChangeForm
+    
+    def save_model(self, request, obj, form, change):
+        # Save the user object in Django database
+        obj.save()
+
+        # Check if the user is newly created (not updated)
+        if not change:
+            # Add the user to Firebase
+            db = firestore.client()
+            users_ref = db.collection('Users')
+            users_ref.document(str(obj.id)).set({
+                'email': obj.email,
+                'fullName': obj.name,
+                'userType': obj.user_type,
+                'phone_number': obj.phone_number,
+                'imageUrl': obj.image.url if obj.image else '',
+                # Add other fields as needed
+            }, merge=True)
+    
     # add_form = CustomUserCreationForm
     change_password_form = AdminPasswordChangeForm
     list_display = ("email", "name",
