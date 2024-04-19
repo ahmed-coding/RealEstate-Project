@@ -24,6 +24,8 @@ from django.core.exceptions import ValidationError
 from import_export import resources, fields, widgets
 from import_export.fields import Field
 from django.core.files import File
+import firebase_admin
+from firebase_admin import firestore
 
 # from import_export.fields import FileField
 
@@ -208,6 +210,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         if not self.id:
             self.unique_no = f"{slugify(self.name.strip())}-{str(uuid.uuid4())[:5]}"
+            # db = firestore.client()
+            # users_ref = db.collection('Users')
+            # users_ref.document(self.id).set({
+            #     'email': self.email,
+            #     'fullName': self.name,
+            #     'userType' : self.user_type,
+            #     'phone_number': self.phone_number,
+            #     'imageUrl' : self.image.url if self.image else None,
+            #     # Add other fields as needed
+            #  }, merge=True)
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -596,6 +608,7 @@ class Property(models.Model):
     image = GenericRelation(Image, related_query_name='property')
     for_sale = models.BooleanField(_("Is For sale"), default=False)
     is_featured = models.BooleanField(_("is_featured"), default=False)
+    for_rent = models.BooleanField(_("Is For Rent?"), default=False)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -1364,3 +1377,61 @@ class FriendRequest(models.Model):
 
 
 # End Chats Models
+class Alarm(models.Model):
+    user = models.ForeignKey(User, verbose_name=_(
+        "User"), on_delete=models.CASCADE, related_name='alarm')
+
+    state = models.ForeignKey(State, verbose_name=_(
+        "State"), on_delete=models.CASCADE, related_name='alarm')
+    category = models.ForeignKey(Category, verbose_name=_(
+        "Category"), on_delete=models.CASCADE, related_name='alarm')
+
+    is_active = models.BooleanField(_("Activite?"), default=True)
+    time_created = models.DateTimeField(
+        _("time_created"), auto_now=False, auto_now_add=True)
+    time_updated = models.DateTimeField(
+        _("time_updated"), auto_now=True, auto_now_add=False)
+    max_price = models.DecimalField(
+        _("Max Price"), max_digits=10, decimal_places=2, blank=True, null=True)
+    min_price = models.DecimalField(
+        _("Min Price"), max_digits=10, decimal_places=2, blank=True, null=True)
+    for_sale = models.BooleanField(_("For Sale?"), default=True)
+    for_rent = models.BooleanField(_("For Rent?"), default=True)
+    value = models.ManyToManyField(
+        Attribute, verbose_name=_("alarm_value"), through="Alarm_value")
+    notifications = GenericRelation(Notification)
+
+    @property
+    def get_cname(self):
+        """
+        For determining what kind of object is associated with a Notification
+        """
+        return "Alarm"
+
+    def send_notification(self):
+        content_type = ContentType.objects.get_for_model(self)
+        notification = self.notifications.create(
+            target=self.user,
+            from_user=None,  # You may set this to a specific user if needed
+            verb="Your alarm matched a new property!",
+            timestamp=timezone.now(),
+            content_object=content_type
+        )
+        return notification
+
+    class Meta:
+        db_table = 'Alarm'
+
+
+class Alarm_value(models.Model):
+    alarm = models.ForeignKey(Alarm, verbose_name=_(
+        "Alarm"), on_delete=models.CASCADE, related_name='alarm_value')
+    attribute = models.ForeignKey(Attribute, verbose_name=_(
+        "Attribute"), on_delete=models.CASCADE, related_name='alarm_value')
+    value = models.CharField(_("Value"), max_length=50)
+
+    class Meta:
+        db_table = 'Alarm_value'
+
+
+# Start Alarm Models

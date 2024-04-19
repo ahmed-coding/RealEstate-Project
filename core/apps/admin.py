@@ -2,7 +2,7 @@ from statistics import mode
 from django.contrib import admin
 from . import models
 from django import forms
-from .models import Banner, Category, PrivateChatRoom, UnreadChatRoomMessages
+from .models import Alarm, Alarm_value, Banner, Category, PrivateChatRoom, UnreadChatRoomMessages
 from .models import User
 from django.contrib.contenttypes.admin import GenericTabularInline
 # Register your models here.
@@ -25,6 +25,8 @@ from import_export.admin import ImportExportModelAdmin
 from import_export import resources, fields, widgets
 from import_export.fields import Field
 from django.core.files import File
+from firebase_admin import firestore
+
 
 
 class CustomUserChangeForm(forms.ModelForm):
@@ -93,6 +95,25 @@ class CustomAdminUser(UserAdmin):
         ),
     )
     form = CustomUserChangeForm
+    
+    def save_model(self, request, obj, form, change):
+        # Save the user object in Django database
+        obj.save()
+
+        # Check if the user is newly created (not updated)
+        if not change:
+            # Add the user to Firebase
+            db = firestore.client()
+            users_ref = db.collection('Users')
+            users_ref.document(str(obj.id)).set({
+                'email': obj.email,
+                'fullName': obj.name,
+                'userType': obj.user_type,
+                'phone_number': obj.phone_number,
+                'imageUrl': obj.image.url if obj.image else '',
+                # Add other fields as needed
+            }, merge=True)
+    
     # add_form = CustomUserCreationForm
     change_password_form = AdminPasswordChangeForm
     list_display = ("email", "name",
@@ -288,23 +309,28 @@ class ImageAdmin(admin.ModelAdmin):
     list_display = ('content_type', 'object_id', 'image')
 
 # Admin class for Feature
+
+
 class FeatureAttributeInline(admin.TabularInline):
     model = Feature_category
     extra = 1
+
+
 class FeatureAdminForm(forms.ModelForm):
     class Meta:
         model = Feature
         fields = '__all__'
-    
+
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
     #     # Filter the category field to display only sub-categories
     #     self.fields['category'].queryset = Category.objects.filter(level=2)
 
+
 class FeatureAdmin(admin.ModelAdmin):
     form = FeatureAdminForm
     inlines = [FeatureAttributeInline]
-    
+
 
 # Admin class for Feature_category
 
@@ -321,16 +347,19 @@ class FeaturePropertyAdmin(admin.ModelAdmin):
     ]
 
 # Admin class for Attribute
+
+
 class CategoryAttributeInline(admin.TabularInline):
     model = Attribute.category.through
     extra = 1
 
 
 class AttributeAdminForm(forms.ModelForm):
-    
+
     class Meta:
         model = Attribute
         fields = '__all__'
+
 
 class AttributeAdmin(admin.ModelAdmin):
     # list_display = ('name', 'data_type',)
@@ -349,13 +378,12 @@ class AttributeAdmin(admin.ModelAdmin):
     #     form = super().get_form(request, obj, **kwargs)
     #     form.base_fields['category'].widget.can_add_related = False  # Disable adding new categories
     #     return form
-  
+
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         print(db_field)
         if db_field.name == 'category':
             kwargs['queryset'] = Category.objects.filter(level=2)
         return super().formfield_for_manytomany(db_field, request, **kwargs)
-
 
 
 # Admin class for ValueModel
@@ -609,6 +637,16 @@ class BannerAdmin(admin.ModelAdmin):
     # pass
 
 
+class AlramValueAdmin(admin.TabularInline):
+    model = Alarm_value
+    extra = 3
+
+
+class AlarmAdmin(admin.ModelAdmin):
+    list_display = ['user', 'is_active']
+    inlines = [AlramValueAdmin]
+
+
 admin.site.register(Banner, BannerAdmin)
 admin.site.register(UnreadChatRoomMessages, UnradChateMessageAdmin)
 admin.site.register(PrivateChatRoom, PrivateChatRoomAdmin)
@@ -643,3 +681,4 @@ admin.site.register(Ticket_type, TicketTypeAdmin)
 admin.site.register(Ticket_status, TicketStatusAdmin)
 admin.site.register(Ticket, TicketAdmin)
 admin.site.register(Solve_message, SolveMessageAdmin)
+admin.site.register(Alarm, AlarmAdmin)

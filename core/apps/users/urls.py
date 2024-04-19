@@ -10,6 +10,7 @@ urlpatterns = [
     path('profile/update/',
          views.UpdateUserViewsets.as_view({'put': 'partial_update', 'patch': 'partial_update'})),
     path('favorite/', include('apps.favorite.urls')),
+    path('alarms/', include('apps.alarms.urls')),
 
 
 ]

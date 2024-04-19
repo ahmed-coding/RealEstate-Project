@@ -6,7 +6,8 @@ from rest_framework.views import APIView, Request, status
 from rest_framework.generics import CreateAPIView, GenericAPIView
 from django.contrib.auth import logout, authenticate, login
 from rest_framework.permissions import IsAuthenticated
-
+import firebase_admin
+from firebase_admin import firestore
 
 from .serializers import User, UserAuthSerializer
 
@@ -57,7 +58,19 @@ class ReigsterView(CreateAPIView):
         # print(generit_random_code())
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            user = serializer.save()
+            user_data = serializer.validated_data  
+                 # Synchronize user data with Firebase Realtime Database or Firestore
+            db = firestore.client()
+            users_ref = db.collection('Users')
+            users_ref.document(user.id).set({
+                'email': user_data['email'],
+                'fullName': user_data.get('name', ''),
+                'userType' : user_data.get('user_type', ''),
+                'phone_number': user_data.get('phone_number', ''),
+                'imageUrl' : user_data.get('image', ''),
+                # Add other fields as needed
+            }, merge=True)
             return Response(
                 serializer.data, status=status.HTTP_200_OK)
         else:
