@@ -1,5 +1,15 @@
 from django.core.serializers.python import Serializer
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from rest_framework import serializers
+
+from core.apps.models import Notification
+
+
+class NotificationsSerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = Notification
+        fields = "__all__"
 
 
 class LazyNotificationEncoder(Serializer):
