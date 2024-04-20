@@ -133,7 +133,8 @@ def create_notification_on_property_save(sender, instance, **kwargs):
     Signal receiver function to create notifications when a property is saved.
     """
     old = Property.objects.filter(id=instance.id).first()
-    if instance.is_active == True and old.is_active == False:  # Check if a new property is updated
+    # Check if a new property is updated
+    if old is not None and instance.is_active == True and old.is_active == False:
 
         for_rent = True if instance.for_sale == False else False
         alarms = Alarm.objects.filter(
