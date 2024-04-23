@@ -9,14 +9,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from ..pagination import StandardResultsSetPagination
 from rest_framework.views import Response
 
-from ..models import Favorite,  Review, Ticket, Ticket_type
+from ..models import Favorite,  Review, Ticket, Ticket_type, User
 from . import serializers
 
 
 class TicketViewsets(viewsets.ModelViewSet):
     # queryset = Ticket_type
     # serializer_class = serializers.TicketTypeSerilalizers
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         if self.action == 'list':
@@ -31,7 +31,9 @@ class TicketViewsets(viewsets.ModelViewSet):
             return serializers.TicketSerializers
 
     def get_serializer_context(self):
-        return {'user': self.request.user}
+        user = self.request.user if isinstance(
+            User, self.request.user) else None
+        return {'user': user}
 
     # @action(detail=True, methods=['list'])
     # def get_ticket_type(self, request, *args, **kwargs):
