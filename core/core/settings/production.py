@@ -2,6 +2,30 @@ from .base import *
 ALLOWED_HOSTS = ['*']
 
 
+INSTALLED_APPS = [
+    'daphne',
+    # 'django_crontab',
+    'import_export',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    # internl apps
+    'apps',
+    # # external apps
+    'mptt',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'user_agents',
+    'drf_spectacular',
+    'schema_graph',
+    'corsheaders',
+    'channels',
+]
+
 DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql',

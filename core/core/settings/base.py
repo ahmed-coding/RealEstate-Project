@@ -49,36 +49,13 @@ def debug_task(self):
     print(f'Request: {self.request!r}')
 
 
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', True)
 
 AUTH_USER_MODEL = 'apps.User'
 
 DEFAULT_CHARSET = 'utf-8'
 
 
-INSTALLED_APPS = [
-    'daphne',
-    # 'django_crontab',
-    'import_export',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    # internl apps
-    'apps',
-    # # external apps
-    'mptt',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'django_filters',
-    'user_agents',
-    'drf_spectacular',
-    'schema_graph',
-    'corsheaders',
-    'channels',
-]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
