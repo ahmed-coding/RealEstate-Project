@@ -32,7 +32,7 @@ class TicketViewsets(viewsets.ModelViewSet):
 
     def get_serializer_context(self):
         user = self.request.user if isinstance(
-            User, self.request.user) else None
+            self.request.user, User) else None
         return {'user': user}
 
     # @action(detail=True, methods=['list'])

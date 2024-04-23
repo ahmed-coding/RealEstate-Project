@@ -885,7 +885,7 @@ class Ticket(models.Model):
     ---------------------------
 
     """
- 
+
     STATUS_CHOICES = [
         ('Opened', _('Opened')),
         ('InProcess', _('In Process')),
@@ -896,11 +896,12 @@ class Ticket(models.Model):
         "type"), on_delete=models.DO_NOTHING, related_name='ticket')
     # status = models.ForeignKey(
     #     Ticket_status, verbose_name=_("Ticket_status"), on_delete=models.CASCADE, related_name='ticket', null=True, blank=True)
-    status = models.CharField(max_length=100, blank=True, choices=STATUS_CHOICES, default='Opened', verbose_name=_("Ticket_status"))
+    status = models.CharField(max_length=100, blank=True, choices=STATUS_CHOICES,
+                              default='Opened', verbose_name=_("Ticket_status"))
     ticket_solver = models.ForeignKey(User, verbose_name=_(
         "solver"), on_delete=models.CASCADE, related_name="ticket_solver", null=True, blank=True)
     ticket_sender = models.ForeignKey(User, verbose_name=_(
-        "sender"), on_delete=models.CASCADE, related_name="ticket_sender")
+        "sender"), on_delete=models.CASCADE, related_name="ticket_sender", blank=True, null=True)
     phone_number = models.CharField(_("phone_number"), max_length=50)
     created_time = models.DateTimeField(
         _("created_time"), auto_now=False, auto_now_add=True)
