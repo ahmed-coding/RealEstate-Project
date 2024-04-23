@@ -896,7 +896,7 @@ class Ticket(models.Model):
         "type"), on_delete=models.DO_NOTHING, related_name='ticket')
     # status = models.ForeignKey(
     #     Ticket_status, verbose_name=_("Ticket_status"), on_delete=models.CASCADE, related_name='ticket', null=True, blank=True)
-    status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='Opened', verbose_name=_("Ticket_status"))
+    status = models.CharField(max_length=100, blank=True, choices=STATUS_CHOICES, default='Opened', verbose_name=_("Ticket_status"))
     ticket_solver = models.ForeignKey(User, verbose_name=_(
         "solver"), on_delete=models.CASCADE, related_name="ticket_solver", null=True, blank=True)
     ticket_sender = models.ForeignKey(User, verbose_name=_(
