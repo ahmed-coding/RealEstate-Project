@@ -4,11 +4,11 @@ from ..models import Ticket, Ticket_status, Ticket_type, Solve_message
 
 
 class TicketSerializers(serializers.ModelSerializer):
-    sender = serializers.HiddenField(default=None)
+    ticket_sender = serializers.HiddenField(default=None)
 
     def validate(self, attrs):
         sender = self.context.get('user' or None)
-        attrs['sender'] = sender
+        attrs['ticket_sender'] = sender
         return super().validate(attrs)
 
     class Meta:
