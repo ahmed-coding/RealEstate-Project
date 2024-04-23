@@ -885,11 +885,18 @@ class Ticket(models.Model):
     ---------------------------
 
     """
+ 
+    STATUS_CHOICES = [
+        ('Opened', _('Opened')),
+        ('InProcess', _('In Process')),
+        ('Reviewed', _('Reviewed')),
+    ]
 
     type = models.ForeignKey(Ticket_type, verbose_name=_(
         "type"), on_delete=models.DO_NOTHING, related_name='ticket')
-    status = models.ForeignKey(
-        Ticket_status, verbose_name=_("Ticket_status"), on_delete=models.CASCADE, related_name='ticket', null=True, blank=True)
+    # status = models.ForeignKey(
+    #     Ticket_status, verbose_name=_("Ticket_status"), on_delete=models.CASCADE, related_name='ticket', null=True, blank=True)
+    status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='Opened', verbose_name=_("Ticket_status"))
     ticket_solver = models.ForeignKey(User, verbose_name=_(
         "solver"), on_delete=models.CASCADE, related_name="ticket_solver", null=True, blank=True)
     ticket_sender = models.ForeignKey(User, verbose_name=_(
@@ -898,7 +905,7 @@ class Ticket(models.Model):
     created_time = models.DateTimeField(
         _("created_time"), auto_now=False, auto_now_add=True)
     solved_time = models.DateTimeField(
-        _("solved_time"), auto_now=False, auto_now_add=False)
+        _("solved_time"), auto_now=False, auto_now_add=False, blank=True, null=True)
     email = models.EmailField(_("email"), max_length=254)
     problem_text = models.TextField(_("problem_text"))
     image = GenericRelation(Image, related_query_name='ticket')
