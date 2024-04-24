@@ -218,3 +218,14 @@ CRONJOBS = [
      ['update_banner_stat']),
 ]
 # Channels settings
+
+# Settings for Email
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL')
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFUALT_FROM_EMAIL = EMAIL_HOST_USER
+
+# End settings for Email
