@@ -1,3 +1,6 @@
+from django.conf import settings
+from django.core.mail import send_mail, EmailMessage
+from django.template import loader
 from datetime import datetime
 from django.contrib.humanize.templatetags.humanize import naturalday
 from django.core.serializers.python import Serializer
@@ -40,3 +43,15 @@ class LazyRoomChatMessageEncoder(Serializer):
         dump_object.update(
             {'natural_timestamp': calculate_timestamp(obj.timestamp)})
         return dump_object
+
+
+def send_email(email, message):
+    template = loader.get_template('email-template/code_design.html').render({
+        'message': message
+    })
+    send = EmailMessage(
+        "Test OTP Form Django APIs Verify", template,  settings.EMAIL_HOST_USER, [email, ])
+    # send_mail(
+    #     f" Welcome Your Code : {code}.", settings.EMAIL_HOST_USER, [email, ], fail_silently=False)
+    send.content_subtype = 'html'
+    send.send()
