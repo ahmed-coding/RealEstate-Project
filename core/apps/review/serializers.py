@@ -39,3 +39,16 @@ class ReviewSerializers(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = '__all__'
+
+
+class CreateReviewSerializers(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=None)
+
+    def validate(self, attrs):
+        # self.user = self.context.get('user').id
+        attrs['user'] = self.context.get('user')
+        return super().validate(attrs)
+
+    class Meta:
+        model = Review
+        fields = '__all__'

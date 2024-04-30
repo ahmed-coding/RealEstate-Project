@@ -1,3 +1,4 @@
+from urllib import request
 from django.shortcuts import render
 
 # Create your views here.
@@ -7,12 +8,11 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework import filters
 
-from ..models import Review
+from ..models import Review, User
 from ..pagination import StandardResultsSetPagination
 
 from django_filters.rest_framework import DjangoFilterBackend
 from . import serializers
-from rest_framework.views import Response
 
 
 class ReviewViewsets(viewsets.ModelViewSet):
@@ -32,9 +32,7 @@ class ReviewViewsets(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
     search_fields = 'prop'
-
-    serializer_class = serializers.ReviewSerializers
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     lookup_field = ('pkprop',)
     filterset_fields = ['prop', 'rate_review']
@@ -73,19 +71,26 @@ class ReviewViewsets(viewsets.ModelViewSet):
         return queryset
 
     def get_serializer_context(self):
-        return {'user': self.request.user}
-    
-    
+        user = self.request.user if isinstance(
+            self.request.user, User) else None
+        return {'user': user}
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return serializers.CreateReviewSerializers
+        else:
+            return serializers.ReviewSerializers
+
     # def create(self, request, *args, **kwargs):
     #     serializer = self.get_serializer(data=request.data)
     #     print(request.data)
     #     print(self.request.user)
     #     if  serializer.is_valid(raise_exception=True):
-            
+
     #      serializer.save(user=self.request.user)  # Assign the current user to the review
     #      return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     #     else:
-             
+
     #     # headers = self.get_success_headers(serializer.data)
     #         return Response(serializer.erorrs, status=status.HTTP_400_BAD_REQUEST)
