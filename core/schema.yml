@@ -758,6 +758,202 @@ paths:
               schema:
                 $ref: '#/components/schemas/SinglePropertySerializers'
           description: ''
+  /api/property/{id}/update/:
+    put:
+      operationId: api_property_update_update
+      description: |-
+        API view class for creating a new property along with address and images.
+
+        This view class provides an endpoint for creating a new property along with associated address and images.
+
+        Example Usage:
+            To create a property with address, features, and images:
+            ```
+            {
+
+            "category": 1,
+            "name": "Property Name",
+            "description": "Property Description",
+            "price": 100000,
+            "size": 2000,
+            "is_active": true,
+            "is_deleted": false,
+            "attribute_values": {
+                "1": "Value1",
+                "2": "Value2",
+                "3": "Value3"
+            },
+            "address": {
+                "state": 1,
+                "longitude": "20.354654",
+                "latitude": "32.354654"
+            },
+            "feature_data": [
+                {
+                    "id": 1,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                }
+            ],
+            "image_data": [
+                {
+                    "image": "image_data"
+                },
+                {
+                    "image": "image_data"
+                }
+            ],
+            "for_sale": true
+        }
+            ```
+
+        Note:
+            Ensure that the user and `category` IDs provided exist in the database.
+            Ensure that the attribute IDs provided in `attribute_values` exist in the database.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProperty'
+          description: ''
+    patch:
+      operationId: api_property_update_partial_update
+      description: |-
+        API view class for creating a new property along with address and images.
+
+        This view class provides an endpoint for creating a new property along with associated address and images.
+
+        Example Usage:
+            To create a property with address, features, and images:
+            ```
+            {
+
+            "category": 1,
+            "name": "Property Name",
+            "description": "Property Description",
+            "price": 100000,
+            "size": 2000,
+            "is_active": true,
+            "is_deleted": false,
+            "attribute_values": {
+                "1": "Value1",
+                "2": "Value2",
+                "3": "Value3"
+            },
+            "address": {
+                "state": 1,
+                "longitude": "20.354654",
+                "latitude": "32.354654"
+            },
+            "feature_data": [
+                {
+                    "id": 1,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                }
+            ],
+            "image_data": [
+                {
+                    "image": "image_data"
+                },
+                {
+                    "image": "image_data"
+                }
+            ],
+            "for_sale": true
+        }
+            ```
+
+        Note:
+            Ensure that the user and `category` IDs provided exist in the database.
+            Ensure that the attribute IDs provided in `attribute_values` exist in the database.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateProperty'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateProperty'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateProperty'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProperty'
+          description: ''
   /api/property/bast-seller/:
     get:
       operationId: api_property_bast_seller_list
@@ -2412,6 +2608,138 @@ components:
           title: Line 2
           maxLength: 255
         state:
+          type: integer
+    PatchedCreateProperty:
+      type: object
+      description: |-
+        Serializer class for creating a new property along with associated address, features, and images.
+
+        This serializer allows creating a new property along with an address, features, and images in a single request.
+
+        Attributes:
+            address_data (dict): A dictionary containing address details.
+            feature_data (list): A list of dictionaries containing feature details.
+            attribute_values (dict): A dictionary containing attribute IDs as keys and their corresponding values.
+            image_data (list): A list of dictionaries containing image details.
+
+
+        Example Usage:
+            To create a property with address, features, and images:
+            ```
+        {
+
+            "category": 1,
+            "name": "Property Name",
+            "description": "Property Description",
+            "price": 100000,
+            "size": 2000,
+            "is_active": true,
+            "is_deleted": false,
+            "attribute_values": {
+                "1": "Value1",
+                "2": "Value2",
+                "3": "Value3"
+            },
+            "address": {
+                "state": 1,
+                "longitude": "20.354654",
+                "latitude": "32.354654"
+            },
+            "feature_data": [
+                {
+                    "id": 1,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                }
+            ],
+            "image_data": [
+                {
+                    "image": "image_data"
+                },
+                {
+                    "image": "image_data"
+                }
+            ],
+            "for_sale": true
+        }
+
+            ```
+
+        Note:
+            Ensure that the user and `category` IDs provided exist in the database.
+            Ensure that the attribute IDs provided in `attribute_values` exist in the database.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        attribute_values:
+          type: object
+          additionalProperties: {}
+          writeOnly: true
+        address:
+          $ref: '#/components/schemas/CreateAddress'
+        feature_data:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          writeOnly: true
+        image_data:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          writeOnly: true
+        name:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        size:
+          type: integer
+        is_active:
+          type: boolean
+        is_deleted:
+          type: boolean
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        unique_number:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        for_sale:
+          type: boolean
+          title: Is For sale
+        is_featured:
+          type: boolean
+        for_rent:
+          type: boolean
+          title: Is For Rent?
+        category:
           type: integer
     PatchedImage_Serializers:
       type: object
