@@ -653,12 +653,58 @@ paths:
       security:
       - cookieAuth: []
       - tokenAuth: []
+      - {}
       responses:
         '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedReviewSerializersList'
+          description: ''
+  /api/property/{pkprop}/reviews/create/:
+    post:
+      operationId: api_property_reviews_create_create
+      description: |-
+        Review Viewsets
+
+        Args:
+            (max_rate_review): to get all review by max rate
+            (min_rate_review): to get all review by min rate
+        Usege:
+        it's used togther to get review in range like `?min_rate_review=1&max_rate_review=2`
+
+
+        Returns:
+            queryset: Review queryset
+      parameters:
+      - in: path
+        name: pkprop
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateReviewSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateReviewSerializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateReviewSerializers'
           description: ''
   /api/property/{id}/:
     get:
@@ -942,12 +988,52 @@ paths:
       security:
       - cookieAuth: []
       - tokenAuth: []
+      - {}
       responses:
         '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedReviewSerializersList'
+          description: ''
+  /api/review/create/:
+    post:
+      operationId: api_review_create_create
+      description: |-
+        Review Viewsets
+
+        Args:
+            (max_rate_review): to get all review by max rate
+            (min_rate_review): to get all review by min rate
+        Usege:
+        it's used togther to get review in range like `?min_rate_review=1&max_rate_review=2`
+
+
+        Returns:
+            queryset: Review queryset
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateReviewSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateReviewSerializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateReviewSerializers'
           description: ''
   /api/schema/:
     get:
@@ -2020,6 +2106,31 @@ components:
       - size
       - time_created
       - unique_number
+    CreateReviewSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        review:
+          type: string
+          title: Note
+        rate_review:
+          type: number
+          format: double
+          title: Rating Number
+        prop:
+          type: integer
+          title: Property
+      required:
+      - id
+      - prop
+      - review
+      - time_created
     DataTypeEnum:
       enum:
       - string
