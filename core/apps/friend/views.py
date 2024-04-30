@@ -5,7 +5,6 @@ import json
 
 from rest_framework import viewsets
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework import filters
 from . import serializers
 from ..models import FriendList, User
