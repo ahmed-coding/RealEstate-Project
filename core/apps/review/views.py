@@ -32,7 +32,10 @@ class ReviewViewsets(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
     search_fields = 'prop'
+
     serializer_class = serializers.ReviewSerializers
+    # permission_classes = [IsAuthenticated]
+
     lookup_field = ('pkprop',)
     filterset_fields = ['prop', 'rate_review']
     ordering_fields = '__all__'
@@ -73,9 +76,16 @@ class ReviewViewsets(viewsets.ModelViewSet):
         return {'user': self.request.user}
     
     
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=self.request.user)  # Assign the current user to the review
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     print(request.data)
+    #     print(self.request.user)
+    #     if  serializer.is_valid(raise_exception=True):
+            
+    #      serializer.save(user=self.request.user)  # Assign the current user to the review
+    #      return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    #     else:
+             
+    #     # headers = self.get_success_headers(serializer.data)
+    #         return Response(serializer.erorrs, status=status.HTTP_400_BAD_REQUEST)
