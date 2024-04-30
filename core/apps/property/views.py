@@ -157,7 +157,7 @@ class PropertyViewsets(viewsets.ModelViewSet):
         })
 
 
-class PropertyCreateAPIView(generics.CreateAPIView):
+class PropertyCreateAPIView(viewsets.ModelViewSet):
     """
     API view class for creating a new property along with address and images.
 
