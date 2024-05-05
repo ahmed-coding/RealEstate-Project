@@ -14,6 +14,11 @@ from . import serializers
 
 
 class CountryViewsets(viewsets.ModelViewSet):
+    """_summary_
+
+    Args:
+        viewsets (_type_): _description_
+    """
     serializer_class = serializers.CountrySerializers
     queryset = Country.objects.all().order_by('-id')
 
@@ -65,7 +70,7 @@ class AddressViewsets(viewsets.ModelViewSet):
     queryset = Address.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.CreateAddressSerializer
-    
+
     # def list(self, request):
     #     addresses = self.queryset
     #     serializer = self.serializer_class(addresses, many=True)
@@ -73,7 +78,7 @@ class AddressViewsets(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
-    
+
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
