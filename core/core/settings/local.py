@@ -6,6 +6,12 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     # 'daphne',
     # 'django_crontab',
+`    # "semantic_admin",
+    # "semantic_forms",`
+    "admin_interface",
+    "colorfield",
+    # 'jet.dashboard',
+    # 'jet',
     'import_export',
     'django.contrib.admin',
     'django.contrib.auth',

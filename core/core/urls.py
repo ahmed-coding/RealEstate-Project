@@ -25,6 +25,8 @@ from apps.notifications.consumers import NotificationConsumer
 from apps.chat.consumers import ChatConsumer
 
 urlpatterns = [
+    # path('jet/', include('jet.urls')),
+    # path('jet/dashboard', include('jet.dashboard.urls', 'jet-dashboard')),
     path('admin/', admin.site.urls),
     path('api/', include('apps.urls')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

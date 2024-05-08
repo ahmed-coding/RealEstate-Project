@@ -2,6 +2,8 @@
 
 echo "Apply database migrations"
 
+pip install requirements.txt
+
 python manage.py makemigrations
 
 echo "Apply database migrate"
