@@ -5,6 +5,8 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'daphne',
     # 'django_crontab',
+    "admin_interface",
+    "colorfield",
     'import_export',
     'django.contrib.admin',
     'django.contrib.auth',
