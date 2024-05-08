@@ -114,6 +114,11 @@ paths:
   /api/address/country/:
     get:
       operationId: api_address_country_list
+      description: |-
+        _summary_
+
+        Args:
+            viewsets (_type_): _description_
       tags:
       - api
       security:
