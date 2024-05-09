@@ -1572,13 +1572,26 @@ paths:
     post:
       operationId: api_user_favorite_delete_all_create
       description: |-
-        _summary_
+        Delete List of Favorite
 
         Args:
-            request (_type_): _description_
-
+            `id`: id of favorite `(NOT PROPERTY)`
+            ex:
+            ```
+            [
+                {
+                    "id":1
+                },
+                {
+                    "id":2
+                },
+                {
+                    "id":3
+                }
+            ]
+            ```
         Returns:
-            _type_: _description_
+            data-done: if is ok
       tags:
       - api
       requestBody:
@@ -1606,13 +1619,26 @@ paths:
     post:
       operationId: api_user_favorite_delete_list_create
       description: |-
-        _summary_
+        Delete List of Favorite
 
         Args:
-            request (_type_): _description_
-
+            `id`: id of favorite `(NOT PROPERTY)`
+            ex:
+            ```
+            [
+                {
+                    "id":1
+                },
+                {
+                    "id":2
+                },
+                {
+                    "id":3
+                }
+            ]
+            ```
         Returns:
-            _type_: _description_
+            data-done: if is ok
       tags:
       - api
       requestBody:
