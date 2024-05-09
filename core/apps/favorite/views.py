@@ -51,22 +51,35 @@ class FavoriteView(viewsets.ModelViewSet):
 
     @action(detail=True)
     def destroy_list(self, request, *args, **kwargs):
-        """_summary_
+        """Delete List of Favorite
 
         Args:
-            request (_type_): _description_
-
+            `id`: id of favorite `(NOT PROPERTY)`
+            ex:
+            ```
+            [
+                {
+                    "id":1
+                },
+                {
+                    "id":2
+                },
+                {
+                    "id":3
+                }
+            ]
+            ```
         Returns:
-            _type_: _description_
+            data-done: if is ok
         """
-        item = request.data
+        item = self.request.data
         # print(item)
-        user = request.user
+        querysets = self.get_queryset()
         if item:
             try:
                 for id in item:
-                    Favorite.objects.filter(
-                        user_id=request.user.id, id=id.get('id')).delete()
+                    querysets.filter(
+                        user_id=self.request.user.id, id=id.get('id')).delete()
                 return Response({
                     'data': 'Done'
                 }, status=status.HTTP_200_OK)
