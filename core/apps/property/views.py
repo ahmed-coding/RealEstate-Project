@@ -18,7 +18,7 @@ class BastSellerViewsets(viewsets.ModelViewSet):
     """BastSellerViewsets
 
     Args:
-        - `category`: for get all Sellers from `Category` in `GET` method 
+        - `category`: for get all Sellers from `Main Category` in `GET` method 
         - `user_type`: for get all Sellers By `user_type` in `GET` method
         - `user_type-choices`: `owner`, `agent`, `promoter`
 
@@ -53,7 +53,7 @@ class BastSellerViewsets(viewsets.ModelViewSet):
         # ).order_by('-property_count')
         if category:
             queryset = User.objects.filter(
-                property__category=category, is_seller=True, user_type__in=["owner", "agent", "promoter"]).annotate(
+                property__category__parent__id=category, is_seller=True, user_type__in=["owner", "agent", "promoter"]).annotate(
                 property_count=Count('property', filter=Q(
                     property__category=category))
             ).order_by('-property_count')
