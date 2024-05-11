@@ -62,6 +62,7 @@ class StateViewsets(viewsets.ModelViewSet):
     def get_queryset(self):
         city = self.request.query_params.get("city") or None
         category_id = self.request.query_params.get("main_category")
+        category_id = None if category_id == '0' else category_id
 
         # If category_id is provided, filter states based on properties in that category
         queryset = State.objects.all().order_by('id')
