@@ -966,7 +966,8 @@ paths:
         BastSellerViewsets
 
         Args:
-            - `category`: for get all property from `Main Category` in `GET` method from tow levels
+            - `category`: for get all Sellers from `Category` in `GET` method
+            - `user_type`: for get all Sellers By `user_type` in `GET` method
       parameters:
       - in: query
         name: name
@@ -1974,6 +1975,8 @@ components:
         property_count:
           type: integer
           readOnly: true
+        user_type:
+          $ref: '#/components/schemas/UserTypeEnum'
       required:
       - email
       - id
