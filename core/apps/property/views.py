@@ -18,7 +18,7 @@ class BastSellerViewsets(viewsets.ModelViewSet):
     """BastSellerViewsets
 
     Args:
-        - `category`: for get all property from `Main Category` in `GET` method from tow levels
+        - `category`: for get all property from `Category` in `GET` method from tow levels
 
     """
     serializer_class = serializers.BastSellerSerializers
@@ -47,11 +47,18 @@ class BastSellerViewsets(viewsets.ModelViewSet):
         #     property_count=Count('property', filter=Q(
         #         property__category=category))
         # ).order_by('-property_count')
-        queryset = User.objects.filter(
-            property__category=category, is_seller=True).annotate(
-            property_count=Count('property', filter=Q(
-                property__category=category))
-        ).order_by('-property_count')
+        if category:
+            queryset = User.objects.filter(
+                property__category=category, is_seller=True).annotate(
+                property_count=Count('property', filter=Q(
+                    property__category=category))
+            ).order_by('-property_count')
+        else:
+            queryset = User.objects.filter(
+                property__category=category, is_seller=True).annotate(
+                property_count=Count('property', filter=Q(
+                    property__category_parent=category))
+            ).order_by('-property_count')
         return queryset
 
 
