@@ -78,7 +78,8 @@ class CustomAdminUser(UserAdmin):
                     "groups",
                     "user_permissions",
                     "is_deleted",
-                    "is_seller"
+                    "is_seller",
+                    "user_type"
                 ),
             },
         ),
@@ -89,7 +90,7 @@ class CustomAdminUser(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("username", "email", "password1", "password2", 'name', 'phone_number'),
+                "fields": ("username", "email", "password1", "password2", 'name', 'phone_number', "user_type"),
             },
         ),
     )
