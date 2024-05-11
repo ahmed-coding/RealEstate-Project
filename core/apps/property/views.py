@@ -104,7 +104,7 @@ class PropertyViewsets(viewsets.ModelViewSet):
             elif self.action == 'get_by_state':
                 state = self.request.query_params.get(
                     "state", None) or None
-                return Property.objects.filter(address__state=obj).order_by('-id')
+                return Property.objects.filter(address__state=obj, category__parent__id=self.main_category).order_by('-id')
 
             else:
                 return Property.objects.filter(category__parent__id=self.main_category).order_by('-id')
