@@ -18,7 +18,8 @@ class BastSellerViewsets(viewsets.ModelViewSet):
     """BastSellerViewsets
 
     Args:
-        - `category`: for get all property from `Category` in `GET` method from tow levels
+        - `category`: for get all Sellers from `Category` in `GET` method 
+        - `user_type`: for get all Sellers By `user_type` in `GET` method 
 
     """
     serializer_class = serializers.BastSellerSerializers
@@ -35,6 +36,8 @@ class BastSellerViewsets(viewsets.ModelViewSet):
     def get_queryset(self):
         category = self.request.query_params.get(
             "category", None) or None
+        user_type = self.request.query_params.get(
+            "user_type", None) or None
         # queryset = User.objects.annotate(
         #     property_count=Count(
         #         Case(
@@ -58,6 +61,8 @@ class BastSellerViewsets(viewsets.ModelViewSet):
                 is_seller=True).annotate(
                 property_count=Count('property')
             ).order_by('-property_count')
+        if user_type:
+            queryset = queryset.filter(user_type=user_type)
         return queryset
 
 
