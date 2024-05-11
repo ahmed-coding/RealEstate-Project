@@ -168,15 +168,8 @@ paths:
 
         Argament:
             `city`: city id to get all State in `GET Method`
+            `main_category`: Main category id to get all State in `GET Method`
       parameters:
-      - in: query
-        name: city
-        schema:
-          type: integer
-      - in: query
-        name: name
-        schema:
-          type: string
       - name: ordering
         required: false
         in: query
