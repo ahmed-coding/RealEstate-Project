@@ -962,6 +962,11 @@ paths:
   /api/property/bast-seller/:
     get:
       operationId: api_property_bast_seller_list
+      description: |-
+        BastSellerViewsets
+
+        Args:
+            - `category`: for get all property from `Main Category` in `GET` method from tow levels
       parameters:
       - in: query
         name: name
