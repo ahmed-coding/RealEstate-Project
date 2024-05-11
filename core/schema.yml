@@ -1978,10 +1978,15 @@ components:
           readOnly: true
         user_type:
           $ref: '#/components/schemas/UserTypeEnum'
+        rate_review:
+          type: number
+          format: double
+          readOnly: true
       required:
       - email
       - id
       - property_count
+      - rate_review
     BlankEnum:
       enum:
       - ''
