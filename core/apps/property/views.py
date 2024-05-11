@@ -42,7 +42,7 @@ class BastSellerViewsets(viewsets.ModelViewSet):
         #         property__category=category))
         # ).order_by('-property_count')
         queryset = User.objects.filter(
-            property__category=category).annotate(
+            property__category=category, is_seller=True).annotate(
             property_count=Count('property', filter=Q(
                 property__category=category))
         ).order_by('-property_count')
