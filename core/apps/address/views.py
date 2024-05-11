@@ -48,8 +48,8 @@ class StateViewsets(viewsets.ModelViewSet):
     """StateViewsets
 
     Argament:
-        `city`: city id to get all State in `GET Method`
-        `main_category`: Main category id to get all State in `GET Method`
+        - `city`: city id to get all State in `GET Method`
+        - `main_category`: Main category id to get all State in `GET Method`
     """
     serializer_class = serializers.StateSerializers
     # pagination_class = StandardResultsSetPagination
