@@ -19,7 +19,8 @@ class BastSellerViewsets(viewsets.ModelViewSet):
 
     Args:
         - `category`: for get all Sellers from `Category` in `GET` method 
-        - `user_type`: for get all Sellers By `user_type` in `GET` method 
+        - `user_type`: for get all Sellers By `user_type` in `GET` method
+        - `user_type-choices`: `owner`, `agent`, `promoter`
 
     """
     serializer_class = serializers.BastSellerSerializers
