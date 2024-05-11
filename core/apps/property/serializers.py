@@ -30,13 +30,24 @@ class BastSellerSerializers(UserSerializer):
         User: _description_
     """
     property_count = serializers.SerializerMethodField()
+    rate_review = serializers.SerializerMethodField(read_only=True)
+
+    def get_rate_review(self, obj) -> float:
+        ratings = obj.property.all().values_list('review__rate_review', flat=True)
+        # Filter out None values
+        ratings = [rating for rating in ratings if rating is not None]
+        if ratings:
+            average_rating = sum(ratings) / len(ratings)
+            return round(average_rating, 1)
+        else:
+            return 0.0
 
     def get_property_count(self, obj) -> int:
         return obj.property_count
 
     class Meta:
         fields = ['id', 'email', 'phone_number',
-                  'username',   'name', 'is_active', 'image', 'property_count', 'user_type']
+                  'username',   'name', 'is_active', 'image', 'property_count', 'user_type', 'rate_review']
         model = User
 
 
