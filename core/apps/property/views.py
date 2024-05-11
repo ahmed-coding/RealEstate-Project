@@ -58,7 +58,7 @@ class BastSellerViewsets(viewsets.ModelViewSet):
             ).order_by('-property_count')
         else:
             queryset = User.objects.filter(
-                is_seller=True).annotate(
+                is_seller=True, user_type__in=["owner", "agent", "promoter"]).annotate(
                 property_count=Count('property')
             ).order_by('-property_count')
         if user_type:
