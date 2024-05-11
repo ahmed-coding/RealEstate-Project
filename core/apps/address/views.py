@@ -67,10 +67,11 @@ class StateViewsets(viewsets.ModelViewSet):
         queryset = State.objects.all().order_by('id')
         if category_id:
             queryset = queryset.filter(
-                addresses__property__category_id=category_id
+                addresses__property__category__parent__id=category_id
             ).distinct().order_by('id')
         if city:
             queryset = queryset.filter(city=city).order_by('id')
+        return queryset
 
 
 class AddressViewsets(viewsets.ModelViewSet):
