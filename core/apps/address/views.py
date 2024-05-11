@@ -49,6 +49,7 @@ class StateViewsets(viewsets.ModelViewSet):
 
     Argament:
         `city`: city id to get all State in `GET Method`
+        `main_category`: Main category id to get all State in `GET Method`
     """
     serializer_class = serializers.StateSerializers
     # pagination_class = StandardResultsSetPagination
@@ -60,10 +61,16 @@ class StateViewsets(viewsets.ModelViewSet):
 
     def get_queryset(self):
         city = self.request.query_params.get("city") or None
+        category_id = self.request.query_params.get("main_category")
+
+        # If category_id is provided, filter states based on properties in that category
+        queryset = State.objects.all().order_by('id')
+        if category_id:
+            queryset = queryset.filter(
+                addresses__property__category_id=category_id
+            ).distinct().order_by('id')
         if city:
-            return State.objects.filter(city=city).order_by('id')
-        else:
-            return State.objects.all().order_by('id')
+            queryset = queryset.filter(city=city).order_by('id')
 
 
 class AddressViewsets(viewsets.ModelViewSet):
