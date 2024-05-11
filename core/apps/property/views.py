@@ -15,6 +15,12 @@ from rest_framework import generics
 
 
 class BastSellerViewsets(viewsets.ModelViewSet):
+    """BastSellerViewsets
+
+    Args:
+        - `category`: for get all property from `Main Category` in `GET` method from tow levels
+
+    """
     serializer_class = serializers.BastSellerSerializers
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
