@@ -36,7 +36,7 @@ class BastSellerSerializers(UserSerializer):
 
     class Meta:
         fields = ['id', 'email', 'phone_number',
-                  'username',   'name', 'is_active', 'image', 'property_count']
+                  'username',   'name', 'is_active', 'image', 'property_count', 'user_type']
         model = User
 
 
