@@ -78,6 +78,6 @@ class ValueIndex(AlgoliaIndex):
 
 @register(property_value)
 class PropertyValueIndex(AlgoliaIndex):
-    fields = ('id', 'value')
-    settings = {'searchableAttributes': ['value']}
+    fields = ('id', 'value', 'property_id')
+    settings = {'searchableAttributes': ['value', 'property_id']}
     index_name = 'property_value_index'
