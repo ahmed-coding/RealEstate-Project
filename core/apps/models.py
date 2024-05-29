@@ -1,3 +1,4 @@
+from .property import serializers
 from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.contrib.contenttypes.fields import GenericRelation
@@ -622,9 +623,13 @@ class Property(models.Model):
             self.unique_no = f"{slugify(self.name.strip())}-{str(uuid.uuid4())[:8]}"
         return super().save(*args, **kwargs)
 
+    # start in customize the fields for algolia
     class Meta:
         db_table = 'Property'
+
     # add a speacial method to return the name of Property object
+    def get_algolia_serializer(self):
+        return serializers.PropertyDetailsSerializers(self).data
 
     @property
     def image_url(self):

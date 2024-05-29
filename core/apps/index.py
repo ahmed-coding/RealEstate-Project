@@ -6,13 +6,13 @@ from .models import Property, Feature, Feature_property, Attribute, ValueModel, 
 @register(Property)
 class PropertyIndex(AlgoliaIndex):
     fields = [
-        'id', 'name', 'description', 'price', 'review',
-        'address', 'category', 'user', 'feature_property', 'property_value', 'image'
+        'id', 'name', 'description', 'price', 'review', 'is_featured', 'for_sale', 'for_rent',
+        'address', 'category', 'user_id', 'feature_property', 'property_value', 'image_url', 'unique_number', 'is_active', 'size',
     ]
     settings = {
         'searchableAttributes': [
-            'name', 'description', 'address', 'category', 'user.id',
-            'feature_property.feature.name', 'property_value.value', 'review.rate_review', 'image.image.url'
+            'name', 'description', 'address', 'category', 'user_id', 'is_featured', 'for_sale', 'for_rent', 'unique_number', 'is_active', 'size',
+            'feature_property.feature.name', 'property_value.value', 'review.rate_review', 'image_url'
         ]
     }
     index_name = 'property_index'
