@@ -6,7 +6,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     # 'daphne',
     # 'django_crontab',
-   # "semantic_admin",
+    # "semantic_admin",
     # "semantic_forms",
     "admin_interface",
     "colorfield",
@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'schema_graph',
     'corsheaders',
     'channels',
+    'algoliasearch_django',
 ]
 
 DATABASES = {

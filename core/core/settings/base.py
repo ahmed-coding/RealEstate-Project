@@ -229,3 +229,11 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFUALT_FROM_EMAIL = EMAIL_HOST_USER
 
 # End settings for Email
+
+
+# algolia settings
+
+ALGOLIA = {
+    'APPLICATION_ID': 'JOGS9NTSUL',
+    'API_KEY': '3a4e5442a0dc5257d9d526ba5163743f'
+}
