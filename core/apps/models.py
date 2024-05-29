@@ -629,8 +629,8 @@ class Property(models.Model):
 
    # add a speacial method to return the name of Property object
     def get_algolia_serializer(self):
-        from .property import serializers
-        return serializers.PropertyDetailsSerializers(self).data
+        from . import algolia_serializers as serializers
+        return serializers.PropertyAlgoliaSerializer(self).data
 
     @property
     def image_url(self):
@@ -640,8 +640,8 @@ class Property(models.Model):
         return urls
 
     def data_serializers(self):
-        from .property import serializers
-        return serializers.PropertyDetailsSerializers(self).data
+        from . import algolia_serializers as serializers
+        return serializers.PropertyAlgoliaSerializer(self).data
 
     def __str__(self) -> str:
         return self.name
