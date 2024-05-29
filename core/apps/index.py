@@ -3,16 +3,46 @@ from algoliasearch_django.decorators import register
 from .models import Property, Feature, Feature_property, Attribute, ValueModel, property_value
 
 
+# @register(Property)
+# class PropertyIndex(AlgoliaIndex):
+#     fields = [
+#         'id', 'name', 'description', 'price', 'review', 'is_featured', 'for_sale', 'for_rent',
+#         'address', 'category', 'user_id', 'feature_property', 'property_value', 'image_url', 'unique_number', 'is_active', 'size',
+#     ]
+#     settings = {
+#         'searchableAttributes': [
+#             'name', 'description', 'address', 'category', 'user_id', 'is_featured', 'for_sale', 'for_rent', 'unique_number', 'is_active', 'size',
+#             'feature_property.feature.name', 'property_value.value', 'review.rate_review', 'image_url'
+#         ]
+#     }
+#     index_name = 'property_index'
+
+
+# @register(Property)
+# class PropertyIndex(AlgoliaIndex):
+#     fields = [
+#         'id', 'name', 'description', 'price', 'review', 'is_featured', 'for_sale', 'for_rent',
+#         'address', 'category', 'user_id', 'feature_property', 'property_value', 'image_url', 'unique_number', 'is_active', 'size',
+#     ]
+#     settings = {
+#         'searchableAttributes': [
+#             'name', 'description', 'address', 'category', 'user_id', 'is_featured', 'for_sale', 'for_rent', 'unique_number', 'is_active', 'size',
+#             'feature_property.name', 'property_value.value', 'review.rate_review', 'image_url'
+#         ]
+#     }
+#     index_name = 'property_index'
+
+
 @register(Property)
 class PropertyIndex(AlgoliaIndex):
     fields = [
-        'id', 'name', 'description', 'price', 'review', 'is_featured', 'for_sale', 'for_rent',
-        'address', 'category', 'user_id', 'feature_property', 'property_value', 'image_url', 'unique_number', 'is_active', 'size',
+        'data_serializers', 'id', 'name', 'description', 'price', 'review', 'is_featured', 'for_sale', 'for_rent',
+        'address', 'address_id', 'category', 'user_id', 'feature_property', 'property_value', 'image_url', 'unique_number', 'is_active', 'size',
     ]
     settings = {
         'searchableAttributes': [
-            'name', 'description', 'address', 'category', 'user_id', 'is_featured', 'for_sale', 'for_rent', 'unique_number', 'is_active', 'size',
-            'feature_property.feature.name', 'property_value.value', 'review.rate_review', 'image_url'
+            'data_serializers', 'name', 'description', 'address', 'category', 'user_id', 'is_featured', 'for_sale', 'for_rent', 'unique_number', 'is_active', 'size',
+            'feature_property.name', 'property_value.value', 'review.rate_review', 'image_url'
         ]
     }
     index_name = 'property_index'

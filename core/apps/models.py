@@ -1,4 +1,4 @@
-from .property import serializers
+# from .property import algolia_serializers
 from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.contrib.contenttypes.fields import GenericRelation
@@ -627,8 +627,9 @@ class Property(models.Model):
     class Meta:
         db_table = 'Property'
 
-    # add a speacial method to return the name of Property object
+   # add a speacial method to return the name of Property object
     def get_algolia_serializer(self):
+        from .property import serializers
         return serializers.PropertyDetailsSerializers(self).data
 
     @property
@@ -637,6 +638,10 @@ class Property(models.Model):
         urls = [i.image.url for i in Image.objects.filter(
             content_type=content_type, object_id=self.pk)]
         return urls
+
+    def data_serializers(self):
+        from .property import serializers
+        return serializers.PropertyDetailsSerializers(self).data
 
     def __str__(self) -> str:
         return self.name
