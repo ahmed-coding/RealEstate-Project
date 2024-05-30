@@ -4,6 +4,7 @@ DEFAULT_NOTIFICATION_PAGE_SIZE = 10
 "General" notifications include:
 	1. FriendRequest
 	2. FriendList
+	3. Alarms
 """
 GENERAL_MSG_TYPE_NOTIFICATIONS_PAYLOAD = 0  # New 'general' notifications data payload incoming
 GENERAL_MSG_TYPE_PAGINATION_EXHAUSTED = 1  # No more 'general' notifications to retrieve
