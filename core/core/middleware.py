@@ -14,7 +14,8 @@ class TokenAuthMiddleware(BaseMiddleware):
         authorization_header = headers.get(b"authorization", b"")
 
         # Decode the 'Authorization' header from bytes to string
-        auth_token = authorization_header.decode(
+        token = authorization_header[6:]
+        auth_token = token.decode(
             "utf-8") if authorization_header else None
 
         # Validate the token and set the user in the scope
