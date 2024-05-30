@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 import json
 from datetime import datetime
 
-from ..models import Notification, FriendRequest, FriendList, UnreadChatRoomMessages
+from ..models import Alarm, Notification, FriendRequest, FriendList, UnreadChatRoomMessages
 from .utils import LazyNotificationEncoder, NotificationsSerializers
 from .constants import *
 from ..chat.exceptions import ClientError
@@ -126,7 +126,7 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
                 await mark_notifications_read(self.scope["user"])
 
             elif command == "get_chat_notifications":
-                payload = await get_chat_notifications(self.scope["user"], content.get("page_number", None))
+                payload = await get_chat_notifications(self.scope["user"],  content.get("page_number", None))
                 if payload == None:
                     await self.chat_pagination_exhausted()
                 else:
@@ -147,6 +147,14 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
                 except Exception as e:
                     print("UNREAD CHAT MESSAGE COUNT EXCEPTION: " + str(e))
                     pass
+            elif command == "get_alarms_notifications":
+                payload = await get_alarms_notifications(self.user, content.get("page_number", None))
+                if payload == None:
+                    await self.chat_pagination_exhausted()
+                else:
+                    payload = json.loads(payload)
+                    await self.send_alarms_notifications(payload['notifications'], payload['new_page_number'])
+
         except ClientError as e:
             print("EXCEPTION: receive_json: " + str(e))
             pass
@@ -295,6 +303,18 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
                 "chat_msg_type": CHAT_MSG_TYPE_GET_UNREAD_NOTIFICATIONS_COUNT,
                 "count": count,
             },
+        )
+
+    async def send_alarms_notifications(self, notifications, new_page_number):
+        """
+        Send All Notifications for Alarms
+        """
+        await self.send_json(
+            {
+                'chat_msg_type': GENERAL_MSG_TYPE_ALARMS_NOTIFICATION,
+                'notifications': notifications,
+                "new_page_number": new_page_number,
+            }
         )
 
 
@@ -552,3 +572,32 @@ def get_unread_chat_notification_count(user):
         raise ClientError(
             "AUTH_ERROR", "User must be authenticated to get notifications.")
     return None
+
+
+@database_sync_to_async
+def get_alarms_notifications(user, page_number):
+    if user.is_authenticated:
+        alarms_ct = ContentType.objects.get_for_model(Alarm)
+        notifications = Notification.objects.filter(
+            target=user, content_type=alarms_ct)
+        p = Paginator(notifications, DEFAULT_NOTIFICATION_PAGE_SIZE)
+        # sleep 1s for testing
+        # sleep(1)
+        print("PAGES: " + str(p.num_pages))
+        payload = {}
+        if len(notifications) > 0:
+            if int(page_number) <= p.num_pages:
+                s = NotificationsSerializers()
+                serialized_notifications = NotificationsSerializers(
+                    notifications, many=True).data
+                # serialized_notifications = s.serialize(
+                #     p.page(page_number).object_list)
+                payload['notifications'] = serialized_notifications
+                new_page_number = int(page_number) + 1
+                payload['new_page_number'] = new_page_number
+                return json.dumps(payload)
+        else:
+            return None
+    else:
+        raise ClientError(
+            "AUTH_ERROR", "User must be authenticated to get notifications.")
