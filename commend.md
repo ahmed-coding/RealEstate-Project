@@ -40,3 +40,7 @@
 -------
 # [UvicornServer]
 `uvicorn core.asgi:application --port 8000 --workers 4 --log-level debug --reload`
+
+# [Algolia Search]
+## Algolia Setup for first time
+` python.exe manage.py algolia_reindex`
