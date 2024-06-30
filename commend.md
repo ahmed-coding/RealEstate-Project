@@ -43,4 +43,5 @@
 
 # [Algolia Search]
 ## Algolia Setup for first time
+` python manage.py algolia_applysettings`
 ` python manage.py algolia_reindex`
