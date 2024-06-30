@@ -248,6 +248,11 @@ class PropertyCreateAPIView(viewsets.ModelViewSet):
     serializer_class = serializers.CreatePropertySerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        # if self.action == 'partial_update':
+        #     return Property.objects.filter(user=self.request.user)
+        return Property.objects.filter(user=self.request.user)
+
     def get_serializer_context(self):
         """
         Extra context provided to the serializer class.
