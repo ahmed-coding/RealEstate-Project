@@ -1235,6 +1235,87 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateProperty'
           description: ''
+  /api/property/filter/:
+    get:
+      operationId: api_property_filter_list
+      description: |-
+        Viewset for filtering the Property model.
+
+        Filtering Parameters:
+            state: Filter by state (e.g., ?state=California)
+            category: Filter by category ID (e.g., ?category=1)
+            max_price: Filter properties with price less than or equal to the given value (e.g., ?max_price=100000)
+            min_price: Filter properties with price greater than or equal to the given value (e.g., ?min_price=50000)
+            for_sale: Filter properties that are for sale (e.g., ?for_sale=true)
+            for_rent: Filter properties that are for rent (e.g., ?for_rent=true)
+            attribute_value: Filter properties by attribute value (e.g., ?attribute_value=Sea View)
+
+        Ordering Parameters:
+            price: Order by price (e.g., ?ordering=price or ?ordering=-price for descending)
+            time_created: Order by creation time (e.g., ?ordering=time_created or ?ordering=-time_created for descending)
+
+        Args:
+            viewsets.ModelViewSet: A base class for all viewsets that provides default CRUD operations.
+
+        Returns:
+            QuerySet: The filtered and ordered queryset of Property objects.
+
+        Example JSON payload:
+        {
+            "state": "California",
+            "category": 1,
+            "max_price": 100000,
+            "min_price": 50000,
+            "for_sale": true,
+            "for_rent": false,
+            "attribute_values": [
+                {
+                    "attribute_id": 1,
+                    "value": "3"
+                },
+                {
+                    "attribute_id": 2,
+                    "value": "200.5"
+                },
+                {
+                    "attribute_id": 3,
+                    "value": "true"
+                }
+            ]
+        }
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - in: query
+        name: for_rent
+        schema:
+          type: boolean
+      - in: query
+        name: for_sale
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PropertyFilter'
+          description: ''
   /api/property/high-rate/:
     get:
       operationId: api_property_high_rate_retrieve
@@ -3069,6 +3150,60 @@ components:
       - name
       - property_value
       - rate_review
+      - size
+      - time_created
+      - unique_number
+      - user
+    PropertyFilter:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        size:
+          type: integer
+        is_active:
+          type: boolean
+        is_deleted:
+          type: boolean
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        unique_number:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        for_sale:
+          type: boolean
+          title: Is For sale
+        is_featured:
+          type: boolean
+        for_rent:
+          type: boolean
+          title: Is For Rent?
+        user:
+          type: integer
+        category:
+          type: integer
+        address:
+          type: integer
+          nullable: true
+      required:
+      - category
+      - description
+      - id
+      - name
       - size
       - time_created
       - unique_number
