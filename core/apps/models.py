@@ -671,7 +671,7 @@ class Feature_property(models.Model):
         "Property"), on_delete=models.CASCADE, related_name='feature_property')
     feature = models.ForeignKey(Feature, verbose_name=_(
         "Feature"), on_delete=models.CASCADE, related_name='feature_property')
-    image = GenericRelation(Image, related_query_name='featuer_property')
+    image = GenericRelation(Image, related_query_name='featuer_property_image')
 
     class Meta:
         db_table = 'Feature_property'

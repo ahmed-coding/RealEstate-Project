@@ -15,6 +15,10 @@ urlpatterns = [
     # image method
     path('image/<int:pk>/update/', views.ImageViewsets.as_view(
         {'put': 'partial_update', 'patch': 'partial_update'})),
+    path('image/feature/create/',
+         views.CreatePropertyfeaturedImageViewsets.as_view({'post': 'create'})),
+    path('image/property/create/',
+         views.CreatePropertyImageViewsets.as_view({'post': 'create'})),
     path('image/<int:pk>/delete/',
          views.ImageViewsets.as_view({'delete': 'destroy'})),
 
