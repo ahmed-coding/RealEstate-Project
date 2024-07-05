@@ -539,6 +539,62 @@ paths:
               schema:
                 $ref: '#/components/schemas/Image_Serializers'
           description: ''
+  /api/image/feature/create/:
+    post:
+      operationId: api_image_feature_create_create
+      description: Create Property feature Image Viewsets
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyfeaturedImage_Serializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyfeaturedImage_Serializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyfeaturedImage_Serializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePropertyfeaturedImage_Serializers'
+          description: ''
+  /api/image/property/create/:
+    post:
+      operationId: api_image_property_create_create
+      description: Create Property Image Viewsets
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyImage_Serializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyImage_Serializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyImage_Serializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePropertyImage_Serializers'
+          description: ''
   /api/property/:
     get:
       operationId: api_property_list
@@ -2352,6 +2408,39 @@ components:
       - size
       - time_created
       - unique_number
+    CreatePropertyImage_Serializers:
+      type: object
+      properties:
+        image:
+          type: string
+          format: uri
+        object_id:
+          type: integer
+        id:
+          type: integer
+          readOnly: true
+      required:
+      - id
+      - image
+      - object_id
+    CreatePropertyfeaturedImage_Serializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        feature_property_image:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image_Serializers'
+        property:
+          type: integer
+        feature:
+          type: integer
+      required:
+      - feature
+      - id
+      - property
     CreateReviewSerializers:
       type: object
       properties:
