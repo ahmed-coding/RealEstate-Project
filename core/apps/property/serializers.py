@@ -490,3 +490,9 @@ class CreatePropertySerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = '__all__'
+
+
+class PropertyFilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Property
+        fields = '__all__'

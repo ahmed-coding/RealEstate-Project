@@ -1,3 +1,4 @@
+from rest_framework.filters import OrderingFilter
 from django.db.models import Count, Case, When, IntegerField
 from django.utils.translation import gettext_lazy as _
 from rest_framework.decorators import action
@@ -252,3 +253,108 @@ class PropertyCreateAPIView(viewsets.ModelViewSet):
             'view': self,
             'user': self.request.user
         }
+
+
+class PropertyFilterViewSet(viewsets.ModelViewSet):
+    """
+    Viewset for filtering the Property model.
+
+    Filtering Parameters:
+        state: Filter by state (e.g., ?state=California)
+        category: Filter by category ID (e.g., ?category=1)
+        max_price: Filter properties with price less than or equal to the given value (e.g., ?max_price=100000)
+        min_price: Filter properties with price greater than or equal to the given value (e.g., ?min_price=50000)
+        for_sale: Filter properties that are for sale (e.g., ?for_sale=true)
+        for_rent: Filter properties that are for rent (e.g., ?for_rent=true)
+        attribute_value: Filter properties by attribute value (e.g., ?attribute_value=Sea View)
+
+    Ordering Parameters:
+        price: Order by price (e.g., ?ordering=price or ?ordering=-price for descending)
+        time_created: Order by creation time (e.g., ?ordering=time_created or ?ordering=-time_created for descending)
+
+    Args:
+        viewsets.ModelViewSet: A base class for all viewsets that provides default CRUD operations.
+
+    Returns:
+        QuerySet: The filtered and ordered queryset of Property objects.
+
+    Example JSON payload:
+    {
+        "state": "California",
+        "category": 1,
+        "max_price": 100000,
+        "min_price": 50000,
+        "for_sale": true,
+        "for_rent": false,
+        "attribute_values": [
+            {
+                "attribute_id": 1,
+                "value": "3"
+            },
+            {
+                "attribute_id": 2,
+                "value": "200.5"
+            },
+            {
+                "attribute_id": 3,
+                "value": "true"
+            }
+        ]
+    }
+    """
+    queryset = Property.objects.all()
+    serializer_class = serializers.PropertyFilterSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['category', 'for_sale', 'for_rent']
+    ordering_fields = ['price', 'time_created']
+
+    @action(detail=False, methods=['post'])
+    def filter(self, request):
+        """
+        Custom action to filter properties based on JSON payload.
+
+        Returns:
+            Response: A list of filtered Property objects.
+        """
+        queryset = self.get_queryset()
+        data = request.data
+
+        state = data.get('state')
+        category = data.get('category')
+        # is_active = data.get('is_active')
+        max_price = data.get('max_price')
+        min_price = data.get('min_price')
+        for_sale = data.get('for_sale')
+        for_rent = data.get('for_rent')
+        attribute_values = data.get('attribute_values', [])
+
+        if state:
+            queryset = queryset.filter(address__state=state)
+
+        if category:
+            queryset = queryset.filter(category=category)
+
+        # if is_active is not None:
+        #     queryset = queryset.filter(is_active=is_active)
+
+        if max_price is not None:
+            queryset = queryset.filter(price__lte=max_price)
+
+        if min_price is not None:
+            queryset = queryset.filter(price__gte=min_price)
+
+        if for_sale is not None:
+            queryset = queryset.filter(for_sale=for_sale)
+
+        if for_rent is not None:
+            queryset = queryset.filter(for_rent=for_rent)
+
+        for attribute in attribute_values:
+            attribute_id = attribute.get('attribute_id')
+            value = attribute.get('value')
+            if attribute_id and value:
+                queryset = queryset.filter(
+                    property_value__attribute_id=attribute_id, property_value__value=value)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)

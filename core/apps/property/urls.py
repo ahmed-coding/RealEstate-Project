@@ -10,6 +10,8 @@ urlpatterns = [
          views.PropertyViewsets.as_view({'get': 'get_by_state'})),
 
     path('create/', views.PropertyCreateAPIView.as_view({'post': 'create'})),
+    path('filter/', views.PropertyFilterViewSet.as_view({'get': 'list'})),
+
     path('<int:pk>/', views.PropertyViewsets.as_view({'get': 'retrieve'})),
 
     path('<int:pk>/update/',
