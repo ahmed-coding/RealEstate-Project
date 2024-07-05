@@ -545,13 +545,17 @@ paths:
       description: |-
         Property Viewsets
         Args:
-            - `main_category`: for get all property from `Main Category` in `GET` method from tow levels
-            - `state`: `state id` for get all property in thet sate.
+            - main_category: for get all property from Main Category in GET method from two levels
+            - state: state id for get all property in that state.
       parameters:
       - in: query
         name: category
         schema:
           type: integer
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
       - in: query
         name: is_featured
         schema:
@@ -718,8 +722,8 @@ paths:
       description: |-
         Property Viewsets
         Args:
-            - `main_category`: for get all property from `Main Category` in `GET` method from tow levels
-            - `state`: `state id` for get all property in thet sate.
+            - main_category: for get all property from Main Category in GET method from two levels
+            - state: state id for get all property in that state.
       parameters:
       - in: path
         name: id
@@ -744,8 +748,8 @@ paths:
       description: |-
         Property Viewsets
         Args:
-            - `main_category`: for get all property from `Main Category` in `GET` method from tow levels
-            - `state`: `state id` for get all property in thet sate.
+            - main_category: for get all property from Main Category in GET method from two levels
+            - state: state id for get all property in that state.
       parameters:
       - in: path
         name: id
@@ -1017,7 +1021,7 @@ paths:
       description: |-
         State Viewsets
         Args:
-            - `state`: `state id` for get all property in thet sate.
+            - `state`: state id for get all property in that `state`.
       tags:
       - api
       security:
@@ -1129,8 +1133,8 @@ paths:
       description: |-
         Property Viewsets
         Args:
-            - `main_category`: for get all property from `Main Category` in `GET` method from tow levels
-            - `state`: `state id` for get all property in thet sate.
+            - main_category: for get all property from Main Category in GET method from two levels
+            - state: state id for get all property in that state.
       tags:
       - api
       security:
