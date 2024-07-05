@@ -20,6 +20,41 @@ class CreatePropertyfeaturedImage_Serializers(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
+        """
+        Create a Feature_property instance and associated images.
+
+        Example JSON payload:
+        {
+            "property": 1,
+            "feature": 2,
+            "feature_property_image": [
+                {
+                    "image": "image1.jpg"
+                },
+                {
+                    "image": "image2.jpg"
+                },
+                {
+                    "image": "image3.jpg"
+                }
+            ]
+        }
+
+        Parameters:
+        validated_data (dict): The validated data from the serializer.
+
+        Returns:
+        Feature_property: The created Feature_property instance with associated images.
+
+        Explanation of JSON Fields:
+        - property: The ID of the Property instance to which this Feature_property is related.
+        - feature: The ID of the Feature instance to which this Feature_property is related.
+        - feature_property_image: A list of image objects, where each object contains the image field representing the image file name or path.
+
+        Note:
+        - The IDs (property and feature) should correspond to existing instances in your database.
+        - The image fields in feature_property_image should contain valid paths or names of the image files that will be processed by the ImageField.
+        """
         images_data = validated_data.pop('feature_property_image', [])
         feature_property_instance = Feature_property.objects.create(
             **validated_data)
@@ -34,6 +69,29 @@ class CreatePropertyfeaturedImage_Serializers(serializers.ModelSerializer):
 
 
 class CreatePropertyImage_Serializers(serializers.ModelSerializer):
+    """
+    Serializer for creating Image instances associated with a Property.
+
+    Example JSON payload:
+    {
+        "image": "image1.jpg",
+        "object_id": 1
+    }
+
+    Parameters:
+    validated_data (dict): The validated data from the serializer.
+
+    Returns:
+    Image: The created Image instance.
+
+    Explanation of JSON Fields:
+    - image: The image file name or path.
+    - object_id: The ID of the Property instance to which this image is related.
+
+    Note:
+    - The object_id should correspond to an existing Property instance in your database.
+    - The image field should contain a valid path or name of the image file that will be processed by the ImageField.
+    """
     class Meta:
         model = Image
         fields = fields = ("image", "object_id", "id")
