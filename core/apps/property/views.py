@@ -70,61 +70,50 @@ class BastSellerViewsets(viewsets.ModelViewSet):
 class PropertyViewsets(viewsets.ModelViewSet):
     """Property Viewsets
     Args:
-        - `main_category`: for get all property from `Main Category` in `GET` method from tow levels
-        - `state`: `state id` for get all property in thet sate.
+        - main_category: for get all property from Main Category in GET method from two levels
+        - state: state id for get all property in that state.
     """
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', ]
-    filterset_fields = ['name', 'is_featured', 'category', 'user']
-    ordering_fields = '__all__'
+    search_fields = ['name']
+    filterset_fields = ['name', 'is_featured', 'category', 'user', 'is_active']
+    ordering_fields = 'all'
     # Description of params
     main_category = None
     main_category_query_param = 'main_category'
     main_category_query_description = _(
-        "for get all property from `Main Category` in `GET` method from tow levels")
+        "for get all property from Main Category in GET method from two levels")
 
     def get_serializer_context(self):
         return {'user': self.request.user} if self.request.user.is_authenticated else {}
 
     def get_queryset(self):
         self.main_category = self.request.query_params.get(
-            "main_category", None) or None
+            "main_category", None)
+        is_active = self.request.query_params.get("is_active", None)
+
+        queryset = Property.objects.all()
+
         if self.main_category:
-            if self.action == 'get_high_rate':
-                return Property.objects.filter(category__parent__id=self.main_category).annotate(
-                    rating_count=Count('rate')
-                ).order_by('-rating_count')
-            elif self.action == 'get_by_address':
-                pk = self.kwargs.get('pk')
-                obj = Property.objects.get(id=pk)
-                return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
+            queryset = queryset.filter(category__parent__id=self.main_category)
 
-            elif self.action == 'get_by_state':
-                state = self.request.query_params.get(
-                    "state", None) or None
-                return Property.objects.filter(address__state=obj, category__parent__id=self.main_category).order_by('-id')
+        if is_active is not None:
+            queryset = queryset.filter(is_active=is_active.lower() == 'true')
 
-            else:
-                return Property.objects.filter(category__parent__id=self.main_category).order_by('-id')
+        if self.action == 'get_high_rate':
+            return queryset.annotate(
+                rating_count=Count('rate')
+            ).order_by('-rating_count')
+        elif self.action == 'get_by_address':
+            pk = self.kwargs.get('pk')
+            obj = Property.objects.get(id=pk)
+            return queryset.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
+        elif self.action == 'get_by_state':
+            state = self.request.query_params.get("state", None)
+            return queryset.filter(address__state=state).order_by('-id')
         else:
-            if self.action == 'get_high_rate':
-                return Property.objects.annotate(
-                    rating_count=Count('rate')
-                ).order_by('-rating_count')
-            elif self.action == 'get_by_address':
-                pk = self.kwargs.get('pk')
-                obj = Property.objects.get(id=pk)
-                return Property.objects.filter(address__state=obj.address.state).exclude(id=pk).order_by('-id')
-
-            elif self.action == 'get_by_state':
-                state = self.request.query_params.get(
-                    "state", None) or None
-                return Property.objects.filter(address__state=state).order_by('-id')
-
-            else:
-                return Property.objects.all().order_by('-id')
+            return queryset.order_by('-id')
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -161,8 +150,8 @@ class PropertyViewsets(viewsets.ModelViewSet):
     @action(detail=True, methods=['list'])
     def get_by_state(self, request, *args, **kwargs):
         """State Viewsets
-    Args:
-        - `state`: `state id` for get all property in thet sate.
+        Args:
+            - `state`: state id for get all property in that `state`.
         """
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
