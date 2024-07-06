@@ -15,19 +15,24 @@ class Image_Serializers(serializers.ModelSerializer):
 class CreatePropertyfeaturedImage_Serializers(serializers.ModelSerializer):
     # feature_property_image = Image_Serializers(many=True, required=False)
 
-    image = serializers.ImageField()  # Use ImageField to handle file uploads
+    # image = serializers.ImageField()  # Use ImageField to handle file uploads
 
     class Meta:
-        model = Feature_property
-        fields = ['property', 'feature', 'image']
+        model = Image
+        fields = fields = ("image", "object_id", "id")
 
-    def create(self, validated_data):
-        image_file = validated_data.pop('image')
-        feature_property_instance = Feature_property.objects.create(**validated_data)
+    def validate(self, attrs):
+        attrs['content_type'] = ContentType.objects.get_for_model(
+            Feature_property)
+        return super().validate(attrs)
+
+    # def create(self, validated_data):
+    #     image_file = validated_data.pop('image')
+    #     feature_property_instance = Feature_property.objects.create(**validated_data)
         
-        Image.objects.create(content_object=feature_property_instance, image=image_file)
+    #     Image.objects.create(content_object=feature_property_instance, image=image_file)
         
-        return feature_property_instance
+    #     return feature_property_instance
     # class Meta:
     #     model = Feature_property
     #     fields = "__all__"
