@@ -1469,7 +1469,6 @@ paths:
           - br
           - bs
           - ca
-          - ckb
           - cs
           - cy
           - da
@@ -1522,7 +1521,6 @@ paths:
           - ml
           - mn
           - mr
-          - ms
           - my
           - nb
           - ne
@@ -2581,21 +2579,18 @@ components:
     CreatePropertyfeaturedImage_Serializers:
       type: object
       properties:
+        image:
+          type: string
+          format: uri
+        object_id:
+          type: integer
         id:
           type: integer
           readOnly: true
-        feature_property_image:
-          type: array
-          items:
-            $ref: '#/components/schemas/Image_Serializers'
-        property:
-          type: integer
-        feature:
-          type: integer
       required:
-      - feature
       - id
-      - property
+      - image
+      - object_id
     CreateReviewSerializers:
       type: object
       properties:
