@@ -13,7 +13,7 @@ class Image_Serializers(serializers.ModelSerializer):
 
 
 class CreatePropertyfeaturedImage_Serializers(serializers.ModelSerializer):
-    # images = Image_Serializers(many=True, required=False)
+    # feature_property_image = Image_Serializers(many=True, required=False)
 
     image = serializers.ImageField()  # Use ImageField to handle file uploads
 
