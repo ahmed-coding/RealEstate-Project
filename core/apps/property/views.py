@@ -1,3 +1,4 @@
+from django.db.models import Q, OuterRef, Exists
 from rest_framework.filters import OrderingFilter
 from django.db.models import Count, Case, When, IntegerField
 from django.utils.translation import gettext_lazy as _
@@ -8,7 +9,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from rest_framework import filters
 from ..pagination import StandardResultsSetPagination
 from rest_framework.views import Response
-from ..models import Property, User
+from ..models import Property, User, property_value
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Avg, Q
 from . import serializers
@@ -302,24 +303,31 @@ class PropertyFilterViewSet(viewsets.ModelViewSet):
         ]
     }
     """
-    # queryset = Property.objects.all()
+    queryset = Property.objects.all()
     serializer_class = serializers.PropertyFilterSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['category', 'for_sale', 'for_rent']
     ordering_fields = ['price', 'time_created']
 
-    def get_queryset(self):
-        queryset = Property.objects.all()
+    @action(detail=False, methods=['post'])
+    def filter(self, request):
+        """
+        Custom action to filter properties based on JSON payload.
 
-        state = self.request.query_params.get("state", None)
-        category = self.request.query_params.get('category', None)
+        Returns:
+            Response: A list of filtered Property objects.
+        """
+        queryset = self.get_queryset()
+        data = request.data
+
+        state = data.get('state')
+        category = data.get('category')
         # is_active = data.get('is_active')
-        max_price = self.request.query_params.get('max_price', None)
-        min_price = self.request.query_params.get('min_price', None)
-        for_sale = self.request.query_params.get('for_sale', None)
-        for_rent = self.request.query_params.get('for_rent', None)
-        attribute_values = self.request.query_params.get(
-            'attribute_values', [])
+        max_price = data.get('max_price')
+        min_price = data.get('min_price')
+        for_sale = data.get('for_sale')
+        for_rent = data.get('for_rent')
+        attribute_values = data.get('attribute_values', [])
 
         if state:
             queryset = queryset.filter(address__state=state)
@@ -345,59 +353,21 @@ class PropertyFilterViewSet(viewsets.ModelViewSet):
         for attribute in attribute_values:
             attribute_id = attribute.get('attribute_id')
             value = attribute.get('value')
-            if attribute_id and value:
-                queryset = queryset.filter(
-                    property_value__attribute_id=attribute_id, property_value__value=value)
+            # if attribute_id and value:
+            #     queryset = queryset.filter(
+            #         property_value__attribute_id=attribute_id, property_value__value=value)
 
-        return queryset
+            # if attribute_id and value:
+            #     queryset = queryset.filter(
+            #         Q(property_value__attribute_id=attribute_id) &
+            #         Q(property_value__value=value)
+            #     )
 
-    # @action(detail=False, methods=['post'])
-    # def filter(self, request):
-    #     """
-    #     Custom action to filter properties based on JSON payload.
-
-    #     Returns:
-    #         Response: A list of filtered Property objects.
-    #     """
-    #     queryset = self.get_queryset()
-    #     data = request.data
-
-    #     state = data.get('state')
-    #     category = data.get('category')
-    #     # is_active = data.get('is_active')
-    #     max_price = data.get('max_price')
-    #     min_price = data.get('min_price')
-    #     for_sale = data.get('for_sale')
-    #     for_rent = data.get('for_rent')
-    #     attribute_values = data.get('attribute_values', [])
-
-    #     if state:
-    #         queryset = queryset.filter(address__state=state)
-
-    #     if category:
-    #         queryset = queryset.filter(category=category)
-
-    #     # if is_active is not None:
-    #     #     queryset = queryset.filter(is_active=is_active)
-
-    #     if max_price is not None:
-    #         queryset = queryset.filter(price__lte=max_price)
-
-    #     if min_price is not None:
-    #         queryset = queryset.filter(price__gte=min_price)
-
-    #     if for_sale is not None:
-    #         queryset = queryset.filter(for_sale=for_sale)
-
-    #     if for_rent is not None:
-    #         queryset = queryset.filter(for_rent=for_rent)
-
-    #     for attribute in attribute_values:
-    #         attribute_id = attribute.get('attribute_id')
-    #         value = attribute.get('value')
-    #         if attribute_id and value:
-    #             queryset = queryset.filter(
-    #                 property_value__attribute_id=attribute_id, property_value__value=value)
-
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return Response(serializer.data)
+            subquery = property_value.objects.filter(
+                property=OuterRef('pk'),
+                value__attribute_id=attribute_id,
+                value__value=value
+            ).values('property')
+            queryset = queryset.filter(Exists(subquery))
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
