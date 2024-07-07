@@ -477,7 +477,7 @@ class PropertyAdmin(admin.ModelAdmin):
 
 
     )
-    list_display = ['name', 'price', 'time_created',]
+    list_display = ['name', 'price', 'time_created', "is_active"]
     inlines = [
         ImageInline,
     ]
@@ -532,7 +532,7 @@ class PropertyAdminImport(ImportExportModelAdmin):
 
 
     )
-    list_display = ['name', 'price', 'time_created',]
+    list_display = ["id", 'name', 'price', 'time_created', "is_active"]
     inlines = [
         ImageInline,
     ]

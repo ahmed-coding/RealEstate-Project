@@ -1236,74 +1236,27 @@ paths:
                 $ref: '#/components/schemas/CreateProperty'
           description: ''
   /api/property/filter/:
-    get:
-      operationId: api_property_filter_list
+    post:
+      operationId: api_property_filter_create
       description: |-
-        Viewset for filtering the Property model.
-
-        Filtering Parameters:
-            state: Filter by state (e.g., ?state=California)
-            category: Filter by category ID (e.g., ?category=1)
-            max_price: Filter properties with price less than or equal to the given value (e.g., ?max_price=100000)
-            min_price: Filter properties with price greater than or equal to the given value (e.g., ?min_price=50000)
-            for_sale: Filter properties that are for sale (e.g., ?for_sale=true)
-            for_rent: Filter properties that are for rent (e.g., ?for_rent=true)
-            attribute_value: Filter properties by attribute value (e.g., ?attribute_value=Sea View)
-
-        Ordering Parameters:
-            price: Order by price (e.g., ?ordering=price or ?ordering=-price for descending)
-            time_created: Order by creation time (e.g., ?ordering=time_created or ?ordering=-time_created for descending)
-
-        Args:
-            viewsets.ModelViewSet: A base class for all viewsets that provides default CRUD operations.
+        Custom action to filter properties based on JSON payload.
 
         Returns:
-            QuerySet: The filtered and ordered queryset of Property objects.
-
-        Example JSON payload:
-        {
-            "state": "California",
-            "category": 1,
-            "max_price": 100000,
-            "min_price": 50000,
-            "for_sale": true,
-            "for_rent": false,
-            "attribute_values": [
-                {
-                    "attribute_id": 1,
-                    "value": "3"
-                },
-                {
-                    "attribute_id": 2,
-                    "value": "200.5"
-                },
-                {
-                    "attribute_id": 3,
-                    "value": "true"
-                }
-            ]
-        }
-      parameters:
-      - in: query
-        name: category
-        schema:
-          type: integer
-      - in: query
-        name: for_rent
-        schema:
-          type: boolean
-      - in: query
-        name: for_sale
-        schema:
-          type: boolean
-      - name: ordering
-        required: false
-        in: query
-        description: Which field to use when ordering the results.
-        schema:
-          type: string
+            Response: A list of filtered Property objects.
       tags:
       - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PropertyFilter'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PropertyFilter'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PropertyFilter'
+        required: true
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -1312,9 +1265,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PropertyFilter'
+                $ref: '#/components/schemas/PropertyFilter'
           description: ''
   /api/property/high-rate/:
     get:
@@ -1335,6 +1286,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SinglePropertySerializers'
+          description: ''
+  /api/property/update-list/:
+    post:
+      operationId: api_property_update_list_create
+      description: |-
+        Custom action to update a list of properties.
+
+        Args:
+            request (Request): The request object containing the property list and fields to update.
+
+        Example JSON payload:
+        {
+            "property_list": [
+                {
+                    "id": 1,
+                    "is_active": true
+                },
+                {
+                    "id": 2,
+                    "is_active": true
+                },
+                {
+                    "id": 3,
+                    "is_active": true
+                }
+            ]
+        }
+        Returns:
+            Response: A list of updated Property objects.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateProperty'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProperty'
           description: ''
   /api/review/:
     get:
@@ -1469,6 +1472,7 @@ paths:
           - br
           - bs
           - ca
+          - ckb
           - cs
           - cy
           - da
@@ -1521,6 +1525,7 @@ paths:
           - ml
           - mn
           - mr
+          - ms
           - my
           - nb
           - ne

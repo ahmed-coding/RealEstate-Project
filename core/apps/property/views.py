@@ -20,7 +20,7 @@ class BastSellerViewsets(viewsets.ModelViewSet):
     """BastSellerViewsets
 
     Args:
-        - `category`: for get all Sellers from `Main Category` in `GET` method 
+        - `category`: for get all Sellers from `Main Category` in `GET` method
         - `user_type`: for get all Sellers By `user_type` in `GET` method
         - `user_type-choices`: `owner`, `agent`, `promoter`
 
@@ -254,6 +254,55 @@ class PropertyCreateAPIView(viewsets.ModelViewSet):
             'view': self,
             'user': self.request.user
         }
+
+    @action(detail=False, methods=['post'])
+    def update_list(self, request):
+        """
+        Custom action to update a list of properties.
+
+        Args:
+            request (Request): The request object containing the property list and fields to update.
+
+        Example JSON payload:
+        {
+            "property_list": [
+                {
+                    "id": 1,
+                    "is_active": true
+                },
+                {
+                    "id": 2,
+                    "is_active": true
+                },
+                {
+                    "id": 3,
+                    "is_active": true
+                }
+            ]
+        }
+        Returns:
+            Response: A list of updated Property objects.
+        """
+        #     queryset = self.get_queryset()
+        #     property_list = request.data.get('property', [])
+        #     property_updates = Property.objects.bulk_update(
+        #         property_list, fields=["is_active"])
+        #     serializer = self.get_serializer(queryset, many=True)
+        #     return Response(serializer.data)
+        property_list = request.data.get('property_list', [])
+        updates = []
+
+        for property_data in property_list:
+            property_instance = Property.objects.get(id=property_data['id'])
+            for field, value in property_data.items():
+                setattr(property_instance, field, value)
+            updates.append(property_instance)
+
+        # Add other fields as needed
+        Property.objects.bulk_update(updates, fields=['is_active'])
+
+        serializer = self.get_serializer(updates, many=True)
+        return Response(serializer.data)
 
 
 class PropertyFilterViewSet(viewsets.ModelViewSet):
