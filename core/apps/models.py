@@ -171,6 +171,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     unique_no = models.SlugField(_("unique_no"), unique=True, blank=True,)
     is_seller = models.BooleanField(_("Is Seller?"), default=False)
 
+    device_token = models.CharField(
+        _("Decive Token"), max_length=255, default="", blank=True)
+
     ########## ManyToMAny Fileds ###########
     # product_view = models.ManyToManyField("Product_item", through='View')
     # wishlist = models.ManyToManyField(

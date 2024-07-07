@@ -26,6 +26,7 @@ def user_save(sender, instance, created, **kwargs):
         'imageUrl': instance.get_profile_image_filename,
         'fullName': instance.name,
         'userType': instance.user_type,
+        'deviceToken': instance.device_token
     }
     doc_ref = db.collection("Users").document(
         str(data["userId"])).set(data, merge=True)
