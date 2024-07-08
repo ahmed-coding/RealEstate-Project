@@ -876,6 +876,89 @@ paths:
               schema:
                 $ref: '#/components/schemas/SinglePropertySerializers'
           description: ''
+  /api/property/{id}/delete/:
+    delete:
+      operationId: api_property_delete_destroy
+      description: |-
+        API view class for creating a new property along with address and images.
+
+        This view class provides an endpoint for creating a new property along with associated address and images.
+
+        Example Usage:
+            To create a property with address, features, and images:
+            ```
+            {
+
+            "category": 1,
+            "name": "Property Name",
+            "description": "Property Description",
+            "price": 100000,
+            "size": 2000,
+            "is_active": true,
+            "is_deleted": false,
+            "attribute_values": {
+                "1": "Value1",
+                "2": "Value2",
+                "3": "Value3"
+            },
+            "address": {
+                "state": 1,
+                "longitude": "20.354654",
+                "latitude": "32.354654"
+            },
+            "feature_data": [
+                {
+                    "id": 1,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                }
+            ],
+            "image_data": [
+                {
+                    "image": "image_data"
+                },
+                {
+                    "image": "image_data"
+                }
+            ],
+            "for_sale": true
+        }
+            ```
+
+        Note:
+            Ensure that the user and `category` IDs provided exist in the database.
+            Ensure that the attribute IDs provided in `attribute_values` exist in the database.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/property/{id}/update/:
     put:
       operationId: api_property_update_update
@@ -3506,6 +3589,10 @@ components:
           readOnly: true
         user_type:
           $ref: '#/components/schemas/UserTypeEnum'
+        device_token:
+          type: string
+          title: Decive Token
+          maxLength: 255
       required:
       - email
       - id
