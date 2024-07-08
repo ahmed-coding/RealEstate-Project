@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import Category, Image, Attribute, Category_attribute, ValueModel
+from ..models import Category, Feature, Image, Attribute, Category_attribute, ValueModel
 
 
 from ..serializers import Image_Serializers
@@ -40,3 +40,10 @@ class AttributeByCategorieSerializers(serializers.ModelSerializer):
     class Meta:
         model = Category_attribute
         fields = '__all__'
+
+
+class FeatureSerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = Feature
+        fields = ("id", "name")

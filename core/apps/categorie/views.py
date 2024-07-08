@@ -6,7 +6,7 @@ from rest_framework import filters
 from ..pagination import StandardResultsSetPagination
 from rest_framework.views import Response
 
-from apps.models import Category, Attribute, ValueModel, Category_attribute
+from apps.models import Category, Attribute, ValueModel, Category_attribute, Feature, Feature_category
 from django_filters.rest_framework import DjangoFilterBackend
 
 from . import serializers
@@ -45,3 +45,14 @@ class AttributeByCategorieViewsets(viewsets.ModelViewSet):
     def get_queryset(self):
         category = self.request.query_params.get("category") or None
         return Attribute.objects.filter(category_attribute__category__id=category).order_by('id')
+
+
+class FeatureByCategorieViewsets(viewsets.ModelViewSet):
+    serializer_class = serializers.FeatureSerializers
+
+    queryset = Feature.objects.all()
+
+    def get_queryset(self):
+        category = self.request.query_params.get("category") or None
+
+        return Feature.objects.filter(feature_category__category_id=category)
