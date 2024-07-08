@@ -424,6 +424,28 @@ paths:
                 items:
                   $ref: '#/components/schemas/AttributeSerializers'
           description: ''
+  /api/categorie/features/:
+    get:
+      operationId: api_categorie_features_list
+      description: |-
+        FeatureByCategorieViewsets
+
+        Argament:
+            `category`: categorie id to get all Feature in `GET Method`
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeatureByCategorySerializers'
+          description: ''
   /api/friend/:
     get:
       operationId: api_friend_list
@@ -2731,6 +2753,19 @@ components:
       - id
       - prop
       - time_created
+    FeatureByCategorySerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Feature Name
+          maxLength: 50
+      required:
+      - id
+      - name
     FeatureSerializers:
       type: object
       properties:

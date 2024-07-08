@@ -48,11 +48,16 @@ class AttributeByCategorieViewsets(viewsets.ModelViewSet):
 
 
 class FeatureByCategorieViewsets(viewsets.ModelViewSet):
-    serializer_class = serializers.FeatureSerializers
+    """FeatureByCategorieViewsets
+
+    Argament:
+        `category`: categorie id to get all Feature in `GET Method`
+    """
+    serializer_class = serializers.FeatureByCategorySerializers
 
     queryset = Feature.objects.all()
 
     def get_queryset(self):
         category = self.request.query_params.get("category") or None
 
-        return Feature.objects.filter(feature_category__category_id=category)
+        return Feature.objects.filter(feature_category__category_id=category).order_by('id')

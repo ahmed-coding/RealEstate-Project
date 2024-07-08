@@ -42,7 +42,7 @@ class AttributeByCategorieSerializers(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class FeatureSerializers(serializers.ModelSerializer):
+class FeatureByCategorySerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Feature
