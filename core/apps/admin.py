@@ -633,6 +633,7 @@ class UnradChateMessageAdmin(admin.ModelAdmin):
 class BannerAdmin(admin.ModelAdmin):
     # pass
     list_display = ['title', 'end_time', 'start_time', 'is_active']
+    list_filter = ['is_active']
 
     # pass
 
