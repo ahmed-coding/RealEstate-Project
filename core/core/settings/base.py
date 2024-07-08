@@ -49,7 +49,7 @@ def debug_task(self):
     print(f'Request: {self.request!r}')
 
 
-DEBUG = os.environ.get('DEBUG', False)
+DEBUG = os.environ.get('DEBUG', True)
 
 AUTH_USER_MODEL = 'apps.User'
 
