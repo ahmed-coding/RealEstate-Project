@@ -95,7 +95,7 @@ class PropertyViewsets(viewsets.ModelViewSet):
             "main_category", None)
         is_active = self.request.query_params.get("is_active", None)
 
-        queryset = Property.objects.all()
+        queryset = Property.objects.filter(is_deleted=False)
 
         if self.main_category:
             queryset = queryset.filter(category__parent__id=self.main_category)

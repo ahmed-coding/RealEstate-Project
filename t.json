@@ -52,3 +52,47 @@
         "for_sale": true
     }
 }
+
+{
+    "id": 1,
+    "car": {
+        "id": 1,
+        "temp_name": "Car1 sdfsdf",
+        "name": "Car1",
+        "model": "sdfsdf"
+    },
+    "name": "lsdh",
+    "code": 555
+}
+
+{
+    "id": 1,
+    "colors": [
+        {
+            "id": 1,
+            "name": "lsdh",
+            "code": 555,
+            "car": 1
+        }
+    ],
+    "name": "Car1",
+    "model": "sdfsdf"
+}
+
+{
+    "id": 1,
+    "colors": [
+        {
+            "id": 1,
+            "car": {
+                "id": 1,
+                "name": "Car1",
+                "model": "sdfsdf"
+            },
+            "name": "lsdh",
+            "code": 555
+        }
+    ],
+    "name": "Car1",
+    "model": "sdfsdf"
+}

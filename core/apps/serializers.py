@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 class Image_Serializers(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ("image","id")
+        fields = ("image", "id")
 
     # def to_representation(self, instance):
     #     return instance.image.url
@@ -19,7 +19,7 @@ class CreatePropertyfeaturedImage_Serializers(serializers.ModelSerializer):
 
     class Meta:
         model = Image
-        fields = fields = ("image", "object_id", "id")
+        fields = ("image", "object_id", "id")
 
     def validate(self, attrs):
         attrs['content_type'] = ContentType.objects.get_for_model(
@@ -29,9 +29,9 @@ class CreatePropertyfeaturedImage_Serializers(serializers.ModelSerializer):
     # def create(self, validated_data):
     #     image_file = validated_data.pop('image')
     #     feature_property_instance = Feature_property.objects.create(**validated_data)
-        
+
     #     Image.objects.create(content_object=feature_property_instance, image=image_file)
-        
+
     #     return feature_property_instance
     # class Meta:
     #     model = Feature_property
@@ -65,9 +65,9 @@ class CreatePropertyfeaturedImage_Serializers(serializers.ModelSerializer):
     #     """
     #     image_data = validated_data.pop('image')
     #     feature_property_instance = Feature_property.objects.create(**validated_data)
-        
+
     #     Image.objects.create(feature_property=feature_property_instance, image=image_data)
-        
+
     #     return feature_property_instance
 
     # def to_representation(self, instance):
