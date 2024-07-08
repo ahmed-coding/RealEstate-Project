@@ -15,6 +15,8 @@ urlpatterns = [
          views.PropertyCreateAPIView.as_view({'post': 'update_list'})),
 
     path('<int:pk>/', views.PropertyViewsets.as_view({'get': 'retrieve'})),
+    path('<int:pk>/delete/',
+         views.PropertyCreateAPIView.as_view({'delete': 'destroy'})),
 
     path('<int:pk>/update/',
          views.PropertyCreateAPIView.as_view({'put': 'partial_update', 'patch': 'partial_update'})),
