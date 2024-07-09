@@ -11,6 +11,11 @@ model = load(settings.ML_MODELS_PATH / "model.joblib")
 
 
 class PropertyPricePredictView(APIView):
+    """
+    Property Price Predict model
+    Argament:
+        `query`: query to get Predicting Price  For Property in `POST Method`
+    """
     serializer_class = serializers.PropertyPricePredictSerializers
 
     def post(self, request: Request, *args, **kwargs):

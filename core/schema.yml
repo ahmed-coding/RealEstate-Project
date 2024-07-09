@@ -669,6 +669,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreatePropertyImage_Serializers'
           description: ''
+  /api/ml/property-price/:
+    post:
+      operationId: api_ml_property_price_create
+      description: |-
+        Property Price Predict model
+        Argament:
+            `query`: query to get Predicting Price  For Property in `POST Method`
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PropertyPricePredictSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PropertyPricePredictSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PropertyPricePredictSerializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyPricePredictSerializers'
+          description: ''
   /api/property/:
     get:
       operationId: api_property_list
@@ -3326,6 +3357,17 @@ components:
       - time_created
       - unique_number
       - user
+    PropertyPricePredictSerializers:
+      type: object
+      properties:
+        query:
+          type: integer
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - query
     ReviewSerializers:
       type: object
       properties:
