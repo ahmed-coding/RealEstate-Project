@@ -242,3 +242,6 @@ ALGOLIA = {
     'APPLICATION_ID': 'K5HRMSGJI4',
     'API_KEY': '67e7c4435e6254c743056eb62f612305'
 }
+
+# Base dir for ML models
+ML_MODELS_PATH = BASE_DIR / '../ML'

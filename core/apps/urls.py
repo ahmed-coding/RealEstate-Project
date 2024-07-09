@@ -11,6 +11,7 @@ urlpatterns = [
     path('friend/', include('apps.friend.urls')),
     path('banners/', include('apps.banners.urls')),
     path('review/', include('apps.review.urls')),
+    path('ml/', include('apps.ML.urls')),
 
     # image method
     path('image/<int:pk>/update/', views.ImageViewsets.as_view(
