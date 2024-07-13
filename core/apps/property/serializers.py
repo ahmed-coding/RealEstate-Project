@@ -55,7 +55,8 @@ class SinglePropertySerializers(serializers.ModelSerializer):
     rate_review = serializers.SerializerMethodField(read_only=True)
     in_favorite = serializers.SerializerMethodField(read_only=True)
     image = Image_Serializers(many=True, read_only=True)
-    address = propertyAddressSerializersI(read_only=True)
+    # address = propertyAddressSerializersI(read_only=True)
+    address = AddressSerializers(read_only=True)
 
     # review = ReviewSerializers(many=True, read_only=True)
 
@@ -495,4 +496,17 @@ class CreatePropertySerializer(serializers.ModelSerializer):
 class PropertyFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
+        fields = '__all__'
+
+
+class CreatePropertyFeatureSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Feature_property
+        fields = "__all__"
+
+
+class CreateProperty_valueSerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = property_value
         fields = '__all__'

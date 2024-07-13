@@ -24,4 +24,23 @@ urlpatterns = [
     path('<int:pkprop>/reviews/', include('apps.review.urls')),
     path('<int:pk>/by-address/',
          views.PropertyViewsets.as_view({'get': 'get_by_address'})),
+
+
+
+    # feature Method
+    path("feature/create/",
+         views.FeaturePropertyView.as_view({"post": "create"})),
+    path("feature/<int:pk>/update/",
+         views.FeaturePropertyView.as_view({'put': 'partial_update', 'patch': 'partial_update'})),
+    path("feature/<int:pk>/delete/",
+         views.FeaturePropertyView.as_view({'delete': 'destroy'})),
+
+    #     Attribute Method
+
+    path("attribute/create/",
+         views.AttributePropertyView.as_view({"post": "create"})),
+    path("attribute/<int:pk>/update/",
+         views.AttributePropertyView.as_view({'put': 'partial_update', 'patch': 'partial_update'})),
+    path("attribute/<int:pk>/delete/",
+         views.AttributePropertyView.as_view({'delete': 'destroy'})),
 ]

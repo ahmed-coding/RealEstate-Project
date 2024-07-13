@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from rest_framework import filters
 from ..pagination import StandardResultsSetPagination
 from rest_framework.views import Response
-from ..models import Property, User, property_value
+from ..models import Feature_property, Property, User, property_value
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, Avg, Q
 from . import serializers
@@ -360,12 +360,12 @@ class PropertyFilterViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def filter(self, request):
-        """
-        Custom action to filter properties based on JSON payload.
+        # """
+        # Custom action to filter properties based on JSON payload.
 
-        Returns:
-            Response: A list of filtered Property objects.
-        """
+        # Returns:
+        #     Response: A list of filtered Property objects.
+        # """
         queryset = self.get_queryset()
         data = request.data
 
@@ -420,3 +420,13 @@ class PropertyFilterViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(Exists(subquery))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class FeaturePropertyView(viewsets.ModelViewSet):
+    serializer_class = serializers.CreatePropertyFeatureSerializers
+    queryset = Feature_property.objects.all()
+
+
+class AttributePropertyView(viewsets.ModelViewSet):
+    serializer_class = serializers.CreateProperty_valueSerializers
+    queryset = property_value.objects.all()
