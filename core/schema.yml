@@ -1208,6 +1208,114 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateProperty'
           description: ''
+  /api/property/attribute/{id}/delete/:
+    delete:
+      operationId: api_property_attribute_delete_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/property/attribute/{id}/update/:
+    put:
+      operationId: api_property_attribute_update_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProperty_valueSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateProperty_valueSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateProperty_valueSerializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProperty_valueSerializers'
+          description: ''
+    patch:
+      operationId: api_property_attribute_update_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateProperty_valueSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateProperty_valueSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateProperty_valueSerializers'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProperty_valueSerializers'
+          description: ''
+  /api/property/attribute/create/:
+    post:
+      operationId: api_property_attribute_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProperty_valueSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateProperty_valueSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateProperty_valueSerializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProperty_valueSerializers'
+          description: ''
   /api/property/bast-seller/:
     get:
       operationId: api_property_bast_seller_list
@@ -1371,14 +1479,162 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateProperty'
           description: ''
+  /api/property/feature/{id}/delete/:
+    delete:
+      operationId: api_property_feature_delete_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/property/feature/{id}/update/:
+    put:
+      operationId: api_property_feature_update_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
+          description: ''
+    patch:
+      operationId: api_property_feature_update_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCreatePropertyFeatureSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCreatePropertyFeatureSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCreatePropertyFeatureSerializers'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
+          description: ''
+  /api/property/feature/create/:
+    post:
+      operationId: api_property_feature_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
+          description: ''
   /api/property/filter/:
     post:
       operationId: api_property_filter_create
       description: |-
-        Custom action to filter properties based on JSON payload.
+        Viewset for filtering the Property model.
+
+        Filtering Parameters:
+            state: Filter by state (e.g., ?state=5)
+            category: Filter by category ID (e.g., ?category=1)
+            max_price: Filter properties with price less than or equal to the given value (e.g., ?max_price=100000)
+            min_price: Filter properties with price greater than or equal to the given value (e.g., ?min_price=50000)
+            for_sale: Filter properties that are for sale (e.g., ?for_sale=true)
+            for_rent: Filter properties that are for rent (e.g., ?for_rent=true)
+            attribute_value: Filter properties by attribute value (e.g., ?attribute_value=Sea View)
+
+        Ordering Parameters:
+            price: Order by price (e.g., ?ordering=price or ?ordering=-price for descending)
+            time_created: Order by creation time (e.g., ?ordering=time_created or ?ordering=-time_created for descending)
+
+        Args:
+            viewsets.ModelViewSet: A base class for all viewsets that provides default CRUD operations.
 
         Returns:
-            Response: A list of filtered Property objects.
+            QuerySet: The filtered and ordered queryset of Property objects.
+
+        Example JSON payload:
+        {
+            "state": "California",
+            "category": 1,
+            "max_price": 100000,
+            "min_price": 50000,
+            "for_sale": true,
+            "for_rent": false,
+            "attribute_values": [
+                {
+                    "attribute_id": 1,
+                    "value": "3"
+                },
+                {
+                    "attribute_id": 2,
+                    "value": "200.5"
+                },
+                {
+                    "attribute_id": 3,
+                    "value": "true"
+                }
+            ]
+        }
       tags:
       - api
       requestBody:
@@ -2680,6 +2936,20 @@ components:
       - size
       - time_created
       - unique_number
+    CreatePropertyFeatureSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        property:
+          type: integer
+        feature:
+          type: integer
+      required:
+      - feature
+      - id
+      - property
     CreatePropertyImage_Serializers:
       type: object
       description: |-
@@ -2717,6 +2987,20 @@ components:
       - id
       - image
       - object_id
+    CreateProperty_valueSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        property:
+          type: integer
+        value:
+          type: integer
+      required:
+      - id
+      - property
+      - value
     CreatePropertyfeaturedImage_Serializers:
       type: object
       properties:
@@ -3184,6 +3468,26 @@ components:
           title: Is For Rent?
         category:
           type: integer
+    PatchedCreatePropertyFeatureSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        property:
+          type: integer
+        feature:
+          type: integer
+    PatchedCreateProperty_valueSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        property:
+          type: integer
+        value:
+          type: integer
     PatchedImage_Serializers:
       type: object
       properties:
@@ -3417,7 +3721,7 @@ components:
           readOnly: true
         address:
           allOf:
-          - $ref: '#/components/schemas/propertyAddressSerializersI'
+          - $ref: '#/components/schemas/AddressSerializers'
           readOnly: true
         name:
           type: string
@@ -3768,35 +4072,6 @@ components:
       - attribute
       - id
       - value
-    propertyAddressSerializersI:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        state:
-          allOf:
-          - $ref: '#/components/schemas/StateSerializers'
-          readOnly: true
-        longitude:
-          type: number
-          format: double
-        latitude:
-          type: number
-          format: double
-        line1:
-          type: string
-          title: Line 1
-          maxLength: 255
-        line2:
-          type: string
-          title: Line 2
-          maxLength: 255
-      required:
-      - id
-      - latitude
-      - longitude
-      - state
     property_valueSerializers:
       type: object
       properties:
