@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED 1
 
 RUN apk update && \
     apk add --no-cache build-base linux-headers musl-dev && \
-    apk add --no-cache postgresql-dev cairo-dev libffi-dev && \
+    apk add --no-cache  postgresql-dev cairo-dev libffi-dev && \
     apk add --no-cache dos2unix && \
     rm -rf /var/cache/apk/*
 
@@ -16,11 +16,15 @@ COPY ./requirements.txt /usr/src/app/realEstate/requirements.txt
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-COPY ./entrypoint.sh /usr/src/app/realEstate/entrypoint.sh
-
-RUN dos2unix /usr/src/app/realEstate/entrypoint.sh && \
-    chmod +x /usr/src/app/realEstate/entrypoint.sh
-
 COPY . /usr/src/app/realEstate/
 
-ENTRYPOINT ["/usr/src/app/realEstate/entrypoint.sh"]
+CMD ["sh", "-c", " \
+    echo 'Apply database migrations' && \
+    python manage.py makemigrations && \
+    echo 'Apply database migrate' && \
+    python manage.py migrate && \
+    echo 'Apply collectstatic' && \
+    python manage.py collectstatic --noinput && \
+    echo 'Apply spectacular schema' && \
+    python manage.py spectacular --color --file schema.yml && \
+    python manage.py runserver 0.0.0.0:8000"]
