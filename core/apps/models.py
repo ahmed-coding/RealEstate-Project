@@ -678,6 +678,7 @@ class Feature_property(models.Model):
 
     class Meta:
         db_table = 'Feature_property'
+        unique_together = ['property', 'feature']
 
     def __str__(self):
         return self.feature.name
@@ -753,6 +754,7 @@ class property_value(models.Model):
 
     class Meta:
         db_table = 'property_value'
+        unique_together = ['property', 'value']
 
 
 class Category_attribute(models.Model):
