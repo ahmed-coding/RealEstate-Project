@@ -620,6 +620,8 @@ class Property(models.Model):
     for_sale = models.BooleanField(_("Is For sale"), default=False)
     is_featured = models.BooleanField(_("is_featured"), default=False)
     for_rent = models.BooleanField(_("Is For Rent?"), default=False)
+    last_active = models.DateTimeField(
+        _("Last activet time"), auto_now=False, auto_now_add=False, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.id:

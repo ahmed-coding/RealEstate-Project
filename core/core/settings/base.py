@@ -214,9 +214,12 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 CRONJOBS = [
-    ('*/1 * * * *', 'django.core.management.call_command',
-     ['update_banner_stat']),
+    ('*/10 * * * *', 'django.core.management.call_command',
+     ['update_banner_stat',]),
+    ('*0 * * * *', 'django.core.management.call_command',
+     ['update_property_state',]),
 ]
+
 # Channels settings
 
 # Settings for Email

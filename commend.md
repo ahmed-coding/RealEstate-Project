@@ -45,3 +45,9 @@
 ## Algolia Setup for first time
 ` python manage.py algolia_applysettings`
 ` python manage.py algolia_reindex`
+
+
+# [CRONJOBS]
+`python manage.py ctontab add `
+`python manage.py ctontab show `
+`python manage.py ctontab remove `

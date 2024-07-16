@@ -1,17 +1,16 @@
-from typing import Any
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from ...models import Banner
+from ...models import Property
 from django.db.models import Q
-import io
-from django.conf import settings
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
 
-        banner = Banner.objects.filter(
-            Q(end_time__lte=timezone.now()), is_active=True).update(is_active=False)
+        property = Property.objects.filter(
+            Q(last_active__lte=timezone.now()), is_active=True).update(is_active=False)
+
+        print(property)
 
         # file = io.open(f'{settings.BASE_DIR}/log.txt', 'a')
         # file.write(f"{timezone.now()}\t-updated banners={banner}\n")

@@ -525,7 +525,7 @@ class PropertyAdminImport(ImportExportModelAdmin):
         (
             'Property Status',
             {
-                'fields': ['is_active', 'is_deleted', 'is_featured', 'for_sale']
+                'fields': ['is_active', 'is_deleted', 'is_featured', 'for_sale', 'last_active']
             }
 
         ),

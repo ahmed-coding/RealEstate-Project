@@ -136,7 +136,7 @@ def create_notification_on_property_save(sender, instance, **kwargs):
     old = Property.objects.filter(id=instance.id).first()
     # Check if a new property is updated
     if old is not None and instance.is_active == True and old.is_active == False:
-
+        instance.last_active = timezone.now()
         for_rent = True if instance.for_sale == False else False
         alarms = Alarm.objects.filter(
             state=instance.address.state,
@@ -190,3 +190,14 @@ def create_notification_on_property_save(sender, instance, **kwargs):
                         object_id=alarm.id,  # Pass the ID of the alarm
                         content_object=alarm,  # Pass the alarm instance
                     )
+    elif old is not None and instance.is_active == False and old.is_active == True:
+        Notification.objects.create(
+            target=old.user,
+            from_user=None,  # You may set this to a specific user if needed
+            verb=f"Your property '{old.name}' is unactive!",
+            timestamp=timezone.now(),
+            content_type=ContentType.objects.get_for_model(
+                User),  # Use Alarm model content type
+            object_id=old.user.id,  # Pass the ID of the alarm
+            # content_object=alarm,  # Pass the alarm instance
+        )

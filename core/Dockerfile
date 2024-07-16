@@ -25,6 +25,14 @@ CMD ["sh", "-c", " \
     python manage.py migrate && \
     echo 'Apply collectstatic' && \
     python manage.py collectstatic --noinput && \
+    echo 'Apply Crontab Jobs' && \
+    python manage.py crontab add && \
     echo 'Apply spectacular schema' && \
     python manage.py spectacular --color --file schema.yml && \
     python manage.py runserver 0.0.0.0:8000"]
+
+RUN python manage.py crontab add && \
+    python manage.py makemigrations && \
+    python manage.py migrate && \
+    python manage.py collectstatic --noinput && \
+    python manage.py spectacular --color --file schema.yml
