@@ -512,8 +512,9 @@ class Banner(models.Model):
     #     if self.end_time.date() >= timezone.now().date():
     #         self.is_active = False
     #     super().save(*args, **kwargs)
+    
     def clean(self):
-        if self.end_time < timezone.now():
+        if self.end_time is not None and self.end_time < timezone.now():
             raise ValidationError(
                 {'end_time': 'End time should be in the future.'})
 

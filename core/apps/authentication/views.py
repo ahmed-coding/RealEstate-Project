@@ -25,7 +25,8 @@ class CustomAuthToken(CreateAPIView):
         return Response({
             'token': token.key,
             'user_id': user.pk,
-            'email': user.email
+            'email': user.email,
+            'user_type': user.user_type
         })
 
 
