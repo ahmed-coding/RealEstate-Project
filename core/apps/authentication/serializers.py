@@ -35,3 +35,25 @@ class UserAuthSerializer(serializers.ModelSerializer):
             instence.set_password(password)
         instence.save()
         return instence
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        if not User.objects.filter(email=value).exists():
+            raise serializers.ValidationError(
+                "No user is associated with this email address")
+        return value
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    # token = serializers.CharField()
+    email = serializers.EmailField()
+    new_password = serializers.CharField()
+
+    def validate(self, data):
+        email = data.get("email")
+        if not User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Invalid token")
+        return data

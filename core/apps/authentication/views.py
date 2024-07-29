@@ -14,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 import firebase_admin
 from firebase_admin import firestore
 
-from .serializers import User, UserAuthSerializer
+from .serializers import User, UserAuthSerializer, PasswordResetSerializer
 
 
 class CustomAuthToken(CreateAPIView):
@@ -156,7 +156,7 @@ def send_verify_email(request: Request):
             code = generit_random_code(4)
             print(code)
             email = request.data.get('email')
-            template = loader.get_template('code_design.html').render({
+            template = loader.get_template('email-template/code_design.html').render({
                 'code': code
             })
             send = EmailMessage(
@@ -175,7 +175,7 @@ def send_verify_email(request: Request):
             }, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({"error": e}, status=status.HTTP_204_NO_CONTENT)
 
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -207,3 +207,23 @@ def verify_email(request: Request):
         }, status=status.HTTP_200_OK)
 
 #### End Email Method ######
+
+
+class PasswordResetView(APIView):
+    serializer_class = PasswordResetSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            new_password = serializer.validated_data['new_password']
+            user = User.objects.get(email=email)
+            # Reset the password
+            user.set_password(new_password)
+            # user.profile.reset_password_token = ''
+            # user.profile.save()
+            user.save()
+
+            return Response({"message": "Password has been reset"}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
