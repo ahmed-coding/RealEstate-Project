@@ -168,7 +168,7 @@ def send_verify_email(request: Request):
             # {
             #     "email": "ahmed.128hemzh@gmail.com"
             # }
-            request.session['email_code'] = code
+            # request.session['email_code'] = code
             # request.session['is_verify'] = False
             return Response({
                 'code': code

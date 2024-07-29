@@ -233,9 +233,10 @@ CRONJOBS = [
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.hostinger.com'  # Hostinger's SMTP server
-EMAIL_PORT = 465  # Typically 587 for TLS
+EMAIL_HOST = 'smtp.hostinger.com'  # Make sure this is correct
+EMAIL_PORT = 587  # Typically 587 for TLS, but can also be 465 for SSL
 EMAIL_USE_TLS = True  # Enable TLS
+EMAIL_USE_SSL = False  # Use True if your port is 465
 EMAIL_HOST_USER = 'realestate@bastblog.com'  # Your Hostinger email address
 EMAIL_HOST_PASSWORD = 'Realestate12345$$'  # Your Hostinger email password
 DEFAULT_FROM_EMAIL = 'realestate@bastblog.com'
