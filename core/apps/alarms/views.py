@@ -50,7 +50,11 @@ class AlarmViewsets(viewsets.ModelViewSet):
     ```
     """
         return super().create(request, *args, **kwargs)
+
     def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context = context + {'user': self.request.user}
-        return context
+        return {
+            "request": self.request,
+            "format": self.format_kwarg,
+            "view": self,
+            "user": self.request.user,
+        }

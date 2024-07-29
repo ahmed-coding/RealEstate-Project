@@ -32,7 +32,8 @@ class CreateAlarmSerializer(serializers.ModelSerializer):
     ```
     """
 
-    alarm_values = serializers.ListField(child=serializers.DictField())
+    alarm_values = serializers.ListField(
+        child=serializers.DictField(), default=[{}])
     user = serializers.HiddenField(default=None)
 
     class Meta:
