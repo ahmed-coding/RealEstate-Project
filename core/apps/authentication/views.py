@@ -1,3 +1,8 @@
+from django.conf import settings
+from django.template import loader
+from ..models import generit_random_code
+from django.core.mail import send_mail, EmailMessage
+from rest_framework.decorators import api_view
 from rest_framework.authtoken.views import ObtainAuthToken, AuthTokenSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework import generics
@@ -110,3 +115,95 @@ class LogoutView(APIView):
         return Response(data={
             'data': 'Logout done'
         }, status=status.HTTP_200_OK)
+
+
+#### Email Method ######
+
+
+@api_view(["POST"])
+def check_email_velidate(request: Request):
+    """
+    Argament:
+        `email`: to check email validate.
+    """
+    # print(dir(request.META))
+    # for key in request.META :
+    #     print(key)
+
+    if request.data.get('email'):
+        try:
+            email = User.objects.get(email=request.data.get('email'))
+            return Response({
+                'is_valid': False
+            }, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({
+                'is_valid': True
+            }, status=status.HTTP_200_OK)
+    return Response({
+        'error': "check-email-velidate"
+    }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def send_verify_email(request: Request):
+    """
+    Argament:
+        `email`: to send code.
+    """
+    if request.data.get('email'):
+        try:
+            code = generit_random_code(4)
+            print(code)
+            email = request.data.get('email')
+            template = loader.get_template('code_design.html').render({
+                'code': code
+            })
+            send = EmailMessage(
+                "OTP Form RealEstate authentication Verify", template,  settings.EMAIL_HOST_USER, [email, ])
+            # send_mail(
+            #     f" Welcome Your Code : {code}.", settings.EMAIL_HOST_USER, [email, ], fail_silently=False)
+            send.content_subtype = 'html'
+            send.send()
+            # {
+            #     "email": "ahmed.128hemzh@gmail.com"
+            # }
+            request.session['email_code'] = code
+            # request.session['is_verify'] = False
+            return Response({
+                'code': code
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def verify_email(request: Request):
+
+    email_code = ''
+    code = ''
+    # and request.session.has_key('is_verify'): -> لما نكمل بشكل كامل لازم يكون create user من هناء لما يكون False يعني مايقع شي
+    # if request.session.has_key('email_code'):
+    #     email_code = request.session.get('email_code')
+    # else:
+    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    if request.data.get('code'):
+        code = request.data.get('code')
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    # if email_code == code:        # request.session['is_verify'] = True # هنا
+
+    if code:
+        return Response({
+            'is_valid': True
+        }, status=status.HTTP_200_OK)
+    else:
+        return Response({
+            'is_valid': False
+        }, status=status.HTTP_200_OK)
+
+#### End Email Method ######
