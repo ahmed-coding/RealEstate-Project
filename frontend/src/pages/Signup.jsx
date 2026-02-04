@@ -11,6 +11,7 @@ export default function Signup() {
         email: '',
         password: '',
         name: '',
+        user_type: 'customer',
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);

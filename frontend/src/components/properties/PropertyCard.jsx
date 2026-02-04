@@ -1,10 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Button } from '@/components/common/Button';
+import { useAuth } from '@/context/AuthContext';
+import { Edit } from 'lucide-react';
 
 export default function PropertyCard({ property }) {
+    const { user } = useAuth();
+    const isOwner = user && user.id === property.user; // Assuming property.user is ID
+
     return (
-        <div className="group relative overflow-hidden rounded-lg bg-white shadow-md border border-gray-100 transition-all hover:shadow-lg">
-            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden bg-gray-200 lg:aspect-none lg:h-64">
+        <div className="group relative overflow-hidden rounded-lg bg-white shadow-md border border-gray-100 transition-all hover:shadow-lg flex flex-col h-full">
+            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden bg-gray-200 lg:aspect-none lg:h-64 relative">
                 {property.image && property.image.length > 0 ? (
                     <img
                         src={property.image[0].image}
@@ -21,7 +27,7 @@ export default function PropertyCard({ property }) {
                     {property.for_rent && <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">For Rent</span>}
                 </div>
             </div>
-            <div className="p-4">
+            <div className="p-4 flex flex-col flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600">
                     <Link to={`/properties/${property.id}`}>
                         <span aria-hidden="true" className="absolute inset-0" />
@@ -32,13 +38,23 @@ export default function PropertyCard({ property }) {
                 <p className="mt-2 text-sm text-gray-500 line-clamp-2">
                     {property.description}
                 </p>
-                <div className="mt-4 flex items-center justify-between text-xs text-gray-500 border-t pt-2">
+                <div className="mt-4 flex items-center justify-between text-xs text-gray-500 border-t pt-2 mt-auto">
                     <div className="flex gap-4">
                         {property.size && <span>{property.size} m²</span>}
-                        {/* Add beds/baths if available in schema later, currently size is main attr */}
                     </div>
                     {property.address && property.address.state_name && <span>{property.address.state_name}</span>}
                 </div>
+
+                {isOwner && (
+                    <div className="mt-4 pt-2 border-t flex justify-end relative z-10">
+                        <Link to={`/edit-property/${property.id}`}>
+                            <Button variant="outline" size="sm" className="w-full">
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit
+                            </Button>
+                        </Link>
+                    </div>
+                )}
             </div>
         </div>
     );

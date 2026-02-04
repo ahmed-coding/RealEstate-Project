@@ -9,6 +9,7 @@ import Properties from '@/pages/Properties';
 import PropertyDetail from '@/pages/PropertyDetail';
 import Dashboard from '@/pages/Dashboard';
 import CreateProperty from '@/pages/CreateProperty';
+import EditProperty from '@/pages/EditProperty';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/properties/:id" element={<PropertyDetail />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/create-property" element={<CreateProperty />} />
+            <Route path="/edit-property/:id" element={<EditProperty />} />
           </Route>
         </Routes>
       </div>
