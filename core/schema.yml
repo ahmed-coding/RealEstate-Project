@@ -6,7 +6,7 @@ info:
 paths:
   /api/address/{id}/update/:
     put:
-      operationId: api_address_update_update
+      operationId: address_update_update
       parameters:
       - in: path
         name: id
@@ -14,7 +14,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - address
       requestBody:
         content:
           application/json:
@@ -38,7 +38,7 @@ paths:
                 $ref: '#/components/schemas/CreateAddress'
           description: ''
     patch:
-      operationId: api_address_update_partial_update
+      operationId: address_update_partial_update
       parameters:
       - in: path
         name: id
@@ -46,7 +46,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - address
       requestBody:
         content:
           application/json:
@@ -70,7 +70,7 @@ paths:
           description: ''
   /api/address/city/:
     get:
-      operationId: api_address_city_list
+      operationId: address_city_list
       description: |-
         CityViewsets
 
@@ -98,7 +98,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - address
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -113,14 +113,14 @@ paths:
           description: ''
   /api/address/country/:
     get:
-      operationId: api_address_country_list
+      operationId: address_country_list
       description: |-
         _summary_
 
         Args:
             viewsets (_type_): _description_
       tags:
-      - api
+      - address
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -135,9 +135,9 @@ paths:
           description: ''
   /api/address/create/:
     post:
-      operationId: api_address_create_create
+      operationId: address_create_create
       tags:
-      - api
+      - address
       requestBody:
         content:
           application/json:
@@ -162,7 +162,7 @@ paths:
           description: ''
   /api/address/state/:
     get:
-      operationId: api_address_state_list
+      operationId: address_state_list
       description: |-
         StateViewsets
 
@@ -191,7 +191,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - address
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -206,9 +206,9 @@ paths:
           description: ''
   /api/auth/login/:
     post:
-      operationId: api_auth_login_create
+      operationId: auth_login_create
       tags:
-      - api
+      - auth
       requestBody:
         content:
           application/json:
@@ -233,7 +233,7 @@ paths:
           description: ''
   /api/auth/logout/:
     post:
-      operationId: api_auth_logout_create
+      operationId: auth_logout_create
       description: |-
         >>> LOGIN REQUIRD WITH JWT:
         - Try to get Authentication from User it's self by JWT[refresh].
@@ -243,7 +243,48 @@ paths:
         - data: login done if the logiut success.
         - status: 200 or 401
       tags:
-      - api
+      - auth
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/auth/reset-password/:
+    post:
+      operationId: auth_reset_password_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordReset'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordReset'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordReset'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordReset'
+          description: ''
+  /api/auth/send-verify-email/:
+    post:
+      operationId: auth_send_verify_email_create
+      description: |-
+        Argament:
+            `email`: to send code.
+      tags:
+      - auth
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -252,7 +293,7 @@ paths:
           description: No response body
   /api/auth/sginup/:
     post:
-      operationId: api_auth_sginup_create
+      operationId: auth_sginup_create
       description: |-
         Reigster User View to signup after verify the ``email`` or ``phone number`` (just email for new).
         Returns:
@@ -265,7 +306,7 @@ paths:
             - status: 401 when come bafore verify the ``email`` or ``phone_number``.
             - status: 400 when data isn't correct or somthing go to by wrong.
       tags:
-      - api
+      - auth
       requestBody:
         content:
           application/json:
@@ -288,9 +329,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserAuth'
           description: ''
+  /api/auth/verify-email/:
+    post:
+      operationId: auth_verify_email_create
+      description: |-
+        Argament:
+            `email`: to check email validate.
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/banners/:
     get:
-      operationId: api_banners_list
+      operationId: banners_list
       parameters:
       - in: query
         name: category
@@ -313,7 +368,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - banners
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -328,9 +383,9 @@ paths:
           description: ''
   /api/banners/create/:
     post:
-      operationId: api_banners_create_create
+      operationId: banners_create_create
       tags:
-      - api
+      - banners
       requestBody:
         content:
           application/json:
@@ -355,7 +410,7 @@ paths:
           description: ''
   /api/categorie/:
     get:
-      operationId: api_categorie_list
+      operationId: categorie_list
       description: |-
         CategoryViewsets
 
@@ -391,7 +446,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - categorie
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -404,14 +459,14 @@ paths:
           description: ''
   /api/categorie/attributes/:
     get:
-      operationId: api_categorie_attributes_list
+      operationId: categorie_attributes_list
       description: |-
         AttributeByCategorieViewsets
 
         Argament:
             `category`: categorie id to get all attribute in `GET Method`
       tags:
-      - api
+      - categorie
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -426,14 +481,14 @@ paths:
           description: ''
   /api/categorie/features/:
     get:
-      operationId: api_categorie_features_list
+      operationId: categorie_features_list
       description: |-
         FeatureByCategorieViewsets
 
         Argament:
             `category`: categorie id to get all Feature in `GET Method`
       tags:
-      - api
+      - categorie
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -448,9 +503,9 @@ paths:
           description: ''
   /api/friend/:
     get:
-      operationId: api_friend_list
+      operationId: friend_list
       tags:
-      - api
+      - friend
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -465,9 +520,9 @@ paths:
           description: ''
   /api/friends/:
     get:
-      operationId: api_friends_list
+      operationId: friends_list
       tags:
-      - api
+      - friends
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -482,7 +537,7 @@ paths:
           description: ''
   /api/image/{id}/delete/:
     delete:
-      operationId: api_image_delete_destroy
+      operationId: image_delete_destroy
       parameters:
       - in: path
         name: id
@@ -490,7 +545,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - image
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -499,7 +554,7 @@ paths:
           description: No response body
   /api/image/{id}/update/:
     put:
-      operationId: api_image_update_update
+      operationId: image_update_update
       parameters:
       - in: path
         name: id
@@ -507,7 +562,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - image
       requestBody:
         content:
           application/json:
@@ -531,7 +586,7 @@ paths:
                 $ref: '#/components/schemas/Image_Serializers'
           description: ''
     patch:
-      operationId: api_image_update_partial_update
+      operationId: image_update_partial_update
       parameters:
       - in: path
         name: id
@@ -539,7 +594,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - image
       requestBody:
         content:
           application/json:
@@ -563,7 +618,7 @@ paths:
           description: ''
   /api/image/feature/create/:
     post:
-      operationId: api_image_feature_create_create
+      operationId: image_feature_create_create
       description: |-
         ViewSet for creating Feature_property instances with associated images.
 
@@ -598,7 +653,7 @@ paths:
         - permission_classes: The list of permission classes that this viewset requires.
         - serializer_class: The serializer class that this viewset uses.
       tags:
-      - api
+      - image
       requestBody:
         content:
           application/json:
@@ -623,7 +678,7 @@ paths:
           description: ''
   /api/image/property/create/:
     post:
-      operationId: api_image_property_create_create
+      operationId: image_property_create_create
       description: |-
         ViewSet for creating Image instances associated with a Property.
 
@@ -646,7 +701,7 @@ paths:
         - permission_classes: The list of permission classes that this viewset requires.
         - serializer_class: The serializer class that this viewset uses.
       tags:
-      - api
+      - image
       requestBody:
         content:
           application/json:
@@ -671,13 +726,13 @@ paths:
           description: ''
   /api/ml/property-price/:
     post:
-      operationId: api_ml_property_price_create
+      operationId: ml_property_price_create
       description: |-
         Property Price Predict model
         Argament:
             `query`: query to get Predicting Price  For Property in `POST Method`
       tags:
-      - api
+      - ml
       requestBody:
         content:
           application/json:
@@ -702,7 +757,7 @@ paths:
           description: ''
   /api/property/:
     get:
-      operationId: api_property_list
+      operationId: property_list
       description: |-
         Property Viewsets
         Args:
@@ -754,7 +809,7 @@ paths:
         schema:
           type: integer
       tags:
-      - api
+      - property
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -767,7 +822,7 @@ paths:
           description: ''
   /api/property/{pkprop}/reviews/:
     get:
-      operationId: api_property_reviews_list
+      operationId: property_reviews_list
       description: |-
         Review Viewsets
 
@@ -820,7 +875,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - property
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -834,7 +889,7 @@ paths:
           description: ''
   /api/property/{pkprop}/reviews/create/:
     post:
-      operationId: api_property_reviews_create_create
+      operationId: property_reviews_create_create
       description: |-
         Review Viewsets
 
@@ -854,7 +909,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -879,7 +934,7 @@ paths:
           description: ''
   /api/property/{id}/:
     get:
-      operationId: api_property_retrieve
+      operationId: property_retrieve
       description: |-
         Property Viewsets
         Args:
@@ -892,7 +947,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -905,7 +960,7 @@ paths:
           description: ''
   /api/property/{id}/by-address/:
     get:
-      operationId: api_property_by_address_retrieve
+      operationId: property_by_address_retrieve
       description: |-
         Property Viewsets
         Args:
@@ -918,7 +973,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -931,7 +986,7 @@ paths:
           description: ''
   /api/property/{id}/delete/:
     delete:
-      operationId: api_property_delete_destroy
+      operationId: property_delete_destroy
       description: |-
         API view class for creating a new property along with address and images.
 
@@ -1005,7 +1060,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -1014,7 +1069,7 @@ paths:
           description: No response body
   /api/property/{id}/update/:
     put:
-      operationId: api_property_update_update
+      operationId: property_update_update
       description: |-
         API view class for creating a new property along with address and images.
 
@@ -1088,7 +1143,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -1112,7 +1167,7 @@ paths:
                 $ref: '#/components/schemas/CreateProperty'
           description: ''
     patch:
-      operationId: api_property_update_partial_update
+      operationId: property_update_partial_update
       description: |-
         API view class for creating a new property along with address and images.
 
@@ -1186,7 +1241,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -1210,7 +1265,7 @@ paths:
           description: ''
   /api/property/attribute/{id}/delete/:
     delete:
-      operationId: api_property_attribute_delete_destroy
+      operationId: property_attribute_delete_destroy
       parameters:
       - in: path
         name: id
@@ -1218,7 +1273,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -1227,7 +1282,7 @@ paths:
           description: No response body
   /api/property/attribute/{id}/update/:
     put:
-      operationId: api_property_attribute_update_update
+      operationId: property_attribute_update_update
       parameters:
       - in: path
         name: id
@@ -1235,7 +1290,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -1259,7 +1314,7 @@ paths:
                 $ref: '#/components/schemas/CreateProperty_valueSerializers'
           description: ''
     patch:
-      operationId: api_property_attribute_update_partial_update
+      operationId: property_attribute_update_partial_update
       parameters:
       - in: path
         name: id
@@ -1267,7 +1322,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -1291,9 +1346,9 @@ paths:
           description: ''
   /api/property/attribute/create/:
     post:
-      operationId: api_property_attribute_create_create
+      operationId: property_attribute_create_create
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -1316,9 +1371,105 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateProperty_valueSerializers'
           description: ''
+  /api/property/attribute/update-property-value/:
+    put:
+      operationId: property_attribute_update_property_value_update
+      description: |-
+        View for updating or creating property values.
+
+        This view handles PUT requests to update or create property values based on
+        provided attribute IDs and their corresponding values. It checks if a
+        property exists and updates or creates `property_value` entries as needed.
+
+        Request Payload:
+        - `property_id` (int): The ID of the property to update.
+        - `attributes_values` (dict): A dictionary where the keys are attribute IDs
+          and the values are the new values for these attributes.
+
+        Example Request Payload:
+        {
+            "property_id": 123,
+            "attributes_values": {
+                "1": "New Value 1",
+                "2": "New Value 2",
+                "3": "New Value 3"
+            }
+        }
+
+        Responses:
+        - **200 OK**: If the operation was successful.
+          - **Response Format:**
+            {
+                "detail": "Operation completed.",
+                "updates": [
+                    {
+                        "attribute_id": 1,
+                        "old_value": "Old Value",
+                        "new_value": "New Value 1",
+                        "categories": [1, 2]
+                    }
+                ],
+                "creations": [
+                    {
+                        "attribute_id": 2,
+                        "value": "New Value 2",
+                        "categories": [2]
+                    }
+                ],
+                "errors": []
+            }
+
+        - **400 Bad Request**: If `property_id` or `attributes_values` are missing or invalid.
+          - **Response Format:**
+            {
+                "detail": "Invalid input. Please provide both 'property_id' and 'attributes_values'."
+            }
+
+        - **404 Not Found**: If the specified property does not exist.
+          - **Response Format:**
+            {
+                "detail": "Property with ID 123 not found."
+            }
+
+        Method:
+        - **PUT**: Updates or creates property values.
+
+        Logic:
+        1. **Input Validation**:
+           - Ensures that `property_id` and `attributes_values` are provided in the request.
+           - Returns a 400 error if either is missing.
+
+        2. **Property Lookup**:
+           - Attempts to retrieve the `Property` instance using `property_id`.
+           - Returns a 404 error if the property is not found.
+
+        3. **Attributes Fetching**:
+           - Fetches attributes and their associated categories based on provided attribute IDs.
+
+        4. **Processing Attribute Values**:
+           - Updates existing `property_value` instances or creates new ones as necessary.
+           - Collects information on updates and new creations, including associated categories.
+
+        5. **Response Preparation**:
+           - Constructs a detailed response with information on updates, creations, and errors.
+
+        Dependencies:
+        - **Models**:
+          - `Property`
+          - `Attribute`
+          - `ValueModel`
+          - `property_value`
+      tags:
+      - property
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/property/bast-seller/:
     get:
-      operationId: api_property_bast_seller_list
+      operationId: property_bast_seller_list
       description: |-
         BastSellerViewsets
 
@@ -1356,7 +1507,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - property
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -1369,13 +1520,13 @@ paths:
           description: ''
   /api/property/by-state/:
     get:
-      operationId: api_property_by_state_retrieve
+      operationId: property_by_state_retrieve
       description: |-
         State Viewsets
         Args:
             - `state`: state id for get all property in that `state`.
       tags:
-      - api
+      - property
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -1388,7 +1539,7 @@ paths:
           description: ''
   /api/property/create/:
     post:
-      operationId: api_property_create_create
+      operationId: property_create_create
       description: |-
         API view class for creating a new property along with address and images.
 
@@ -1456,7 +1607,7 @@ paths:
             Ensure that the user and `category` IDs provided exist in the database.
             Ensure that the attribute IDs provided in `attribute_values` exist in the database.
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -1481,7 +1632,7 @@ paths:
           description: ''
   /api/property/feature/{id}/delete/:
     delete:
-      operationId: api_property_feature_delete_destroy
+      operationId: property_feature_delete_destroy
       parameters:
       - in: path
         name: id
@@ -1489,7 +1640,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -1498,7 +1649,7 @@ paths:
           description: No response body
   /api/property/feature/{id}/update/:
     put:
-      operationId: api_property_feature_update_update
+      operationId: property_feature_update_update
       parameters:
       - in: path
         name: id
@@ -1506,7 +1657,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -1530,7 +1681,7 @@ paths:
                 $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
           description: ''
     patch:
-      operationId: api_property_feature_update_partial_update
+      operationId: property_feature_update_partial_update
       parameters:
       - in: path
         name: id
@@ -1538,7 +1689,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -1562,9 +1713,9 @@ paths:
           description: ''
   /api/property/feature/create/:
     post:
-      operationId: api_property_feature_create_create
+      operationId: property_feature_create_create
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -1589,7 +1740,7 @@ paths:
           description: ''
   /api/property/filter/:
     post:
-      operationId: api_property_filter_create
+      operationId: property_filter_create
       description: |-
         Viewset for filtering the Property model.
 
@@ -1636,7 +1787,7 @@ paths:
             ]
         }
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -1661,14 +1812,14 @@ paths:
           description: ''
   /api/property/high-rate/:
     get:
-      operationId: api_property_high_rate_retrieve
+      operationId: property_high_rate_retrieve
       description: |-
         Property Viewsets
         Args:
             - main_category: for get all property from Main Category in GET method from two levels
             - state: state id for get all property in that state.
       tags:
-      - api
+      - property
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -1681,7 +1832,7 @@ paths:
           description: ''
   /api/property/update-list/:
     post:
-      operationId: api_property_update_list_create
+      operationId: property_update_list_create
       description: |-
         Custom action to update a list of properties.
 
@@ -1708,7 +1859,7 @@ paths:
         Returns:
             Response: A list of updated Property objects.
       tags:
-      - api
+      - property
       requestBody:
         content:
           application/json:
@@ -1733,7 +1884,7 @@ paths:
           description: ''
   /api/review/:
     get:
-      operationId: api_review_list
+      operationId: review_list
       description: |-
         Review Viewsets
 
@@ -1781,7 +1932,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - review
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -1795,7 +1946,7 @@ paths:
           description: ''
   /api/review/create/:
     post:
-      operationId: api_review_create_create
+      operationId: review_create_create
       description: |-
         Review Viewsets
 
@@ -1809,7 +1960,7 @@ paths:
         Returns:
             queryset: Review queryset
       tags:
-      - api
+      - review
       requestBody:
         content:
           application/json:
@@ -1834,7 +1985,7 @@ paths:
           description: ''
   /api/schema/:
     get:
-      operationId: api_schema_retrieve
+      operationId: schema_retrieve
       description: |-
         OpenApi3 schema for this API. Format can be selected via content negotiation.
 
@@ -1952,7 +2103,7 @@ paths:
           - zh-hans
           - zh-hant
       tags:
-      - api
+      - schema
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -1979,9 +2130,9 @@ paths:
           description: ''
   /api/ticket/create/:
     post:
-      operationId: api_ticket_create_create
+      operationId: ticket_create_create
       tags:
-      - api
+      - ticket
       requestBody:
         content:
           application/json:
@@ -2006,9 +2157,9 @@ paths:
           description: ''
   /api/ticket/ticket-type/:
     get:
-      operationId: api_ticket_ticket_type_list
+      operationId: ticket_ticket_type_list
       tags:
-      - api
+      - ticket
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -2023,7 +2174,7 @@ paths:
           description: ''
   /api/user/alarms/create:
     post:
-      operationId: api_user_alarms_create_create
+      operationId: user_alarms_create_create
       description: |-
         Creates a new alarm along with associated alarm values.
         Example Request Body:
@@ -2053,7 +2204,7 @@ paths:
             }
         ```
       tags:
-      - api
+      - user
       requestBody:
         content:
           application/json:
@@ -2078,7 +2229,7 @@ paths:
           description: ''
   /api/user/favorite/:
     get:
-      operationId: api_user_favorite_list
+      operationId: user_favorite_list
       parameters:
       - name: ordering
         required: false
@@ -2109,7 +2260,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - user
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -2122,7 +2273,7 @@ paths:
           description: ''
   /api/user/favorite/{prop_id}/delete/:
     delete:
-      operationId: api_user_favorite_delete_destroy
+      operationId: user_favorite_delete_destroy
       parameters:
       - in: path
         name: prop_id
@@ -2130,7 +2281,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - user
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -2139,9 +2290,9 @@ paths:
           description: No response body
   /api/user/favorite/create/:
     post:
-      operationId: api_user_favorite_create_create
+      operationId: user_favorite_create_create
       tags:
-      - api
+      - user
       requestBody:
         content:
           application/json:
@@ -2166,7 +2317,7 @@ paths:
           description: ''
   /api/user/favorite/delete-all/:
     post:
-      operationId: api_user_favorite_delete_all_create
+      operationId: user_favorite_delete_all_create
       description: |-
         Delete List of Favorite
 
@@ -2189,7 +2340,7 @@ paths:
         Returns:
             data-done: if is ok
       tags:
-      - api
+      - user
       requestBody:
         content:
           application/json:
@@ -2213,7 +2364,7 @@ paths:
           description: ''
   /api/user/favorite/delete-list/:
     post:
-      operationId: api_user_favorite_delete_list_create
+      operationId: user_favorite_delete_list_create
       description: |-
         Delete List of Favorite
 
@@ -2236,7 +2387,7 @@ paths:
         Returns:
             data-done: if is ok
       tags:
-      - api
+      - user
       requestBody:
         content:
           application/json:
@@ -2260,7 +2411,7 @@ paths:
           description: ''
   /api/user/profile/:
     get:
-      operationId: api_user_profile_list
+      operationId: user_profile_list
       description: |-
         _summary_
 
@@ -2277,7 +2428,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - user
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -2293,7 +2444,7 @@ paths:
           description: ''
   /api/user/profile/{id}/:
     get:
-      operationId: api_user_profile_retrieve
+      operationId: user_profile_retrieve
       description: |-
         _summary_
 
@@ -2309,7 +2460,7 @@ paths:
           type: integer
         required: true
       tags:
-      - api
+      - user
       security:
       - cookieAuth: []
       - tokenAuth: []
@@ -2323,14 +2474,14 @@ paths:
           description: ''
   /api/user/profile/update/:
     put:
-      operationId: api_user_profile_update_update
+      operationId: user_profile_update_update
       description: |-
         _summary_
 
         Args:
             viewsets (_type_): _description_
       tags:
-      - api
+      - user
       requestBody:
         content:
           application/json:
@@ -2354,14 +2505,14 @@ paths:
                 $ref: '#/components/schemas/UpdateUser'
           description: ''
     patch:
-      operationId: api_user_profile_update_partial_update
+      operationId: user_profile_update_partial_update
       description: |-
         _summary_
 
         Args:
             viewsets (_type_): _description_
       tags:
-      - api
+      - user
       requestBody:
         content:
           application/json:
@@ -2739,6 +2890,8 @@ components:
           items:
             type: object
             additionalProperties: {}
+          default:
+          - {}
         is_active:
           type: boolean
           title: Activite?
@@ -2778,7 +2931,6 @@ components:
           readOnly: true
           title: Alarm_value
       required:
-      - alarm_values
       - category
       - id
       - state
@@ -2922,6 +3074,11 @@ components:
         for_rent:
           type: boolean
           title: Is For Rent?
+        last_active:
+          type: string
+          format: date-time
+          nullable: true
+          title: Last activet time
         category:
           type: integer
       required:
@@ -3300,6 +3457,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SinglePropertySerializers'
+    PasswordReset:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        new_password:
+          type: string
+      required:
+      - email
+      - new_password
     PatchedCreateAddress:
       type: object
       description: |-
@@ -3466,6 +3634,11 @@ components:
         for_rent:
           type: boolean
           title: Is For Rent?
+        last_active:
+          type: string
+          format: date-time
+          nullable: true
+          title: Last activet time
         category:
           type: integer
     PatchedCreatePropertyFeatureSerializers:
@@ -3592,6 +3765,11 @@ components:
         for_rent:
           type: boolean
           title: Is For Rent?
+        last_active:
+          type: string
+          format: date-time
+          nullable: true
+          title: Last activet time
       required:
       - address
       - category
@@ -3645,6 +3823,11 @@ components:
         for_rent:
           type: boolean
           title: Is For Rent?
+        last_active:
+          type: string
+          format: date-time
+          nullable: true
+          title: Last activet time
         user:
           type: integer
         category:
@@ -3755,6 +3938,11 @@ components:
         for_rent:
           type: boolean
           title: Is For Rent?
+        last_active:
+          type: string
+          format: date-time
+          nullable: true
+          title: Last activet time
         user:
           type: integer
         category:
