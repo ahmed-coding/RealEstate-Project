@@ -13,7 +13,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8005', // Verified with docker-compose
+        target: 'http://localhost:8000', // Verified with docker-compose
         changeOrigin: true,
       },
     }

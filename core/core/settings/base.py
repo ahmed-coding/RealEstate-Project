@@ -31,7 +31,7 @@ app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 cred = credentials.Certificate(
-    f'{BASE_DIR}/../real-estate-app-ee644-firebase-adminsdk-nc9u9-9a54a7b302.json')
+    f'{BASE_DIR}/../firebase.json')
 firebase_admin.initialize_app(cred)
 
 
