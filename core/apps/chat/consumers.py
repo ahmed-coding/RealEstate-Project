@@ -343,8 +343,9 @@ def get_room_or_error(room_id, user):
     friend_list = FriendList.objects.get(user=user).friends.all()
     if not room.user1 in friend_list:
         if not room.user2 in friend_list:
-            raise ClientError("ROOM_ACCESS_DENIED",
-                              "You must be friends to chat.")
+            FriendList.objects.get(user=user).add_friend(room.user2)
+            # raise ClientError("ROOM_ACCESS_DENIED",
+            #                   "You must be friends to chat.")
     return room
 
 
@@ -437,10 +438,10 @@ def on_user_connected(room, user):
     if user in connected_users:
         try:
             # reset count
-            unread_msgs = UnreadChatRoomMessages.objects.get(
+            unread_msgs = UnreadChatRoomMessages.objects.filter(
                 room=room, user=user)
-            unread_msgs.count = 0
-            unread_msgs.save()
+            unread_msgs.update(count=0)
+            # unread_msgs.save()
         except UnreadChatRoomMessages.DoesNotExist:
             UnreadChatRoomMessages(room=room, user=user).save()
             pass

@@ -60,40 +60,47 @@ def get_recent_chatroom_messages(user):
         else:
             friend = room.user1
 
-        # confirm you are even friends (in case chat is left active somehow)
-        friend_list = FriendList.objects.get(user=user)
-        if not friend_list.is_mutual_friend(friend):
-            chat = find_or_create_private_chat(user, friend)
-            chat.is_active = False
-            chat.save()
-        else:
-            # find newest msg from that friend in the chat room
-            try:
-                message = RoomChatMessage.objects.filter(
-                    room=room, user=friend).latest("timestamp")
-            except RoomChatMessage.DoesNotExist:
-                # create a dummy message with dummy timestamp
-                today = datetime(
-                    year=1950,
-                    month=1,
-                    day=1,
-                    hour=1,
-                    minute=1,
-                    second=1,
-                    tzinfo=pytz.UTC
-                )
-                message = RoomChatMessage(
-                    user=friend,
-                    room=room,
-                    timestamp=today,
-                    content="",
-                )
+        # Check if FriendList exists for the user
+        try:
+            friend_list = FriendList.objects.get(user=user)
+            is_friend = friend_list.is_mutual_friend(friend)
+        except FriendList.DoesNotExist:
+            # Create friend list if it doesn't exist
+            friend_list = FriendList.objects.create(user=user)
+            is_friend = False
+
+        # find newest msg from that friend in the chat room
+        try:
+            message = RoomChatMessage.objects.filter(
+                room=room).order_by('-timestamp').first()
+        except RoomChatMessage.DoesNotExist:
+            message = None
+
+        if message:
             m_and_f.append({
                 'message': message,
                 'friend': friend
             })
+        else:
+            # Create a placeholder for rooms with no messages
+            from django.utils import timezone
+            placeholder_message = RoomChatMessage(
+                user=friend,
+                room=room,
+                timestamp=timezone.now(),
+                content="No messages yet"
+            )
+            m_and_f.append({
+                'message': placeholder_message,
+                'friend': friend
+            })
 
-    return sorted(m_and_f, key=lambda x: x['message'].timestamp, reverse=True)
+    # Sort by timestamp, most recent first
+    from django.utils import timezone
+    sorted_result = sorted(
+        m_and_f, key=lambda x: x['message'].timestamp if x['message'].timestamp else timezone.now(), reverse=True)
+
+    return sorted_result
 
 
 @method_decorator(csrf_exempt, name='dispatch')
