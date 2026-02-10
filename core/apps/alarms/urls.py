@@ -1,6 +1,10 @@
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
-urlpatterns = [
-    path('create', views.AlarmViewsets.as_view({'post': 'create'})),
 
+router = DefaultRouter()
+router.register(r'', views.AlarmViewsets, basename='alarms')
+
+urlpatterns = [
+    path('', include(router.urls)),
 ]

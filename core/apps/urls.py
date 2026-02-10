@@ -12,6 +12,8 @@ urlpatterns = [
     path('banners/', include('apps.banners.urls')),
     path('review/', include('apps.review.urls')),
     path('ml/', include('apps.ML.urls')),
+    path('chat/', include('apps.chat.urls')),
+    path('alarms/', include('apps.alarms.urls')),
 
     # image method
     path('image/<int:pk>/update/', views.ImageViewsets.as_view(

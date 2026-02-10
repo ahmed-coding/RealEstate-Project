@@ -46,13 +46,12 @@ class CreateAlarmSerializer(serializers.ModelSerializer):
         return super().validate(attrs)
 
     def create(self, validated_data):
-        user = self.context.get('user', None)
-
-        alarm_values_data = validated_data.pop('alarm_values')
+        alarm_values_data = validated_data.pop('alarm_values', [])
         alarm = Alarm.objects.create(**validated_data)
         for alarm_value_data in alarm_values_data:
-            attribute_id = alarm_value_data.pop('attribute_id')
-            value = alarm_value_data.pop('value')
-            alarm_value = Alarm_value.objects.create(
-                alarm=alarm, attribute_id=attribute_id, value=value)
+            if 'attribute_id' in alarm_value_data and 'value' in alarm_value_data:
+                attribute_id = alarm_value_data.pop('attribute_id')
+                value = alarm_value_data.pop('value')
+                Alarm_value.objects.create(
+                    alarm=alarm, attribute_id=attribute_id, value=value)
         return alarm
