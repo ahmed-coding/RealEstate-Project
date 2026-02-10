@@ -6,7 +6,7 @@ class AppsConfig(AppConfig):
     name = 'apps'
 
     def ready(self) -> None:
-        from . import algolia_serializers
+        # from . import algolia_serializers
         from .signals import user_save, create_notification, create_unread_chatroom_messages_obj, increment_unread_msg_count, remove_unread_msg_count_notification, create_notification_messages_brodcast
         user_save
         create_notification

@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'schema_graph',
     'corsheaders',
     'channels',
-    'algoliasearch_django',
+    # 'algoliasearch_django',
 ]
 
 DATABASES = {
