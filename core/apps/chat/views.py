@@ -10,8 +10,7 @@ from datetime import datetime
 import pytz
 
 
-from ..models import PrivateChatRoom, RoomChatMessage, User, FriendList
-from chat.utils import find_or_create_private_chat
+from ..models import PrivateChatRoom, RoomChatMessage, User, FriendList, find_or_create_private_chat
 
 
 def private_chat_room_view(request, *args, **kwargs):

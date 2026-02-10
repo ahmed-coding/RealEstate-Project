@@ -1,5 +1,5 @@
-algoliasearch==3.0.0
-algoliasearch-django==3.0.0
+algoliasearch
+algoliasearch-django
 amqp==5.2.0
 anyio==4.3.0
 arabic-reshaper==3.0.0

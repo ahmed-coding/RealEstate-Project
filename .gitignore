@@ -151,6 +151,7 @@ media/
 media/*
 media/*/*.*
 real-estate-app-ee644-firebase-adminsdk-nc9u9-9a54a7b302.json
+*.pdf
 # PyCharm
 #  JetBrains specific template is maintainted in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore

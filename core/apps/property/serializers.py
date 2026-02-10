@@ -72,45 +72,6 @@ class BastSellerSerializers(UserSerializer):
         model = User
 
 
-class SinglePropertySerializers(serializers.ModelSerializer):
-    rate_review = serializers.SerializerMethodField(read_only=True)
-    in_favorite = serializers.SerializerMethodField(read_only=True)
-    image = Image_Serializers(many=True, read_only=True)
-    # address = propertyAddressSerializersI(read_only=True)
-    address = AddressSerializers(read_only=True)
-
-    # review = ReviewSerializers(many=True, read_only=True)
-
-    def get_in_favorite(self, obj) -> bool:
-        user = self.context.get("user" or None)
-        # if isinstance(user, User) else False
-        return obj.favorites.filter(user=user).exists()
-
-    # def get_rate(self, obj) -> float:
-    #     # user = self.context.get('user' or None)
-    #     rat = obj.rate.all()
-    #     sub = 0.0
-    #     if rat.exists():
-    #         try:
-    #             for s in rat:
-    #                 sub += s.rate
-    #             return round(sub / rat.count(), 1)
-    #         except:
-    #             sub = 0
-    #             return round(sub, 1)
-    #     else:
-    #         return round(sub, 1)
-    def get_rate_review(self, obj) -> float:
-        ratings = obj.review.all().values_list("rate_review", flat=True)
-        if ratings:
-            average_rating = sum(ratings) / len(ratings)
-            return round(average_rating, 1)
-        else:
-            return 0.0
-
-    class Meta:
-        model = Property
-        fields = "__all__"
 
 
 class FeatureSerializers(serializers.ModelSerializer):
@@ -148,6 +109,36 @@ class property_valueSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = property_value
+        fields = "__all__"
+
+
+class SinglePropertySerializers(serializers.ModelSerializer):
+    rate_review = serializers.SerializerMethodField(read_only=True)
+    in_favorite = serializers.SerializerMethodField(read_only=True)
+    image = Image_Serializers(many=True, read_only=True)
+    # address = propertyAddressSerializersI(read_only=True)
+    address = AddressSerializers(read_only=True)
+
+    feature_property = Feature_propertySerializers(many=True, read_only=True)
+    property_value = property_valueSerializers(many=True, read_only=True)
+
+    # review = ReviewSerializers(many=True, read_only=True)
+
+    def get_in_favorite(self, obj) -> bool:
+        user = self.context.get("user" or None)
+        # if isinstance(user, User) else False
+        return obj.favorites.filter(user=user).exists()
+
+    def get_rate_review(self, obj) -> float:
+        ratings = obj.review.all().values_list("rate_review", flat=True)
+        if ratings:
+            average_rating = sum(ratings) / len(ratings)
+            return round(average_rating, 1)
+        else:
+            return 0.0
+
+    class Meta:
+        model = Property
         fields = "__all__"
 
 

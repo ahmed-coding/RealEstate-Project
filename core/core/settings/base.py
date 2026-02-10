@@ -151,11 +151,9 @@ APPEND_SLASH = True
 REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        "rest_framework.authentication.SessionAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
-
-
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         # "rest_framework.permissions.IsAuthenticatedOrReadOnly",
@@ -251,10 +249,10 @@ DEFAULT_FROM_EMAIL = 'realestate@bastblog.com'
 #     'APPLICATION_ID': 'JOGS9NTSUL',
 #     'API_KEY': '3a4e5442a0dc5257d9d526ba5163743f'
 # }
-ALGOLIA = {
-    'APPLICATION_ID': 'K5HRMSGJI4',
-    'API_KEY': '67e7c4435e6254c743056eb62f612305'
-}
+# ALGOLIA = {
+#     'APPLICATION_ID': 'K5HRMSGJI4',
+#     'API_KEY': '67e7c4435e6254c743056eb62f612305'
+# }
 
 # Base dir for ML models
 ML_MODELS_PATH = BASE_DIR / '../ML'

@@ -2,6 +2,11 @@ from .base import *
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+
 
 INSTALLED_APPS = [
     'daphne',
@@ -87,4 +92,17 @@ CHANNEL_LAYERS = {
 }
 
 
-# Media Files
+
+# Override REST_FRAMEWORK to use only TokenAuthentication for API
+# This avoids CSRF errors since SessionAuthentication enforces CSRF checks
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        "rest_framework.authentication.TokenAuthentication",
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
+
