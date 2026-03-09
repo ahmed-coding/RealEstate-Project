@@ -474,24 +474,44 @@ Success will be measured using:
 
 
 
-# 19. File Architecture
+# 19. Folder Architecture
 backend/
- ├ django_api/
- │
- │  ├ users/
- │  ├ properties/
- │  ├ reviews/
- │  ├ chat/
- │  ├ notifications/
- │
- │  ├ services/
- │  ├ repositories/
- │  ├ tasks/
- │
- │  └ core/
- │
- ├ ai_gateway/
- │
- │  └ fastapi_app/
- │
- └ workers/
+│
+├ gateway/
+│   └ django_api/
+│       ├ apps/
+│       │   ├ users/
+│       │   ├ properties/
+│       │   ├ reviews/
+│       │   ├ chat/
+│       │   └ notifications/
+│       │
+│       ├ services/
+│       ├ repositories/
+│       └ core/
+│
+├ services/
+│   │
+│   ├ ai-service/
+│   │   ├ api/
+│   │   ├ rag/
+│   │   ├ llm_router/
+│   │   ├ tools/
+│   │   └ prompts/
+│   │
+│   ├ realtime-service/
+│   │   └ fastapi_ws/
+│   │
+│   └ search-service/
+│
+├ workers/
+│   ├ celery_app.py
+│   └ tasks/
+│
+├ infrastructure/
+│   ├ docker/
+│   └ nginx/
+│
+└ shared/
+    ├ schemas/
+    └ utils/
