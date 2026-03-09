@@ -1,0 +1,12 @@
+# Celery Workers Requirements
+celery>=5.3.0
+kombu>=5.3.0
+billiard>=4.2.0
+vine>=5.1.0
+django>=4.2.0
+djangorestframework>=3.14.0
+psycopg2-binary>=2.9.9
+python-dotenv>=1.0.0
+redis>=5.0.0
+httpx>=0.25.0
+

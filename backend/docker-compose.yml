@@ -1,0 +1,208 @@
+version: '3.8'
+
+services:
+  # Django API Gateway
+  gateway:
+    build:
+      context: ./gateway/django_api
+    container_name: realestate-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=false
+      - DATABASE_URL=postgresql://postgres:12345@postgres:5432/RealEstate
+      - REDIS_URL=redis://redis:6379/0
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672//
+      - AI_SERVICE_URL=http://ai-service:8001
+      - REALTIME_SERVICE_URL=http://realtime-service:8002
+      - SEARCH_SERVICE_URL=http://search-service:8003
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    networks:
+      - realestate-network
+
+  # AI Service (FastAPI)
+  ai-service:
+    build:
+      context: ./services/ai-service
+    container_name: realestate-ai-service
+    ports:
+      - "8001:8001"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama2}
+      - HUGGINGFACE_API_TOKEN=${HUGGINGFACE_API_TOKEN}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - DATABASE_URL=postgresql://postgres:12345@postgres:5432/RealEstate
+      - REDIS_URL=redis://redis:6379/0
+      - EMBEDDING_DIM=1536
+    depends_on:
+      - postgres
+      - redis
+      - ollama
+    networks:
+      - realestate-network
+
+  # Ollama (Local LLM - Free)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: realestate-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - realestate-network
+
+  # Realtime Service (FastAPI WebSocket)
+  realtime-service:
+    build:
+      context: ./services/realtime-service
+    container_name: realestate-realtime-service
+    ports:
+      - "8002:8002"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATABASE_URL=postgresql://postgres:12345@postgres:5432/RealEstate
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - CORS_ORIGINS=*
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - realestate-network
+
+  # Search Service (FastAPI + Elasticsearch)
+  search-service:
+    build:
+      context: ./services/search-service
+    container_name: realestate-search-service
+    ports:
+      - "8003:8003"
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - DATABASE_URL=postgresql://postgres:12345@postgres:5432/RealEstate
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - elasticsearch
+      - postgres
+    networks:
+      - realestate-network
+
+  # Celery Workers
+  celery-worker:
+    build:
+      context: ./workers
+    container_name: realestate-celery-worker
+    command: celery -A celery_app worker -l info
+    environment:
+      - DATABASE_URL=postgresql://postgres:12345@postgres:5432/RealEstate
+      - REDIS_URL=redis://redis:6379/0
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    networks:
+      - realestate-network
+
+  # Celery Beat (Scheduler)
+  celery-beat:
+    build:
+      context: ./workers
+    container_name: realestate-celery-beat
+    command: celery -A celery_app beat -l info
+    environment:
+      - DATABASE_URL=postgresql://postgres:12345@postgres:5432/RealEstate
+      - REDIS_URL=redis://redis:6379/0
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - realestate-network
+
+  # PostgreSQL
+  postgres:
+    image: postgres:14-alpine
+    container_name: realestate-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: RealEstate
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - realestate-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: realestate-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - realestate-network
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: realestate-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - realestate-network
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    container_name: realestate-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - realestate-network
+
+  # NGINX Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: realestate-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infrastructure/nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - gateway
+      - ai-service
+      - realtime-service
+      - search-service
+    networks:
+      - realestate-network
+
+volumes:
+  postgres-data:
+  elasticsearch-data:
+  ollama-data:
+
+networks:
+  realestate-network:
+    driver: bridge
