@@ -28,7 +28,6 @@ paths:
               $ref: '#/components/schemas/CreateAddress'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -59,7 +58,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedCreateAddress'
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -100,7 +98,6 @@ paths:
       tags:
       - address
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -122,7 +119,6 @@ paths:
       tags:
       - address
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -151,7 +147,6 @@ paths:
               $ref: '#/components/schemas/CreateAddress'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -193,7 +188,6 @@ paths:
       tags:
       - address
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -204,6 +198,178 @@ paths:
                 items:
                   $ref: '#/components/schemas/StateSerializers'
           description: ''
+  /api/alarms/:
+    get:
+      operationId: alarms_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - alarms
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreateAlarm'
+          description: ''
+    post:
+      operationId: alarms_create
+      description: |-
+        Creates a new alarm along with associated alarm values.
+        Example Request Body:
+        ```
+            {
+                "state": 1,
+                "category": 1,
+                "is_active": true,
+                "max_price": 100000,
+                "min_price": 50000,
+                "for_sale": true,
+                "for_rent": false,
+                "alarm_values": [
+                    {
+                        "attribute_id": 1,
+                        "value": "3"
+                    },
+                    {
+                        "attribute_id": 2,
+                        "value": "200.5"
+                    },
+                    {
+                        "attribute_id": 3,
+                        "value": "true"
+                    }
+                ]
+            }
+        ```
+      tags:
+      - alarms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAlarm'
+          description: ''
+  /api/alarms/{id}/:
+    get:
+      operationId: alarms_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - alarms
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAlarm'
+          description: ''
+    put:
+      operationId: alarms_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - alarms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAlarm'
+          description: ''
+    patch:
+      operationId: alarms_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - alarms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAlarm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAlarm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAlarm'
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAlarm'
+          description: ''
+    delete:
+      operationId: alarms_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - alarms
+      security:
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/auth/login/:
     post:
       operationId: auth_login_create
@@ -222,7 +388,6 @@ paths:
               $ref: '#/components/schemas/AuthToken'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -245,7 +410,6 @@ paths:
       tags:
       - auth
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -268,7 +432,6 @@ paths:
               $ref: '#/components/schemas/PasswordReset'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -286,7 +449,6 @@ paths:
       tags:
       - auth
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -320,7 +482,6 @@ paths:
               $ref: '#/components/schemas/UserAuth'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -338,7 +499,6 @@ paths:
       tags:
       - auth
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -370,7 +530,6 @@ paths:
       tags:
       - banners
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -399,7 +558,6 @@ paths:
               $ref: '#/components/schemas/BannerSerializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -448,7 +606,6 @@ paths:
       tags:
       - categorie
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -468,7 +625,6 @@ paths:
       tags:
       - categorie
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -490,7 +646,6 @@ paths:
       tags:
       - categorie
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -501,13 +656,34 @@ paths:
                 items:
                   $ref: '#/components/schemas/FeatureByCategorySerializers'
           description: ''
+  /api/chat/create/:
+    post:
+      operationId: chat_create_create
+      description: API endpoint to create or return a private chat room
+      tags:
+      - chat
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/chat/rooms/:
+    get:
+      operationId: chat_rooms_retrieve
+      description: API endpoint to list all chat rooms for the authenticated user
+      tags:
+      - chat
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/friend/:
     get:
       operationId: friend_list
       tags:
       - friend
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -524,7 +700,6 @@ paths:
       tags:
       - friends
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -547,7 +722,6 @@ paths:
       tags:
       - image
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '204':
@@ -576,7 +750,6 @@ paths:
               $ref: '#/components/schemas/Image_Serializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -607,7 +780,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedImage_Serializers'
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -667,7 +839,6 @@ paths:
               $ref: '#/components/schemas/CreatePropertyfeaturedImage_Serializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -715,7 +886,6 @@ paths:
               $ref: '#/components/schemas/CreatePropertyImage_Serializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -746,7 +916,6 @@ paths:
               $ref: '#/components/schemas/PropertyPricePredictSerializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -811,7 +980,6 @@ paths:
       tags:
       - property
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -877,7 +1045,6 @@ paths:
       tags:
       - property
       security:
-      - cookieAuth: []
       - tokenAuth: []
       - {}
       responses:
@@ -923,7 +1090,6 @@ paths:
               $ref: '#/components/schemas/CreateReviewSerializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -949,7 +1115,6 @@ paths:
       tags:
       - property
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -975,7 +1140,6 @@ paths:
       tags:
       - property
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1062,7 +1226,6 @@ paths:
       tags:
       - property
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '204':
@@ -1157,7 +1320,6 @@ paths:
               $ref: '#/components/schemas/CreateProperty'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1254,7 +1416,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedCreateProperty'
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1275,7 +1436,6 @@ paths:
       tags:
       - property
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '204':
@@ -1304,7 +1464,6 @@ paths:
               $ref: '#/components/schemas/CreateProperty_valueSerializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1335,7 +1494,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedCreateProperty_valueSerializers'
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1362,7 +1520,6 @@ paths:
               $ref: '#/components/schemas/CreateProperty_valueSerializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -1462,7 +1619,6 @@ paths:
       tags:
       - property
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1509,7 +1665,6 @@ paths:
       tags:
       - property
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1528,7 +1683,6 @@ paths:
       tags:
       - property
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1538,6 +1692,87 @@ paths:
                 $ref: '#/components/schemas/SinglePropertySerializers'
           description: ''
   /api/property/create/:
+    get:
+      operationId: property_create_list
+      description: |-
+        API view class for creating a new property along with address and images.
+
+        This view class provides an endpoint for creating a new property along with associated address and images.
+
+        Example Usage:
+            To create a property with address, features, and images:
+            ```
+            {
+
+            "category": 1,
+            "name": "Property Name",
+            "description": "Property Description",
+            "price": 100000,
+            "size": 2000,
+            "is_active": true,
+            "is_deleted": false,
+            "attribute_values": {
+                "1": "Value1",
+                "2": "Value2",
+                "3": "Value3"
+            },
+            "address": {
+                "state": 1,
+                "longitude": "20.354654",
+                "latitude": "32.354654"
+            },
+            "feature_data": [
+                {
+                    "id": 1,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "images": [
+                        {
+                            "image": "image_data"
+                        },
+                        {
+                            "image": "image_data"
+                        }
+                    ]
+                }
+            ],
+            "image_data": [
+                {
+                    "image": "image_data"
+                },
+                {
+                    "image": "image_data"
+                }
+            ],
+            "for_sale": true
+        }
+            ```
+
+        Note:
+            Ensure that the user and `category` IDs provided exist in the database.
+            Ensure that the attribute IDs provided in `attribute_values` exist in the database.
+      tags:
+      - property
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreateProperty'
+          description: ''
     post:
       operationId: property_create_create
       description: |-
@@ -1621,7 +1856,6 @@ paths:
               $ref: '#/components/schemas/CreateProperty'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -1642,7 +1876,6 @@ paths:
       tags:
       - property
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '204':
@@ -1671,7 +1904,6 @@ paths:
               $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1702,7 +1934,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedCreatePropertyFeatureSerializers'
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1729,7 +1960,6 @@ paths:
               $ref: '#/components/schemas/CreatePropertyFeatureSerializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -1801,7 +2031,6 @@ paths:
               $ref: '#/components/schemas/PropertyFilter'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1821,7 +2050,6 @@ paths:
       tags:
       - property
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1873,7 +2101,6 @@ paths:
               $ref: '#/components/schemas/CreateProperty'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -1934,7 +2161,6 @@ paths:
       tags:
       - review
       security:
-      - cookieAuth: []
       - tokenAuth: []
       - {}
       responses:
@@ -1974,7 +2200,6 @@ paths:
               $ref: '#/components/schemas/CreateReviewSerializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -2105,7 +2330,6 @@ paths:
       tags:
       - schema
       security:
-      - cookieAuth: []
       - tokenAuth: []
       - {}
       responses:
@@ -2146,7 +2370,6 @@ paths:
               $ref: '#/components/schemas/TicketSerializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -2161,7 +2384,6 @@ paths:
       tags:
       - ticket
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -2172,9 +2394,31 @@ paths:
                 items:
                   $ref: '#/components/schemas/TicketTypeSerilalizers'
           description: ''
-  /api/user/alarms/create:
+  /api/user/alarms/:
+    get:
+      operationId: user_alarms_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - user
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreateAlarm'
+          description: ''
     post:
-      operationId: user_alarms_create_create
+      operationId: user_alarms_create
       description: |-
         Creates a new alarm along with associated alarm values.
         Example Request Body:
@@ -2218,7 +2462,6 @@ paths:
               $ref: '#/components/schemas/CreateAlarm'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -2227,6 +2470,102 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateAlarm'
           description: ''
+  /api/user/alarms/{id}/:
+    get:
+      operationId: user_alarms_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - user
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAlarm'
+          description: ''
+    put:
+      operationId: user_alarms_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateAlarm'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAlarm'
+          description: ''
+    patch:
+      operationId: user_alarms_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAlarm'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAlarm'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCreateAlarm'
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAlarm'
+          description: ''
+    delete:
+      operationId: user_alarms_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - user
+      security:
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/user/favorite/:
     get:
       operationId: user_favorite_list
@@ -2262,7 +2601,6 @@ paths:
       tags:
       - user
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -2283,7 +2621,6 @@ paths:
       tags:
       - user
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '204':
@@ -2306,7 +2643,6 @@ paths:
               $ref: '#/components/schemas/CreateFavoriteSerializers'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '201':
@@ -2353,7 +2689,6 @@ paths:
             schema:
               $ref: '#/components/schemas/FavoriteSerializers'
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -2400,7 +2735,6 @@ paths:
             schema:
               $ref: '#/components/schemas/FavoriteSerializers'
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -2430,7 +2764,6 @@ paths:
       tags:
       - user
       security:
-      - cookieAuth: []
       - tokenAuth: []
       - {}
       responses:
@@ -2462,7 +2795,6 @@ paths:
       tags:
       - user
       security:
-      - cookieAuth: []
       - tokenAuth: []
       - {}
       responses:
@@ -2495,7 +2827,6 @@ paths:
               $ref: '#/components/schemas/UpdateUser'
         required: true
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -2525,7 +2856,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedUpdateUser'
       security:
-      - cookieAuth: []
       - tokenAuth: []
       responses:
         '200':
@@ -3504,6 +3834,85 @@ components:
           maxLength: 255
         state:
           type: integer
+    PatchedCreateAlarm:
+      type: object
+      description: |-
+        Creates a new alarm along with associated alarm values.
+        Example Request Body:
+        ```
+            {
+                "state": 1,
+                "category": 1,
+                "is_active": true,
+                "max_price": 100000,
+                "min_price": 50000,
+                "for_sale": true,
+                "for_rent": false,
+                "alarm_values": [
+                    {
+                        "attribute_id": 1,
+                        "value": "3"
+                    },
+                    {
+                        "attribute_id": 2,
+                        "value": "200.5"
+                    },
+                    {
+                        "attribute_id": 3,
+                        "value": "true"
+                    }
+                ]
+            }
+        ```
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        alarm_values:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          default:
+          - {}
+        is_active:
+          type: boolean
+          title: Activite?
+        time_created:
+          type: string
+          format: date-time
+          readOnly: true
+        time_updated:
+          type: string
+          format: date-time
+          readOnly: true
+        max_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        min_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        for_sale:
+          type: boolean
+          title: For Sale?
+        for_rent:
+          type: boolean
+          title: For Rent?
+        state:
+          type: integer
+        category:
+          type: integer
+        value:
+          type: array
+          items:
+            type: integer
+            title: Alarm_value
+          readOnly: true
+          title: Alarm_value
     PatchedCreateProperty:
       type: object
       description: |-
@@ -3906,6 +4315,16 @@ components:
           allOf:
           - $ref: '#/components/schemas/AddressSerializers'
           readOnly: true
+        feature_property:
+          type: array
+          items:
+            $ref: '#/components/schemas/Feature_propertySerializers'
+          readOnly: true
+        property_value:
+          type: array
+          items:
+            $ref: '#/components/schemas/property_valueSerializers'
+          readOnly: true
         name:
           type: string
           maxLength: 50
@@ -3951,10 +4370,12 @@ components:
       - address
       - category
       - description
+      - feature_property
       - id
       - image
       - in_favorite
       - name
+      - property_value
       - rate_review
       - size
       - time_created
@@ -4277,10 +4698,6 @@ components:
       - property
       - value
   securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: sessionid
     tokenAuth:
       type: apiKey
       in: header
