@@ -11,7 +11,7 @@ urlpatterns = [
     path('friend/', include('apps.friend.urls')),
     path('banners/', include('apps.banners.urls')),
     path('review/', include('apps.review.urls')),
-    path('ml/', include('apps.ML.urls')),
+#     path('ml/', include('apps.ML.urls')),
     path('chat/', include('apps.chat.urls')),
     path('alarms/', include('apps.alarms.urls')),
 
