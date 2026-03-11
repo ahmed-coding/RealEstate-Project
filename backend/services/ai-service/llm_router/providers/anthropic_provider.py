@@ -1,22 +1,67 @@
 """
 Anthropic Provider
-Anthropic Claude integration for LLM requests
+Anthropic Claude integration for LLM requests via OpenRouter
 """
 import os
+import sys
+from pathlib import Path
 from typing import Dict, Any, Optional
-from anthropic import AsyncAnthropic
+import httpx
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from llm_router.router import get_allowed_models, OPENROUTER_BASE_URL
 
 
 class AnthropicProvider:
-    """Anthropic Claude provider implementation"""
+    """Anthropic Claude provider implementation via OpenRouter"""
 
-    def __init__(self, api_key: Optional[str] = None, default_model: str = "claude-3-sonnet-20240229"):
-        self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
-        self.default_model = default_model
-        self.client = None
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        default_model: str = None
+    ):
+        # Use OpenRouter API key
+        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY") or os.getenv("ANTHROPIC_API_KEY")
+        self.base_url = OPENROUTER_BASE_URL
+        
+        # Get allowed models based on USE_PAID_MODELS
+        allowed_models = get_allowed_models()
+        
+        # Filter models that work with Anthropic via OpenRouter
+        anthropic_models = [m for m in allowed_models if m.startswith("anthropic/")]
+        
+        # Set default model
+        if default_model:
+            self.default_model = default_model
+        elif anthropic_models:
+            # Prioritize Claude 3.5 Sonnet, then Opus, then Haiku
+            priority_models = [
+                "anthropic/claude-3.5-sonnet",
+                "anthropic/claude-3-opus",
+                "anthropic/claude-3-haiku"
+            ]
+            self.default_model = next(
+                (m for m in priority_models if m in anthropic_models),
+                anthropic_models[0]
+            )
+        else:
+            self.default_model = "anthropic/claude-3.5-sonnet"
 
-        if self.api_key:
-            self.client = AsyncAnthropic(api_key=self.api_key)
+    async def is_available(self) -> bool:
+        """Check if OpenRouter API is available"""
+        if not self.api_key:
+            return False
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    f"{self.base_url}/models",
+                    headers={"Authorization": f"Bearer {self.api_key}"},
+                    timeout=5.0
+                )
+                return response.status_code == 200
+        except:
+            return False
 
     async def generate(
         self,
@@ -27,7 +72,7 @@ class AnthropicProvider:
         system_prompt: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        Generate text using Anthropic Claude
+        Generate text using Anthropic Claude via OpenRouter
 
         Args:
             prompt: User prompt
@@ -39,41 +84,60 @@ class AnthropicProvider:
         Returns:
             Dict with content, model, and tokens_used
         """
-        if not self.client:
-            raise ValueError("Anthropic API key not configured")
+        if not self.api_key:
+            raise ValueError("OpenRouter API key not configured")
 
-        # Build messages
-        messages = []
+        import time
+        start_time = time.time()
 
+        # Build system message
         if system_prompt:
-            # Anthropic uses system parameter
             system = system_prompt
         elif context:
             system = f"Context: {context}"
         else:
             system = "You are a helpful assistant for a real estate platform."
 
-        messages.append({"role": "user", "content": prompt})
+        async with httpx.AsyncClient() as client:
+            # OpenRouter uses OpenAI-compatible format for Anthropic
+            payload = {
+                "model": self.default_model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+            }
 
-        # Make API call
-        response = await self.client.messages.create(
-            model=self.default_model,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            system=system,
-            messages=messages
-        )
+            response = await client.post(
+                f"{self.base_url}/chat/completions",
+                json=payload,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json"
+                },
+                timeout=60.0
+            )
 
-        # Extract content
-        content = ""
-        if response.content:
-            content = response.content[0].text
+            if response.status_code != 200:
+                raise Exception(f"Anthropic via OpenRouter error: {response.text}")
 
-        return {
-            "content": content,
-            "model": response.model,
-            "tokens_used": response.usage.input_tokens + response.usage.output_tokens
-        }
+            data = response.json()
+
+            content = ""
+            if "choices" in data and len(data["choices"]) > 0:
+                content = data["choices"][0]["message"]["content"]
+
+            usage = data.get("usage", {})
+            tokens_used = usage.get("total_tokens", 0)
+
+            return {
+                "content": content,
+                "model": self.default_model,
+                "tokens_used": tokens_used,
+                "latency_ms": int((time.time() - start_time) * 1000)
+            }
 
     async def generate_with_tools(
         self,
@@ -86,67 +150,57 @@ class AnthropicProvider:
 
         Args:
             prompt: User prompt
-            tools: List of tool definitions (Anthropic tool use format)
+            tools: List of tool definitions (OpenAI tool format)
             context: Additional context
 
         Returns:
             Dict with content, tool use, and tokens_used
         """
-        if not self.client:
-            raise ValueError("Anthropic API key not configured")
+        if not self.api_key:
+            raise ValueError("OpenRouter API key not configured")
+
+        import time
+        start_time = time.time()
 
         system = f"Context: {context}" if context else "You are a helpful assistant."
 
-        messages = [{"role": "user", "content": prompt}]
-
-        # Convert OpenAI tools format to Anthropic format
-        anthropic_tools = self._convert_tools(tools)
-
-        response = await self.client.messages.create(
-            model=self.default_model,
-            max_tokens=2000,
-            temperature=0.7,
-            system=system,
-            messages=messages,
-            tools=anthropic_tools
-        )
-
-        # Check for tool use
-        tool_use = None
-        content = ""
-
-        for block in response.content:
-            if block.type == "text":
-                content = block.text
-            elif block.type == "tool_use":
-                tool_use = block
-
-        return {
-            "content": content,
-            "tool_use": tool_use,
-            "model": response.model,
-            "tokens_used": response.usage.input_tokens + response.usage.output_tokens
-        }
-
-    def _convert_tools(self, openai_tools: list) -> list:
-        """
-        Convert OpenAI tool format to Anthropic format
-
-        Args:
-            openai_tools: List of OpenAI tool definitions
-
-        Returns:
-            List of Anthropic tool definitions
-        """
-        # Simplified conversion - in production, implement full conversion
-        anthropic_tools = []
-
-        for tool in openai_tools:
-            anthropic_tool = {
-                "name": tool.get("name"),
-                "description": tool.get("description"),
-                "input_schema": tool.get("parameters", {})
+        async with httpx.AsyncClient() as client:
+            payload = {
+                "model": self.default_model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": prompt}
+                ],
+                "tools": tools,
+                "temperature": 0.7,
+                "max_tokens": 2000,
             }
-            anthropic_tools.append(anthropic_tool)
 
-        return anthropic_tools
+            response = await client.post(
+                f"{self.base_url}/chat/completions",
+                json=payload,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json"
+                },
+                timeout=60.0
+            )
+
+            if response.status_code != 200:
+                raise Exception(f"Anthropic via OpenRouter error: {response.text}")
+
+            data = response.json()
+
+            message = data["choices"][0]["message"]
+            content = message.get("content", "")
+            function_call = message.get("tool_calls", None)
+
+            usage = data.get("usage", {})
+
+            return {
+                "content": content,
+                "function_call": function_call,
+                "model": self.default_model,
+                "tokens_used": usage.get("total_tokens", 0),
+                "latency_ms": int((time.time() - start_time) * 1000)
+            }

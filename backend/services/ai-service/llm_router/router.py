@@ -30,6 +30,7 @@ class LLMProvider(str, Enum):
     HUGGINGFACE = "huggingface"
     COHERE = "cohere"
     GROQ = "groq"
+    GEMINI = "gemini"
 
 
 class LLMRequest(BaseModel):
@@ -40,6 +41,45 @@ class LLMRequest(BaseModel):
     model_preference: Optional[str] = None
     temperature: float = 0.7
     max_tokens: int = 2000
+
+
+# OpenRouter base URL
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+
+# Model lists
+FREE_MODELS = [
+    # Best free models from OpenRouter
+    "qwen/qwen-2.5-7b-instruct",
+    "qwen/qwen-2.5-14b-instruct",
+    "meta-llama/llama-3.1-8b-instruct",
+    "meta-llama/llama-3.2-1b-instruct",
+    "mistralai/mistral-7b-instruct",
+    "google/gemma-2-9b-it",
+    "google/gemma-2-27b-it",
+    "deepseek-ai/deepseek-llm-7b-chat",
+    "microsoft/phi-3-mini-128k-instruct",
+    "anthropic/claude-3-haiku",
+]
+
+PAID_MODELS = [
+    # Premium models
+    "openai/gpt-4o",
+    "openai/gpt-4o-mini",
+    "openai/gpt-4-turbo",
+    "anthropic/claude-3.5-sonnet",
+    "anthropic/claude-3-opus",
+    "google/gemini-pro-1.5",
+]
+
+ALL_MODELS = FREE_MODELS + PAID_MODELS
+
+
+def get_allowed_models() -> list:
+    """Get allowed models based on USE_PAID_MODELS environment variable"""
+    use_paid = os.getenv("USE_PAID_MODELS", "false").lower() == "true"
+    if use_paid:
+        return ALL_MODELS
+    return FREE_MODELS
 
 
 class LLMResponse(BaseModel):
@@ -55,13 +95,15 @@ class LLMRouter:
 
     # Task to preferred provider mapping
     TASK_PROVIDER_MAP = {
-        LLMTaskType.DESCRIPTION_GENERATION: [LLMProvider.OLLAMA, LLMProvider.HUGGINGFACE, LLMProvider.OPENAI],
-        LLMTaskType.PRICE_REASONING: [LLMProvider.GROQ, LLMProvider.COHERE, LLMProvider.OLLAMA],
-        LLMTaskType.CONVERSATIONAL_CHAT: [LLMProvider.OLLAMA, LLMProvider.HUGGINGFACE, LLMProvider.OPENAI],
-        LLMTaskType.ANALYTICS: [LLMProvider.COHERE, LLMProvider.GROQ, LLMProvider.OLLAMA],
+        LLMTaskType.DESCRIPTION_GENERATION: [LLMProvider.GEMINI, LLMProvider.OPENAI, LLMProvider.ANTHROPIC, LLMProvider.OLLAMA],
+        LLMTaskType.PRICE_REASONING: [LLMProvider.GEMINI, LLMProvider.OPENAI, LLMProvider.ANTHROPIC, LLMProvider.GROQ],
+        LLMTaskType.CONVERSATIONAL_CHAT: [LLMProvider.GEMINI, LLMProvider.OPENAI, LLMProvider.ANTHROPIC, LLMProvider.OLLAMA],
+        LLMTaskType.ANALYTICS: [LLMProvider.GEMINI, LLMProvider.OPENAI, LLMProvider.ANTHROPIC, LLMProvider.GROQ],
+        LLMTaskType.EMBEDDING: [LLMProvider.OPENAI, LLMProvider.HUGGINGFACE],
     }
 
     def __init__(self):
+        from .providers.gemini_provider import GeminiProvider
         self.providers = {
             LLMProvider.OPENAI: OpenAIProvider(),
             LLMProvider.ANTHROPIC: AnthropicProvider(),
@@ -69,7 +111,9 @@ class LLMRouter:
             LLMProvider.HUGGINGFACE: HuggingFaceProvider(),
             LLMProvider.COHERE: CohereProvider(),
             LLMProvider.GROQ: GroqProvider(),
+            LLMProvider.GEMINI: GeminiProvider(),
         }
+        self.allowed_models = get_allowed_models()
 
     async def route_request(self, request: LLMRequest) -> LLMResponse:
         """
@@ -115,13 +159,15 @@ class LLMRouter:
             return LLMProvider.OPENAI
         elif "claude" in model_lower:
             return LLMProvider.ANTHROPIC
-        elif "llama" in model_lower or "mistral" in model_lower or "qwen" in model_lower:
+        elif "gemini" in model_lower:
+            return LLMProvider.GEMINI
+        elif "llama" in model_lower or "mistral" in model_lower or "qwen" in model_lower or "gemma" in model_lower:
             return LLMProvider.OLLAMA
         elif any(m in model_lower for m in ["falcon", "bloom", "flan", "m2"]):
             return LLMProvider.HUGGINGFACE
         elif "command" in model_lower:
             return LLMProvider.COHERE
-        elif "mixtral" in model_lower or "llama" in model_lower:
+        elif "mixtral" in model_lower or "deepseek" in model_lower:
             return LLMProvider.GROQ
 
         return None
@@ -262,12 +308,12 @@ class HuggingFaceProvider:
 
 
 class CohereProvider:
-    """Cohere AI provider (free tier available)"""
+    """Cohere AI provider via OpenRouter"""
 
     def __init__(self):
-        self.api_key = os.getenv("COHERE_API_KEY", "")
-        self.base_url = "https://api.cohere.ai/v1"
-        self.default_model = "command-r-plus"  # Has free tier
+        self.api_key = os.getenv("OPENROUTER_API_KEY", os.getenv("COHERE_API_KEY", ""))
+        self.base_url = OPENROUTER_BASE_URL
+        self.default_model = "cohere/command-r-plus-08-2024"
 
     async def is_available(self) -> bool:
         """Check if Cohere API is available"""
@@ -321,12 +367,12 @@ class CohereProvider:
 
 
 class GroqProvider:
-    """Groq provider (free tier available)"""
+    """Groq provider via OpenRouter"""
 
     def __init__(self):
-        self.api_key = os.getenv("GROQ_API_KEY", "")
-        self.base_url = "https://api.groq.com/openai/v1"
-        self.default_model = "mixtral-8x7b-32768"  # Free model
+        self.api_key = os.getenv("OPENROUTER_API_KEY", os.getenv("GROQ_API_KEY", ""))
+        self.base_url = OPENROUTER_BASE_URL
+        self.default_model = "groq/llama-3.1-70b-versatile"
 
     async def is_available(self) -> bool:
         """Check if Groq API is available"""
