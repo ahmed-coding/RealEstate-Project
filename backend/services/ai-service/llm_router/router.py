@@ -49,6 +49,7 @@ OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 # Model lists
 FREE_MODELS = [
     # Best free models from OpenRouter
+    "openrouter/free",
     "qwen/qwen-2.5-7b-instruct",
     "qwen/qwen-2.5-14b-instruct",
     "meta-llama/llama-3.1-8b-instruct",
@@ -372,7 +373,7 @@ class GroqProvider:
     def __init__(self):
         self.api_key = os.getenv("OPENROUTER_API_KEY", os.getenv("GROQ_API_KEY", ""))
         self.base_url = OPENROUTER_BASE_URL
-        self.default_model = "groq/llama-3.1-70b-versatile"
+        self.default_model = "openrouter/free"
 
     async def is_available(self) -> bool:
         """Check if Groq API is available"""

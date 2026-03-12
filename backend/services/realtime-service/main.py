@@ -3,15 +3,21 @@ Realtime Service Main Application
 FastAPI WebSocket service for real-time chat and notifications
 """
 import os
-from contextlib import asynccontextmanager
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
+import sys
+# Add the gateway root to Python path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-from fastapi_ws.websocket.chat import ChatManager
-from fastapi_ws.websocket.notifications import NotificationManager
+from backend.shared.utils.logging import setup_logger
 from fastapi_ws.auth.middleware import WebSocketAuthMiddleware
-from shared.utils.logging import setup_logger
+from fastapi_ws.websocket.notifications import NotificationManager
+from fastapi_ws.websocket.chat import ChatManager
+from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from contextlib import asynccontextmanager
+
+
+# Add parent directory to path for imports
 
 # Load environment variables
 load_dotenv()
@@ -186,5 +192,5 @@ if __name__ == "__main__":
         "main:app",
         host=host,
         port=port,
-        reload=os.getenv("DEBUG", "false").lower() == "true"
+        reload=os.getenv("DEBUG", "true").lower() == "true"
     )

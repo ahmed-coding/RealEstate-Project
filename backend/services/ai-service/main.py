@@ -2,8 +2,14 @@
 AI Service Main Application
 FastAPI application for AI-powered features
 """
-from shared.utils.database import DatabaseManager
-from shared.utils.logging import setup_logger
+import sys
+import os
+
+# Add the gateway root to Python path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+
+from backend.shared.utils.database import DatabaseManager
+from backend.shared.utils.logging import setup_logger
 from api.routes import price_prediction, descriptions, recommendations, assistant
 import os
 from contextlib import asynccontextmanager
@@ -114,5 +120,5 @@ if __name__ == "__main__":
         "main:app",
         host=host,
         port=port,
-        reload=os.getenv("DEBUG", "false").lower() == "true"
+        reload=os.getenv("DEBUG", "true").lower() == "true"
     )

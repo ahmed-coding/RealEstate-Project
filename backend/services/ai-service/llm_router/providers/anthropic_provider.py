@@ -10,7 +10,45 @@ import httpx
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from llm_router.router import get_allowed_models, OPENROUTER_BASE_URL
+
+# Import constants directly to avoid circular import
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+
+def get_allowed_models():
+    """Get allowed models based on USE_PAID_MODELS environment variable"""
+    import os
+    use_paid = os.getenv("USE_PAID_MODELS", "false").lower() == "true"
+    if use_paid:
+        return [
+            "qwen/qwen-2.5-7b-instruct",
+            "qwen/qwen-2.5-14b-instruct", 
+            "meta-llama/llama-3.1-8b-instruct",
+            "meta-llama/llama-3.2-1b-instruct",
+            "mistralai/mistral-7b-instruct",
+            "google/gemma-2-9b-it",
+            "google/gemma-2-27b-it",
+            "deepseek-ai/deepseek-llm-7b-chat",
+            "microsoft/phi-3-mini-128k-instruct",
+            "anthropic/claude-3-haiku",
+            "openai/gpt-4o",
+            "openai/gpt-4o-mini",
+            "openai/gpt-4-turbo",
+            "anthropic/claude-3.5-sonnet",
+            "anthropic/claude-3-opus",
+            "google/gemini-pro-1.5",
+        ]
+    return [
+        "qwen/qwen-2.5-7b-instruct",
+        "qwen/qwen-2.5-14b-instruct",
+        "meta-llama/llama-3.1-8b-instruct",
+        "meta-llama/llama-3.2-1b-instruct",
+        "mistralai/mistral-7b-instruct",
+        "google/gemma-2-9b-it",
+        "google/gemma-2-27b-it",
+        "deepseek-ai/deepseek-llm-7b-chat",
+        "microsoft/phi-3-mini-128k-instruct",
+        "anthropic/claude-3-haiku",
+    ]
 
 
 class AnthropicProvider:

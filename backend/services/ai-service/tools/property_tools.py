@@ -113,6 +113,34 @@ async def get_comparable_properties(
     return []
 
 
+async def get_user_favorites(user_id: int) -> List[Dict[str, Any]]:
+    """
+    Get user's favorite properties
+
+    Args:
+        user_id: User ID
+
+    Returns:
+        List of favorite properties
+    """
+    # Placeholder
+    return []
+
+
+async def get_user_search_history(user_id: int) -> List[Dict[str, Any]]:
+    """
+    Get user's search history
+
+    Args:
+        user_id: User ID
+
+    Returns:
+        List of search queries and filters
+    """
+    # Placeholder
+    return []
+
+
 def get_available_tools() -> List[Dict[str, Any]]:
     """
     Get list of available tools for AI agents
