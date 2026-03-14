@@ -1,94 +1,182 @@
 version: '3.8'
 
+# Networks for service communication
 networks:
   RealEstate:
-
+    driver: bridge
 
 services:
 
+  # Redis - Celery result backend and FastAPI channel layer
   redis:
-    image: redis:7.0.11-alpine
+    image: redis:7-alpine
     container_name: rs-redis
     networks:
       - RealEstate
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
+  # PostgreSQL with pgvector extension
   postgres:
-    image: postgres:14-alpine
+    image: postgres:16-alpine
     container_name: rs-postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345
-      POSTGRES_DB: RealEstate
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: realestate
     ports:
-      - "5435:5432"
+      - "5432:5432"
     networks:
       - RealEstate
-    command: [ "postgres", "-c", "log_statement=all" ]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    command: >
+      postgres
+      -c shared_preload_libraries=vector
+      -c "vector.hnsw_dim=1536"
 
-  core:
+  # RabbitMQ - Celery broker
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rs-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - RealEstate
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  # Django API
+  django:
     build:
       context: ./core
+      dockerfile: Dockerfile
     command: python manage.py runserver 0.0.0.0:8000
-    # command: uvicorn core.asgi:application --port 8000 --workers 4 --log-level debug --reload
     volumes:
-      - ./core:/usr/src/app/realEstate/
+      - ./core:/app
+      - ./media:/app/media
     ports:
-      - 8005:8000
+      - "8000:8000"
     environment:
-      - DEBUG=true
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=core.settings.local
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/realestate
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
+      - redis
+      - postgres
+      - rabbitmq
+    networks:
+      - RealEstate
+
+  # Celery Worker
+  celery_worker:
+    build:
+      context: ./core
+      dockerfile: Dockerfile
+    command: celery -A core worker -l INFO -Q default,embeddings,ai,notifications
+    volumes:
+      - ./core:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.local
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/realestate
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - django
+      - redis
+      - postgres
+      - rabbitmq
+    networks:
+      - RealEstate
+
+  # Celery Beat (scheduler)
+  celery_beat:
+    build:
+      context: ./core
+      dockerfile: Dockerfile
+    command: celery -A core beat -l INFO
+    volumes:
+      - ./core:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.local
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/realestate
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - django
+      - redis
+      - postgres
+      - rabbitmq
+    networks:
+      - RealEstate
+
+  # Flower - Celery monitoring
+  flower:
+    image: mher/flower:latest
+    container_name: rs-flower
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - rabbitmq
+      - redis
+      - celery_worker
+    networks:
+      - RealEstate
+
+  # FastAPI Realtime Service (for WebSockets)
+  realtime:
+    build:
+      context: ./realtime
+      dockerfile: Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    volumes:
+      - ./realtime:/app
+    ports:
+      - "8001:8001"
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.local
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/realestate
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - django
       - redis
       - postgres
     networks:
       - RealEstate
-  # celery:
-  #   container_name: ds-celery
-  #   build:
-  #     context: ./core
-  #   command: celery --app=core worker -l INFO -B
-  #   volumes:
-  #     - ./core:/usr/src/app/ds-project/ds-core/
-  #   environment:
-  #     - DEBUG=true
-  #   depends_on:
-  #     - redis
-  #     - postgres # Add PostgreSQL as a dependency
-  #   networks:
-  #     - DS
 
-  # rabbitmq:
-  #   image: rabbitmq:management
-  #   container_name: ds-rabbitmq
-  #   ports:
-  #     - 5672:5672
-  #     - 15672:15672
-  #   networks:
-  #     - DS
-  # flower:
-  #   image: mher/flower
-  #   container_name: ds-flower
-  #   ports:
-  #     - 5555:5555
-  #   networks:
-  #     - DS
-  #   environment:
-  #     - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+  # Nginx - Reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: rs-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/static:ro
+      - ./media:/media:ro
+    depends_on:
+      - django
+      - realtime
+    networks:
+      - RealEstate
 
-  # celeryworker:
-  #   container_name: celeryworker
-  #   build:
-  #     context: ./celeryworker
-  #     dockerfile: Dockerfile
-  #   command: celery --app=celerytask worker -l INFO -B
-  #   volumes:
-  #     - ./celeryworker:/usr/src/app/ds-project/ds-celeryworker/
-  #   environment:
-  #     - DEBUG=true
-  #     - CELERY_BROKER_URL=redis://redis:6379/0
-  #     - CELERY_RESULT_BACKEND=redis://redis:6379/0
-  #   depends_on:
-  #     - redis
-  #     - coreapis
-  #     # - postgres # Add PostgreSQL as a dependency
-  #   networks:
-  #     - DS
+volumes:
+  redis_data:
+  postgres_data:
+  rabbitmq_data:

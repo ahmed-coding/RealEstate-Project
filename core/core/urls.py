@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from apps.health import health_check
 # WebSocket consumers commented out - will be replaced with FastAPI in Phase 3
 # from apps.notifications.consumers import NotificationConsumer
 # from apps.chat.consumers import ChatConsumer
@@ -33,6 +34,7 @@ urlpatterns = [
     path("api/", include("apps.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/doc/", SpectacularSwaggerView.as_view(url_name="schema"), name="api_doc"),
+    path("api/health/", health_check, name="health_check"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += staticfiles_urlpatterns()

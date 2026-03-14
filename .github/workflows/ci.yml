@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('core/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      
+      - name: Install dependencies
+        run: |
+          cd core
+          pip install -r requirements.txt
+      
+      - name: Run migrations
+        run: |
+          cd core
+          python manage.py migrate --noinput
+        env:
+          DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379/0
+      
+      - name: Check Django system
+        run: |
+          cd core
+          python manage.py check
+        env:
+          DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379/0
+      
+      - name: Run flake8 linter
+        run: |
+          cd core
+          flake8 --max-line-length=120 --ignore=E501,W503 core/ apps/ --exclude=apps/migrations,core/migrations
+      
+      - name: Check black formatting
+        run: |
+          cd core
+          black --check --line-length=120 core/ apps/ --exclude='.*migrations.*'
+      
+      - name: Run security scan with bandit
+        run: |
+          cd core
+          bandit -r apps/ core/ -x apps/migrations,core/migrations -f json -o bandit-report.json || true
+      
+      - name: Run tests with pytest
+        run: |
+          cd core
+          pytest --cov=apps --cov-report=xml --cov-fail-under=60
+        env:
+          DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379/0
+          DJANGO_SETTINGS_MODULE: core.settings.local
+      
+      - name: Upload coverage to Codecov
+        if: success()
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./core/coverage.xml
+          flags: unittests
+      
+      - name: Upload bandit report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: bandit-report
+          path: core/bandit-report.json
