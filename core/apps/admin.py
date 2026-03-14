@@ -2,9 +2,17 @@ from statistics import mode
 from django.contrib import admin
 from . import models
 from django import forms
-from .models import Alarm, Alarm_value, Banner, Category, PrivateChatRoom, UnreadChatRoomMessages
+from .models import (
+    Alarm,
+    Alarm_value,
+    Banner,
+    Category,
+    PrivateChatRoom,
+    UnreadChatRoomMessages,
+)
 from .models import User
 from django.contrib.contenttypes.admin import GenericTabularInline
+
 # Register your models here.
 from django.utils.translation import gettext_lazy as _
 from mptt.admin import DraggableMPTTAdmin
@@ -17,9 +25,33 @@ from django.contrib.auth.forms import (
     UsernameField,
 )  # Register your models here.
 from .models import (
-    VerificationCode, TypeModel, Attribute_verify, Attribute_value, Country, City, State, Address, Image,
-    Category, Feature, Feature_category, Property, Feature_property, Attribute, ValueModel, property_value, Category_attribute, Rate, Favorite, Report,
-    Review, Ticket_type, Ticket_status, Ticket, Solve_message, FriendList,
+    VerificationCode,
+    TypeModel,
+    Attribute_verify,
+    Attribute_value,
+    Country,
+    City,
+    State,
+    Address,
+    Image,
+    Category,
+    Feature,
+    Feature_category,
+    Property,
+    Feature_property,
+    Attribute,
+    ValueModel,
+    property_value,
+    Category_attribute,
+    Rate,
+    Favorite,
+    Report,
+    Review,
+    Ticket_type,
+    Ticket_status,
+    Ticket,
+    Solve_message,
+    FriendList,
 )
 from import_export.admin import ImportExportModelAdmin
 from import_export import resources, fields, widgets
@@ -32,6 +64,7 @@ class CustomUserChangeForm(forms.ModelForm):
     """
     Custom UserChangForm For AdminUser registertions
     """
+
     password = ReadOnlyPasswordHashField(
         label=_("Password"),
         help_text=_(
@@ -43,31 +76,51 @@ class CustomUserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ("name", "phone_number", "email", "is_active", "is_staff",
-                  "is_superuser",  "groups", "username",)
+        fields = (
+            "name",
+            "phone_number",
+            "email",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "groups",
+            "username",
+        )
         # field_classes = {"email": forms.EmailField}
 
 
 class CustomUserCreationForm(UserCreationForm):
     """
-        Custom UserChangForm For AdminUser registertions
+    Custom UserChangForm For AdminUser registertions
     """
+
     class Meta:
         model = User
-        fields = ("name", "phone_number", "email", "is_active", "is_staff",
-                  "is_superuser",  "groups", "username",)
+        fields = (
+            "name",
+            "phone_number",
+            "email",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "groups",
+            "username",
+        )
         # field_classes = {'email': forms.EmailField}
 
 
 class CustomAdminUser(UserAdmin):
     """
-        Custom CustomUSerAdmin For User registertions to add grops and Custom Disgan
+    Custom CustomUSerAdmin For User registertions to add grops and Custom Disgan
 
     """
+
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {
-         "fields": ("name", "phone_number", "email", 'image', "unique_no")}),
+        (
+            _("Personal info"),
+            {"fields": ("name", "phone_number", "email", "image", "unique_no")},
+        ),
         (
             _("Permissions"),
             {
@@ -79,7 +132,7 @@ class CustomAdminUser(UserAdmin):
                     "user_permissions",
                     "is_deleted",
                     "is_seller",
-                    "user_type"
+                    "user_type",
                 ),
             },
         ),
@@ -90,7 +143,15 @@ class CustomAdminUser(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("username", "email", "password1", "password2", 'name', 'phone_number', "user_type"),
+                "fields": (
+                    "username",
+                    "email",
+                    "password1",
+                    "password2",
+                    "name",
+                    "phone_number",
+                    "user_type",
+                ),
             },
         ),
     )
@@ -116,12 +177,23 @@ class CustomAdminUser(UserAdmin):
 
     # add_form = CustomUserCreationForm
     change_password_form = AdminPasswordChangeForm
-    list_display = ("email", "name",
-                    "phone_number", "is_staff", 'is_deleted', 'is_active')
-    list_filter = ("is_staff", "is_superuser",
-                   "is_active", "groups",  'is_deleted', 'is_active')
-    search_fields = ("username",
-                     "phone_number", "name", "email")
+    list_display = (
+        "email",
+        "name",
+        "phone_number",
+        "is_staff",
+        "is_deleted",
+        "is_active",
+    )
+    list_filter = (
+        "is_staff",
+        "is_superuser",
+        "is_active",
+        "groups",
+        "is_deleted",
+        "is_active",
+    )
+    search_fields = ("username", "phone_number", "name", "email")
     ordering = ("id",)
     filter_horizontal = (
         "groups",
@@ -154,17 +226,17 @@ class Feature_propertyInline(admin.TabularInline):
 
 
 class CategoryAdmin(DraggableMPTTAdmin):
-
     mptt_indent_field = "name"
-    list_display = ('tree_actions', 'indented_title',
-                    'related_property_counts', 'related_property_cumulative_count')
-    list_display_links = ('indented_title',)
+    list_display = (
+        "tree_actions",
+        "indented_title",
+        "related_property_counts",
+        "related_property_cumulative_count",
+    )
+    list_display_links = ("indented_title",)
     inlines = [
         ImageInline,
         Category_attributeInline,
-
-
-
     ]
 
     def get_queryset(self, request):
@@ -174,25 +246,28 @@ class CategoryAdmin(DraggableMPTTAdmin):
         qs = Category.objects.add_related_count(
             qs,
             models.Property,
-            'category',
-            'property_cumulative_count',
-            cumulative=True)
+            "category",
+            "property_cumulative_count",
+            cumulative=True,
+        )
 
         # Add non cumulative product count
-        qs = Category.objects.add_related_count(qs,
-                                                models.Property,
-                                                'category',
-                                                'property_counts',
-                                                cumulative=False)
+        qs = Category.objects.add_related_count(
+            qs, models.Property, "category", "property_counts", cumulative=False
+        )
         return qs
 
     def related_property_counts(self, instance):
         return instance.property_counts
-    related_property_counts.short_description = 'Related property (for this specific category)'
+
+    related_property_counts.short_description = (
+        "Related property (for this specific category)"
+    )
 
     def related_property_cumulative_count(self, instance):
         return instance.property_cumulative_count
-    related_property_cumulative_count.short_description = 'Related property (in tree)'
+
+    related_property_cumulative_count.short_description = "Related property (in tree)"
 
 
 admin.site.register(models.Category, CategoryAdmin)
@@ -205,51 +280,54 @@ class SendNotification(forms.Form):
 @admin.register(models.Notification)
 class NotificationAdmin(admin.ModelAdmin):
     add_form_templat = "admin/custom_add_form.html"
-    list_display = ('verb',)
+    list_display = ("verb",)
 
 
 class VerificationCodeAdmin(admin.ModelAdmin):
-    list_display = ('user_phone_num', 'random_code',
-                    'time_created', 'expire_date')
+    list_display = ("email", "random_code", "time_created", "expire_date", "is_used")
+
 
 # Admin class for TypeModel
 
 
 class TypeModelAdmin(admin.ModelAdmin):
-    list_display = ('type',)
+    list_display = ("type",)
+
 
 # Admin class for Attribute_verify
 
 
 class AttributeVerifyAdmin(admin.ModelAdmin):
-    list_display = ('attribute', 'data_type', 'type')
+    list_display = ("attribute", "data_type", "type")
+
 
 # Admin class for Attribute_value
 
 
 class AttributeValueAdmin(admin.ModelAdmin):
-    list_display = ('attribute',)
+    list_display = ("attribute",)
 
 
 class CityAdmin(admin.ModelAdmin):
-    list_display = ('name', 'country')
+    list_display = ("name", "country")
+
 
 # Admin class for State
 
 
 class StateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'city')
+    list_display = ("name", "city")
 
 
 class AddressForm(forms.ModelForm):
-    country = forms.ModelChoiceField(
-        queryset=Country.objects.all(), label='Country')
-    city = forms.ModelChoiceField(queryset=City.objects.all(), label='City')
-    state = forms.ModelChoiceField(queryset=State.objects.all(), label='State')
+    country = forms.ModelChoiceField(queryset=Country.objects.all(), label="Country")
+    city = forms.ModelChoiceField(queryset=City.objects.all(), label="City")
+    state = forms.ModelChoiceField(queryset=State.objects.all(), label="State")
 
     class Meta:
         model = Address
-        fields = ['country', 'city', 'state', 'longitude', 'latitude']
+        fields = ["country", "city", "state", "longitude", "latitude"]
+
 
 # Admin class for Address
 
@@ -259,54 +337,82 @@ class AddressAdmin(admin.ModelAdmin):
     form = AddressForm
     # list_display_links = ['id']
     fieldsets = (
-        ('Location', {
-            'fields': ('country', 'city', 'state')
-        }),
-        ('Coordinates', {
-            'fields': ('longitude', 'latitude', 'line1', 'line2')
-        }),
+        ("Location", {"fields": ("country", "city", "state")}),
+        ("Coordinates", {"fields": ("longitude", "latitude", "line1", "line2")}),
     )
 
-    list_display = ['id', 'get_country', 'get_city',
-                    'get_state', 'longitude', 'latitude']
-    list_display_links = ['id']
-    search_fields = ['country__name', 'city__name', 'state__name']
+    list_display = [
+        "id",
+        "get_country",
+        "get_city",
+        "get_state",
+        "longitude",
+        "latitude",
+    ]
+    list_display_links = ["id"]
+    search_fields = ["country__name", "city__name", "state__name"]
 
     def get_fields(self, request, obj=None):
         if obj:
-            return ['country', 'city', 'state', 'longitude', 'latitude', 'line1', 'line2']
+            return [
+                "country",
+                "city",
+                "state",
+                "longitude",
+                "latitude",
+                "line1",
+                "line2",
+            ]
         else:
             return super().get_fields(request, obj)
 
-    def add_view(self, request, form_url='', extra_context=None):
-        self.fields = ['country', 'city', 'state',
-                       'longitude', 'latitude', 'line1', 'line2']
+    def add_view(self, request, form_url="", extra_context=None):
+        self.fields = [
+            "country",
+            "city",
+            "state",
+            "longitude",
+            "latitude",
+            "line1",
+            "line2",
+        ]
         return super().add_view(request, form_url, extra_context)
 
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        self.fields = ['country', 'city', 'state',
-                       'longitude', 'latitude', 'line1', 'line2']
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        self.fields = [
+            "country",
+            "city",
+            "state",
+            "longitude",
+            "latitude",
+            "line1",
+            "line2",
+        ]
         return super().change_view(request, object_id, form_url, extra_context)
 
     def get_country(self, obj):
-        return obj.state.city.country.name if obj.state and obj.state.city else ''
-    get_country.admin_order_field = 'state__city__country__name'
-    get_country.short_description = 'Country'
+        return obj.state.city.country.name if obj.state and obj.state.city else ""
+
+    get_country.admin_order_field = "state__city__country__name"
+    get_country.short_description = "Country"
 
     def get_city(self, obj):
-        return obj.state.city.name if obj.state else ''
-    get_city.admin_order_field = 'state__city__name'
-    get_city.short_description = 'City'
+        return obj.state.city.name if obj.state else ""
+
+    get_city.admin_order_field = "state__city__name"
+    get_city.short_description = "City"
 
     def get_state(self, obj):
-        return obj.state.name if obj.state else ''
-    get_state.admin_order_field = 'state__name'
-    get_state.short_description = 'State'
+        return obj.state.name if obj.state else ""
+
+    get_state.admin_order_field = "state__name"
+    get_state.short_description = "State"
 
 
 # Admin class for Image
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ('content_type', 'object_id', 'image')
+    list_display = ("content_type", "object_id", "image")
+
 
 # Admin class for Feature
 
@@ -319,7 +425,7 @@ class FeatureAttributeInline(admin.TabularInline):
 class FeatureAdminForm(forms.ModelForm):
     class Meta:
         model = Feature
-        fields = '__all__'
+        fields = "__all__"
 
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
@@ -336,15 +442,16 @@ class FeatureAdmin(admin.ModelAdmin):
 
 
 class FeatureCategoryAdmin(admin.ModelAdmin):
-    list_display = ('feature', 'category')
+    list_display = ("feature", "category")
 
 
 # Admin class for Feature_property
 class FeaturePropertyAdmin(admin.ModelAdmin):
-    list_display = ('property', 'feature')
+    list_display = ("property", "feature")
     inlines = [
         ImageInline,
     ]
+
 
 # Admin class for Attribute
 
@@ -355,10 +462,9 @@ class CategoryAttributeInline(admin.TabularInline):
 
 
 class AttributeAdminForm(forms.ModelForm):
-
     class Meta:
         model = Attribute
-        fields = '__all__'
+        fields = "__all__"
 
 
 class AttributeAdmin(admin.ModelAdmin):
@@ -381,8 +487,8 @@ class AttributeAdmin(admin.ModelAdmin):
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         print(db_field)
-        if db_field.name == 'category':
-            kwargs['queryset'] = Category.objects.filter(level=2)
+        if db_field.name == "category":
+            kwargs["queryset"] = Category.objects.filter(level=2)
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
@@ -390,68 +496,87 @@ class AttributeAdmin(admin.ModelAdmin):
 
 
 class ValueModelAdmin(admin.ModelAdmin):
-    list_display = ('attribute', 'value')
+    list_display = ("attribute", "value")
+
 
 # Admin class for property_value
 
 
 class PropertyValueAdmin(admin.ModelAdmin):
-    list_display = ('property', 'value')
+    list_display = ("property", "value")
+
 
 # Admin class for Category_attribute
 
 
 class CategoryAttributeAdmin(admin.ModelAdmin):
-    list_display = ('category', 'attribute')
+    list_display = ("category", "attribute")
+
 
 # Admin class for Rate
 
 
 class RateAdmin(admin.ModelAdmin):
-    list_display = ('prop', 'user', 'rate', 'time_created')
+    list_display = ("prop", "user", "rate", "time_created")
+
 
 # Admin class for Favorite
 
 
 class FavoriteAdmin(admin.ModelAdmin):
-    list_display = ('prop', 'user', 'time_created')
+    list_display = ("prop", "user", "time_created")
+
 
 # Admin class for Report
 
 
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('prop', 'user', 'time_created', 'note')
+    list_display = ("prop", "user", "time_created", "note")
+
 
 # Admin class for Review
 
 
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('prop', 'user', 'time_created', 'review')
+    list_display = ("prop", "user", "time_created", "review")
+
 
 # Admin class for Ticket_type
 
 
 class TicketTypeAdmin(admin.ModelAdmin):
-    list_display = ('type',)
+    list_display = ("type",)
+
 
 # Admin class for Ticket_status
 
 
 class TicketStatusAdmin(admin.ModelAdmin):
-    list_display = ('status',)
+    list_display = ("status",)
+
 
 # Admin class for Ticket
 
 
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('type', 'status', 'ticket_solver',
-                    'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
+    list_display = (
+        "type",
+        "status",
+        "ticket_solver",
+        "ticket_sender",
+        "phone_number",
+        "created_time",
+        "solved_time",
+        "email",
+        "problem_text",
+    )
+
 
 # Admin class for Solve_message
 
 
 class SolveMessageAdmin(admin.ModelAdmin):
-    list_display = ('ticket', 'message')
+    list_display = ("ticket", "message")
 
 
 # Admin class for Property
@@ -460,48 +585,57 @@ class PropertyAdmin(admin.ModelAdmin):
     #                 'name', 'description', 'price', 'size', 'is_active', 'is_deleted', 'time_created', 'unique_number')
     fieldsets = (
         (
-            'PropertyINFO',
+            "PropertyINFO",
             {
-                'fields': ['name', 'category', 'address', 'price', 'size', 'description', 'user'],
+                "fields": [
+                    "name",
+                    "category",
+                    "address",
+                    "price",
+                    "size",
+                    "description",
+                    "user",
+                ],
             },
-
-
         ),
-        (
-            'Property Status',
-            {
-                'fields': ['is_active', 'is_deleted', 'for_sale']
-            }
-
-        ),
-
-
+        ("Property Status", {"fields": ["is_active", "is_deleted", "for_sale"]}),
     )
-    list_display = ['name', 'price', 'time_created', "is_active"]
+    list_display = ["name", "price", "time_created", "is_active"]
     inlines = [
         ImageInline,
     ]
 
 
 class PropertyResource(resources.ModelResource):
-    user = fields.Field(column_name='user', attribute='user',
-                        widget=widgets.ForeignKeyWidget('auth.User'))
-    image_url = fields.Field(column_name='Image URL', attribute='image_url')
+    user = fields.Field(
+        column_name="user",
+        attribute="user",
+        widget=widgets.ForeignKeyWidget("auth.User"),
+    )
+    image_url = fields.Field(column_name="Image URL", attribute="image_url")
 
     class Meta:
         model = Property
-        fields = ('id', 'user', 'name', 'description', 'price',
-                  'size', 'is_active', 'is_deleted', 'image_url')
+        fields = (
+            "id",
+            "user",
+            "name",
+            "description",
+            "price",
+            "size",
+            "is_active",
+            "is_deleted",
+            "image_url",
+        )
         export_order = fields
 
     def import_obj(self, instance, data, dry_run):
-        image_path = data.get('image_file')
+        image_path = data.get("image_file")
         if image_path:
             try:
-                with open(image_path, 'rb') as f:
+                with open(image_path, "rb") as f:
                     image_file = File(f)
-                    instance.image.save(
-                        image_file.name, image_file, save=False)
+                    instance.image.save(image_file.name, image_file, save=False)
             except FileNotFoundError:
                 pass
 
@@ -515,27 +649,38 @@ class PropertyAdminImport(ImportExportModelAdmin):
     resource_class = PropertyResource
     fieldsets = (
         (
-            'PropertyINFO',
+            "PropertyINFO",
             {
-                'fields': ['name', 'category', 'address', 'price', 'size', 'description', 'user'],
+                "fields": [
+                    "name",
+                    "category",
+                    "address",
+                    "price",
+                    "size",
+                    "description",
+                    "user",
+                ],
             },
-
-
         ),
         (
-            'Property Status',
+            "Property Status",
             {
-                'fields': ['is_active', 'is_deleted', 'is_featured', 'for_sale', 'last_active']
-            }
-
+                "fields": [
+                    "is_active",
+                    "is_deleted",
+                    "is_featured",
+                    "for_sale",
+                    "last_active",
+                ]
+            },
         ),
-
-
     )
-    list_display = ["id", 'name', 'price', 'time_created', "is_active"]
+    list_display = ["id", "name", "price", "time_created", "is_active"]
     inlines = [
         ImageInline,
     ]
+
+
 # # Admin class for Feature_property
 # class FeaturePropertyAdmin(admin.ModelAdmin):
 #     list_display = ('property', 'feature')
@@ -550,72 +695,99 @@ class PropertyAdminImport(ImportExportModelAdmin):
 
 
 class ValueModelAdmin(admin.ModelAdmin):
-    list_display = ('attribute', 'value')
+    list_display = ("attribute", "value")
+
 
 # Admin class for property_value
 
 
 class PropertyValueAdmin(admin.ModelAdmin):
-    list_display = ('property', 'value')
+    list_display = ("property", "value")
+
 
 # Admin class for Category_attribute
 
 
 class CategoryAttributeAdmin(admin.ModelAdmin):
-    list_display = ('category', 'attribute')
+    list_display = ("category", "attribute")
+
 
 # Admin class for Rate
 
 
 class RateAdmin(admin.ModelAdmin):
-    list_display = ('prop', 'user', 'rate', 'time_created')
-    list_filter = ['rate',]
+    list_display = ("prop", "user", "rate", "time_created")
+    list_filter = [
+        "rate",
+    ]
+
 
 # Admin class for Favorite
 
 
 class FavoriteAdmin(admin.ModelAdmin):
-    list_display = ('prop', 'user', 'time_created')
+    list_display = ("prop", "user", "time_created")
+
 
 # Admin class for Report
 
 
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('prop', 'user', 'time_created', 'note')
-    search_fields = ['prop',]
-    list_filter = ['time_created', 'user',]
-    date_hierarchy = 'time_created'
+    list_display = ("prop", "user", "time_created", "note")
+    search_fields = [
+        "prop",
+    ]
+    list_filter = [
+        "time_created",
+        "user",
+    ]
+    date_hierarchy = "time_created"
 
 
 # Admin class for Review
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('prop', 'user', 'time_created', 'review', 'rate_review')
-    list_filter = ['time_created',]
+    list_display = ("prop", "user", "time_created", "review", "rate_review")
+    list_filter = [
+        "time_created",
+    ]
+
 
 # Admin class for Ticket_type
 
 
 class TicketTypeAdmin(admin.ModelAdmin):
-    list_display = ('type',)
+    list_display = ("type",)
+
 
 # Admin class for Ticket_status
 
 
 class TicketStatusAdmin(admin.ModelAdmin):
-    list_display = ('status',)
+    list_display = ("status",)
+
 
 # Admin class for Ticket
 
 
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('type', 'status', 'ticket_solver',
-                    'ticket_sender', 'phone_number', 'created_time', 'solved_time', 'email', 'problem_text')
+    list_display = (
+        "type",
+        "status",
+        "ticket_solver",
+        "ticket_sender",
+        "phone_number",
+        "created_time",
+        "solved_time",
+        "email",
+        "problem_text",
+    )
+
 
 # Admin class for Solve_message
 
 
 class SolveMessageAdmin(admin.ModelAdmin):
-    list_display = ('ticket', 'message')
+    list_display = ("ticket", "message")
 
 
 class FriendListAdmin(admin.ModelAdmin):
@@ -632,8 +804,8 @@ class UnradChateMessageAdmin(admin.ModelAdmin):
 
 class BannerAdmin(admin.ModelAdmin):
     # pass
-    list_display = ['title', 'end_time', 'start_time', 'is_active']
-    list_filter = ['is_active']
+    list_display = ["title", "end_time", "start_time", "is_active"]
+    list_filter = ["is_active"]
 
     # pass
 
@@ -644,7 +816,7 @@ class AlramValueAdmin(admin.TabularInline):
 
 
 class AlarmAdmin(admin.ModelAdmin):
-    list_display = ['user', 'is_active']
+    list_display = ["user", "is_active"]
     inlines = [AlramValueAdmin]
 
 

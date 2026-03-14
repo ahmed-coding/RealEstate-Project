@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from schema_graph.views import Schema
@@ -21,23 +22,23 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from apps.notifications.consumers import NotificationConsumer
-from apps.chat.consumers import ChatConsumer
+# WebSocket consumers commented out - will be replaced with FastAPI in Phase 3
+# from apps.notifications.consumers import NotificationConsumer
+# from apps.chat.consumers import ChatConsumer
 
 urlpatterns = [
     # path('jet/', include('jet.urls')),
     # path('jet/dashboard', include('jet.dashboard.urls', 'jet-dashboard')),
-    path('admin/', admin.site.urls),
-    path('api/', include('apps.urls')),
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/doc/',
-         SpectacularSwaggerView.as_view(url_name='schema'), name='api_doc'),
-]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path("admin/", admin.site.urls),
+    path("api/", include("apps.urls")),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/doc/", SpectacularSwaggerView.as_view(url_name="schema"), name="api_doc"),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += staticfiles_urlpatterns()
 
-websocket_urlpatterns = [
-    path("ws/notifications/", NotificationConsumer.as_asgi()),
-    path('ws/chat/<room_id>/', ChatConsumer.as_asgi()),
-
-]
+# WebSocket patterns disabled - will be handled by FastAPI in Phase 3
+# websocket_urlpatterns = [
+#     path("ws/notifications/", NotificationConsumer.as_asgi()),
+#     path('ws/chat/<room_id>/', ChatConsumer.as_asgi()),
+# ]

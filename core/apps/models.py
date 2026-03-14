@@ -21,8 +21,6 @@ from PIL import Image as PImage
 from django.db import models
 from django.utils.text import slugify
 import uuid
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 import string
 import random
 from django.core.exceptions import ValidationError
@@ -256,7 +254,8 @@ class User(AbstractBaseUser, PermissionsMixin):
             self.is_superuser = False
             self.save()
             return True
-        except:
+        except (AttributeError, ValueError, Exception) as e:
+            # If image doesn't exist or other error, still mark as deleted
             self.is_deleted = True
             self.save()
             return True
@@ -277,16 +276,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     def add_cart(self, item_id: int, count: int):
         try:
             return self.cart.create(product_id=item_id, qty=count)
-        except:
-            ins = self.cart.get(product_id=item_id)
-            ins.qty = count
-            return ins.save()
+        except (AttributeError, ValueError, Exception):
+            try:
+                ins = self.cart.get(product_id=item_id)
+                ins.qty = count
+                return ins.save()
+            except (AttributeError, ValueError, Exception):
+                return None
 
     def add_favorite(self, item_id: int):
         try:
             data = self.favorites.get_or_create(product_id=item_id)
             return data[0]
-        except:
+        except (AttributeError, ValueError, Exception):
             return False
 
     def remove_favorite(self, item_id: int):
@@ -754,7 +756,7 @@ class Property(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.unique_no = f"{slugify(self.name.strip())}-{str(uuid.uuid4())[:8]}"
+            self.unique_number = f"{slugify(self.name.strip())}-{str(uuid.uuid4())[:8]}"
         return super().save(*args, **kwargs)
 
     # start in customize the fields for algolia
