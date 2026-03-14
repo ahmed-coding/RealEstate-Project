@@ -217,3 +217,30 @@ def create_notification_on_property_save(sender, instance, **kwargs):
             object_id=old.user.id,  # Pass the ID of the alarm
             # content_object=alarm,  # Pass the alarm instance
         )
+
+
+# Property embedding signal - enqueue embedding task when property is saved
+@receiver(post_save, sender=Property)
+def property_save_for_embedding(sender, instance, created, **kwargs):
+    """
+    Signal receiver to enqueue embedding task when a property is created or updated.
+    This enables semantic search using pgvector embeddings.
+    """
+    # Only generate embeddings for active properties
+    if not instance.is_active:
+        return
+
+    # Try to import and use Celery task
+    try:
+        from workers.tasks.embeddings import embed_property
+
+        # Enqueue the task asynchronously
+        embed_property.delay(instance.id)
+    except Exception:
+        # If Celery is not available, log the event
+        import logging
+
+        logging.getLogger(__name__).warning(
+            f"Could not enqueue embedding task for property {instance.id}. "
+            "Make sure Celery is running."
+        )

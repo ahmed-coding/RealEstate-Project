@@ -22,8 +22,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # internl apps
+    # internal apps
     "apps",
+    "apps.search",
     # # external apps
     "mptt",
     "rest_framework",
