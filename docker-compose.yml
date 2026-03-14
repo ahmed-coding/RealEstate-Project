@@ -159,6 +159,28 @@ services:
     networks:
       - RealEstate
 
+  # AI Service (for embeddings, recommendations, chat)
+  ai:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+    volumes:
+      - ./ai_service:/app
+    ports:
+      - "8002:8002"
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.local
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/realestate
+      - REDIS_URL=redis://redis:6379/0
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+    depends_on:
+      - django
+      - redis
+      - postgres
+    networks:
+      - RealEstate
+
   # Nginx - Reverse proxy
   nginx:
     image: nginx:alpine
