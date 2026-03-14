@@ -114,8 +114,8 @@ async def semantic_search(request: PropertySearchRequest):
         query_embedding = response.data[0].embedding
 
         # Search properties using pgvector
-        from apps.search.models import PropertyEmbedding
-        from apps.models import Property
+        from core.apps.search.models import PropertyEmbedding
+        from core.apps.models import Property
         from django.db.models import F
         from django.contrib.postgres.search import SearchQuery, SearchRank
         from django.db.models.functions import CosineSimilarity
@@ -160,7 +160,7 @@ async def recommend_properties(request: PropertyRecommendRequest):
         raise HTTPException(status_code=500, detail="OpenRouter API key not configured")
 
     try:
-        from apps.models import Property, Favorite, Alarm
+        from core.apps.models import Property, Favorite, Alarm
         from django.db.models import Count
 
         # Get user's favorite properties
