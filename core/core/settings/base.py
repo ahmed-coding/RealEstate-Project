@@ -22,64 +22,51 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-%m2=vfc6yd@^m_qmg1@bubht_kg!8j)g!g_8^ex1*za+=u@si)'
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY", "django-insecure-dev-key-change-in-production"
+)
 
 # DEBUG = os.environ.get('DEBUG')
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
-app = Celery('core')
-app.config_from_object('django.conf:settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+app = Celery("core")
+app.config_from_object("django.conf:settings")
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
-cred = credentials.Certificate(
-    f'{BASE_DIR}/../firebase.json')
+cred = credentials.Certificate(f"{BASE_DIR}/../firebase.json")
 firebase_admin.initialize_app(cred)
 
 
-# Configure Celery Beat
-app.conf.beat_schedule = {
-    'update_banner_status': {
-        'task': 'your_app.tasks.update_banner_status_task',
-        'schedule': 60,  # Check every minute (adjust as needed)
-    },
-}
+DEBUG = os.environ.get("DEBUG", True)
 
+AUTH_USER_MODEL = "apps.User"
 
-@app.task(bind=True)
-def debug_task(self):
-    print(f'Request: {self.request!r}')
-
-
-DEBUG = os.environ.get('DEBUG', True)
-
-AUTH_USER_MODEL = 'apps.User'
-
-DEFAULT_CHARSET = 'utf-8'
+DEFAULT_CHARSET = "utf-8"
 
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'  # ,
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  # ,
 ]
 
-ROOT_URLCONF = 'core.urls'
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / '../apps/templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "../apps/templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
@@ -99,16 +86,16 @@ ASGI_APPLICATION = "core.asgi.application"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -116,9 +103,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = "en"
 
-TIME_ZONE = 'Asia/Aden'
+TIME_ZONE = "Asia/Aden"
 
 USE_I18N = True
 
@@ -129,14 +116,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR / "../static",
-
 ]
-STATIC_ROOT = BASE_DIR / '../assets'
+STATIC_ROOT = BASE_DIR / "../assets"
 
 
 APPEND_SLASH = True
@@ -149,19 +135,14 @@ APPEND_SLASH = True
 
 # Rest_framework
 REST_FRAMEWORK = {
-
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    "DEFAULT_AUTHENTICATION_CLASSES": (
         # "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        # "rest_framework.permissions.IsAuthenticatedOrReadOnly",
-    ),
-
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
-
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     # 'DEFAULT_RENDERER_CLASSES': [
     #     'rest_framework.renderers.JSONRenderer',
     # ],
@@ -170,20 +151,19 @@ REST_FRAMEWORK = {
     # ],
     # 'DEFAULT_CONTENT_NEGOTIATION_CLASS':
     #     'rest_framework.negotiation.DefaultContentNegotiation',
-
 }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # SPECTACULAR Swagger documentation settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': ' API Documentation for RealEstate ',
-    'DESCRIPTION': 'RealEstate project description',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': True,
+    "TITLE": " API Documentation for RealEstate ",
+    "DESCRIPTION": "RealEstate project description",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": True,
     # OTHER SETTINGS
 }
 
@@ -192,30 +172,47 @@ SPECTACULAR_SETTINGS = {
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
-MEDIA_URL = 'media/'
+MEDIA_URL = "media/"
 MEDIAFILES_DIRS = [
     BASE_DIR / "../media",
 ]
-MEDIA_ROOT = BASE_DIR / '../media'
+MEDIA_ROOT = BASE_DIR / "../media"
 
-CORS_ORIGIN_ALLOW_ALL = True  # -> Cors Header
+# CORS settings - use whitelist in production
+CORS_ORIGIN_ALLOW_ALL = os.environ.get("CORS_ORIGIN_ALLOW_ALL", "False") == "True"
 
-# CORS_ORIGIN_WHITELIST = (
-#     'http://localhost:8000',
-#     'http://192.168.1.100:8080',
-# )
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
 CELERY_BEAT_SCHEDULE = {
-    'update-banner-status': {
-        'task': 'your_app.tasks.update_banner_status_task',
-        'schedule': 60,  # Check every minute (adjust as needed)
+    "update-banner-status": {
+        "task": "workers.tasks.alarms.update_banner_status",
+        "schedule": 60.0,
+    },
+    "update-property-state": {
+        "task": "workers.tasks.alarms.update_property_state",
+        "schedule": 600.0,
     },
 }
 
 CRONJOBS = [
-    ('*/10 * * * *', 'django.core.management.call_command',
-     ['update_banner_stat',]),
-    ('*0 * * * *', 'django.core.management.call_command',
-     ['update_property_state',]),
+    (
+        "*/10 * * * *",
+        "django.core.management.call_command",
+        [
+            "update_banner_stat",
+        ],
+    ),
+    (
+        "*0 * * * *",
+        "django.core.management.call_command",
+        [
+            "update_property_state",
+        ],
+    ),
 ]
 
 # Channels settings
@@ -230,14 +227,14 @@ CRONJOBS = [
 # DEFUALT_FROM_EMAIL = EMAIL_HOST_USER
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.hostinger.com'  # Make sure this is correct
-EMAIL_PORT = 587  # Typically 587 for TLS, but can also be 465 for SSL
-EMAIL_USE_TLS = True  # Enable TLS
-EMAIL_USE_SSL = False  # Use True if your port is 465
-EMAIL_HOST_USER = 'realestate@bastblog.com'  # Your Hostinger email address
-EMAIL_HOST_PASSWORD = 'Realestate12345$$'  # Your Hostinger email password
-DEFAULT_FROM_EMAIL = 'realestate@bastblog.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.hostinger.com")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True") == "True"
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "False") == "True"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "realestate@bastblog.com")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 
 # End settings for Email
 
@@ -255,4 +252,4 @@ DEFAULT_FROM_EMAIL = 'realestate@bastblog.com'
 # }
 
 # Base dir for ML models
-ML_MODELS_PATH = BASE_DIR / '../ML'
+ML_MODELS_PATH = BASE_DIR / "../ML"

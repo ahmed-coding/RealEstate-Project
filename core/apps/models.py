@@ -5,7 +5,11 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.fields import GenericForeignKey
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    PermissionsMixin,
+    BaseUserManager,
+)
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
@@ -38,15 +42,16 @@ def generit_random_code(code_lenth):
     list_code = string.digits
     lenth = len(list_code)
     count = 0
-    code = ''
+    code = ""
     while count < code_lenth:
-        index = random.randint(0, lenth-1)
+        index = random.randint(0, lenth - 1)
         code += list_code[index]
         count += 1
     # print(len(str(int(code))))
     if len(str(int(code))) != code_lenth:
         generit_random_code(code_lenth)
     return int(code)
+
 
 # Custom User Manager and User Models
 
@@ -56,7 +61,7 @@ class MyUserManager(BaseUserManager):
     Custom User Manager
     """
 
-    def _create_user(self,  email, username,  password, **extra_fields):
+    def _create_user(self, email, username, password, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
         """
@@ -70,7 +75,7 @@ class MyUserManager(BaseUserManager):
         #     self.model._meta.app_label, self.model._meta.object_name
         # )
         # username = GlobalUserModel.normalize_username(username)
-        user = self.model(email=email,  username=username, **extra_fields)
+        user = self.model(email=email, username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -80,7 +85,7 @@ class MyUserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", False)
         return self._create_user(email, username, password, **extra_fields)
 
-    def create_superuser(self, email, username=None,  password=None, **extra_fields):
+    def create_superuser(self, email, username=None, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -105,10 +110,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     AUTHENTICATION:\n
         We use JWT auth for this project
     """
+
     # Choices
-    EMAIL = 'email'
-    GOOGLE = 'google'
-    FACEBOOB = 'facebook'
+    EMAIL = "email"
+    GOOGLE = "google"
+    FACEBOOB = "facebook"
     user_type_choices = [
         ("owner", "Property owner"),
         ("agent", "Real-estate agent"),
@@ -117,7 +123,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         ("admin", "Admin"),
     ]
     user_type = models.CharField(
-        _("User Type"), max_length=50, choices=user_type_choices, default="customer")
+        _("User Type"), max_length=50, choices=user_type_choices, default="customer"
+    )
     username = models.CharField(
         _("username"),
         max_length=150,
@@ -129,12 +136,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
         error_messages={
             "unique": _("A user with that username already exists."),
-        }
+        },
     )
     # auth_provider = models.CharField(
     #     max_length=20, blank=True, null=False, default=EMAIL)
-    name = models.CharField(
-        _('Full name'), max_length=60, default='', blank=True)
+    name = models.CharField(_("Full name"), max_length=60, default="", blank=True)
     # first_name = models.CharField(
     #     _("first name"), max_length=55, blank=True, default='')
     # last_name = models.CharField(
@@ -143,13 +149,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     # =============
     email = models.EmailField(_("email address"), unique=True)
     phone_number = models.CharField(
-        _("phone number"),  max_length=50, default='', null=True)
-    register_data = models.CharField(max_length=20, default='')
+        _("phone number"), max_length=50, default="", null=True
+    )
+    register_data = models.CharField(max_length=20, default="")
     is_staff = models.BooleanField(
         _("staff status"),
         default=False,
-        help_text=_(
-            "Designates whether the user can log into this admin site."),
+        help_text=_("Designates whether the user can log into this admin site."),
     )
     is_active = models.BooleanField(
         _("active"),
@@ -159,20 +165,30 @@ class User(AbstractBaseUser, PermissionsMixin):
             "Unselect this instead of deleting accounts."
         ),
     )
-    is_deleted = models.BooleanField(_('Deleted'), default=False,)
+    is_deleted = models.BooleanField(
+        _("Deleted"),
+        default=False,
+    )
     date_joined = models.DateTimeField(
-        _("date joined"),  default=timezone.now, )
+        _("date joined"),
+        default=timezone.now,
+    )
     image = models.ImageField(
-        upload_to='user_image',
+        upload_to="user_image",
         # default='user_image/MicrosoftTeams-image.png',
         blank=True,
-        null=True
+        null=True,
     )
-    unique_no = models.SlugField(_("unique_no"), unique=True, blank=True,)
+    unique_no = models.SlugField(
+        _("unique_no"),
+        unique=True,
+        blank=True,
+    )
     is_seller = models.BooleanField(_("Is Seller?"), default=False)
 
     device_token = models.CharField(
-        _("Decive Token"), max_length=255, default="", blank=True)
+        _("Decive Token"), max_length=255, default="", blank=True
+    )
 
     ########## ManyToMAny Fileds ###########
     # product_view = models.ManyToManyField("Product_item", through='View')
@@ -246,7 +262,8 @@ class User(AbstractBaseUser, PermissionsMixin):
             return True
 
         # return super().delete(*args, **kwargs)
-    def get(self,  **kwargs):
+
+    def get(self, **kwargs):
         user = self.objects.get(**kwargs, is_delete=False) or None
         if user:
             return user
@@ -284,25 +301,73 @@ class User(AbstractBaseUser, PermissionsMixin):
         return "User"
 
     class Meta:
-        db_table = 'User'
+        db_table = "User"
 
 
 class VerificationCode(models.Model):
     """
     Verification_Code model .
     -------------------------
-    It use to verify the account by the code
+    It use to verify the account by the code.
+    Stores OTP in DB with 10-minute expiry.
     """
-    user_phone_num = models.CharField(
-        _("user_phone_num"), max_length=50, default="", blank=True)
+
+    email = models.EmailField(_("email"), max_length=254)
     random_code = models.CharField(_("random_code"), max_length=4)
     time_created = models.DateTimeField(
-        _("time_created"), auto_now=False, auto_now_add=True)
+        _("time_created"), auto_now=False, auto_now_add=True
+    )
     expire_date = models.DateTimeField(
-        _("expire_date"), auto_now=False, auto_now_add=True)
+        _("expire_date"), auto_now=False, auto_now_add=False
+    )
+    is_used = models.BooleanField(_("is_used"), default=False)
 
     class Meta:
-        db_table = 'VerificationCode'
+        db_table = "VerificationCode"
+
+    def is_valid(self):
+        """Check if the code is still valid (not expired and not used)."""
+        from django.utils import timezone
+
+        return not self.is_used and self.expire_date > timezone.now()
+
+    @staticmethod
+    def generate_code():
+        """Generate a 4-digit code."""
+        import random
+
+        return "".join(random.choices(string.digits, k=4))
+
+
+class PasswordResetToken(models.Model):
+    """
+    Password Reset Token model.
+    Stores cryptographic tokens for password reset with 15-minute expiry.
+    """
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="password_reset_tokens"
+    )
+    token = models.CharField(_("token"), max_length=64, unique=True)
+    created_at = models.DateTimeField(_("created_at"), auto_now_add=True)
+    expire_at = models.DateTimeField(_("expire_at"), auto_now=False, auto_now_add=False)
+    is_used = models.BooleanField(_("is_used"), default=False)
+
+    class Meta:
+        db_table = "PasswordResetToken"
+
+    def is_valid(self):
+        """Check if the token is still valid (not expired and not used)."""
+        from django.utils import timezone
+
+        return not self.is_used and self.expire_at > timezone.now()
+
+    @staticmethod
+    def generate_token():
+        """Generate a cryptographically secure token."""
+        import secrets
+
+        return secrets.token_urlsafe(32)
 
 
 class TypeModel(models.Model):
@@ -311,10 +376,11 @@ class TypeModel(models.Model):
     --------------------------
 
     """
+
     type = models.CharField(_("type"), max_length=50, default="")
 
     class Meta:
-        db_table = 'Type'
+        db_table = "Type"
 
 
 class Attribute_verify(models.Model):
@@ -323,13 +389,15 @@ class Attribute_verify(models.Model):
     ---------------------------
 
     """
+
     attribute = models.CharField(_("attribute"), max_length=50)
     data_type = models.CharField(_("data_type"), max_length=50)
-    type = models.ForeignKey(TypeModel, verbose_name=_(
-        "type"), on_delete=models.CASCADE)
+    type = models.ForeignKey(
+        TypeModel, verbose_name=_("type"), on_delete=models.CASCADE
+    )
 
     class Meta:
-        db_table = 'Attribute_verify'
+        db_table = "Attribute_verify"
 
 
 class Attribute_value(models.Model):
@@ -338,11 +406,14 @@ class Attribute_value(models.Model):
     ---------------------------
 
     """
+
     attribute = models.ForeignKey(
-        'Attribute', verbose_name=_("attribute_value"), on_delete=models.CASCADE)
+        "Attribute", verbose_name=_("attribute_value"), on_delete=models.CASCADE
+    )
 
     class Meta:
-        db_table = 'Attribute_value'
+        db_table = "Attribute_value"
+
 
 # End Custom User Manager and User Models
 # Start Address
@@ -350,12 +421,11 @@ class Attribute_value(models.Model):
 
 def generate_upload_to_path(instance, filename):
     if instance.content_type:
-        return f'{instance.content_type.name}-images/{filename}'
-    return f'images/unknown/{filename}'
+        return f"{instance.content_type.name}-images/{filename}"
+    return f"images/unknown/{filename}"
 
 
 class Image(models.Model):
-
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
@@ -375,10 +445,11 @@ class Country(models.Model):
     ---------------------------
 
     """
+
     name = models.CharField(_("Name"), max_length=50)
 
     class Meta:
-        db_table = 'Country'
+        db_table = "Country"
 
     def __str__(self):
         return self.name
@@ -390,12 +461,17 @@ class City(models.Model):
     ---------------------------
 
     """
+
     name = models.CharField(_("Name"), max_length=50)
     country = models.ForeignKey(
-        Country, verbose_name=_("Country"), on_delete=models.CASCADE, related_name='cities')
+        Country,
+        verbose_name=_("Country"),
+        on_delete=models.CASCADE,
+        related_name="cities",
+    )
 
     class Meta:
-        db_table = 'City'
+        db_table = "City"
 
     def __str__(self):
         return self.name
@@ -407,13 +483,15 @@ class State(models.Model):
     ---------------------------
 
     """
+
     name = models.CharField(_("Name"), max_length=50)
     city = models.ForeignKey(
-        City, verbose_name=_("City"), on_delete=models.CASCADE, related_name='states')
-    image = GenericRelation(Image, related_query_name='state')
+        City, verbose_name=_("City"), on_delete=models.CASCADE, related_name="states"
+    )
+    image = GenericRelation(Image, related_query_name="state")
 
     class Meta:
-        db_table = 'State'
+        db_table = "State"
 
     def __str__(self) -> str:
         return self.name
@@ -425,20 +503,25 @@ class Address(models.Model):
     ---------------------------
 
     """
+
     state = models.ForeignKey(
-        State, verbose_name=_("State "), on_delete=models.CASCADE, related_name='addresses')
+        State,
+        verbose_name=_("State "),
+        on_delete=models.CASCADE,
+        related_name="addresses",
+    )
     longitude = models.FloatField(_("Longitude"))
     latitude = models.FloatField(_("Latitude"))
-    line1 = models.CharField(
-        _("Line 1"), max_length=255, default="", blank=True)
-    line2 = models.CharField(
-        _("Line 2"), max_length=255, default="", blank=True)
+    line1 = models.CharField(_("Line 1"), max_length=255, default="", blank=True)
+    line2 = models.CharField(_("Line 2"), max_length=255, default="", blank=True)
 
     def __str__(self) -> str:
-        return f'{self.state.name} {self.state.city.name} {self.state.city.country.name}'
+        return (
+            f"{self.state.name} {self.state.city.name} {self.state.city.country.name}"
+        )
 
     class Meta:
-        db_table = 'Address'
+        db_table = "Address"
 
 
 # End Address
@@ -451,29 +534,33 @@ class Category(MPTTModel):
     ----------------
     use parent and level attributes to access who category is returned
     """
+
     parent = TreeForeignKey(
-        'self', on_delete=models.CASCADE, blank=True, related_name='children', null=True)
+        "self", on_delete=models.CASCADE, blank=True, related_name="children", null=True
+    )
     name = models.CharField(max_length=50)
-    image = GenericRelation(Image, related_query_name='category')
+    image = GenericRelation(Image, related_query_name="category")
 
     class MPTTMeta:
         # level_attr = 'parint'
-        order_insertion_by = ['name']
+        order_insertion_by = ["name"]
 
     def __str__(self):
         return f"{self.name} "
 
     class Meta:
-        db_table = 'Category'
+        db_table = "Category"
 
 
 class CustomBannerManager(models.Manager):
-
     """Automatically update is active to false if end time is over"""
 
     def get_queryset(self):
-        queryset = super(CustomBannerManager,
-                         self).get_queryset().filter(Q(end_date__lte=timezone.now()))
+        queryset = (
+            super(CustomBannerManager, self)
+            .get_queryset()
+            .filter(Q(end_date__lte=timezone.now()))
+        )
         queryset.update(is_active=False)
 
         return queryset
@@ -481,18 +568,29 @@ class CustomBannerManager(models.Manager):
 
 class Banner(models.Model):
     time_created = models.DateTimeField(
-        _("time created"), auto_now=False, auto_now_add=True)
+        _("time created"), auto_now=False, auto_now_add=True
+    )
     end_time = models.DateTimeField(
-        _("end_time"),)
+        _("end_time"),
+    )
     start_time = models.DateTimeField(
-        _("start_time"),)
+        _("start_time"),
+    )
     title = models.CharField(_("Title"), max_length=100, default="")
     description = models.TextField(_("description"), default="")
-    category = models.ForeignKey(Category, verbose_name=_(
-        "category"), on_delete=models.CASCADE, related_name='banner')
-    image = models.ImageField(_("Image"), upload_to='banners/',)
+    category = models.ForeignKey(
+        Category,
+        verbose_name=_("category"),
+        on_delete=models.CASCADE,
+        related_name="banner",
+    )
+    image = models.ImageField(
+        _("Image"),
+        upload_to="banners/",
+    )
     is_active = models.BooleanField(_("Active status"), default=False)
-    objects = CustomBannerManager
+    objects = models.Manager()  # Default manager
+    active = CustomBannerManager()  # Custom manager for filtering active banners
 
     # def get_absolute_url(self):
     #     self.get_deferred_fields
@@ -515,13 +613,10 @@ class Banner(models.Model):
 
     def clean(self):
         if self.end_time is not None and self.end_time < timezone.now():
-            raise ValidationError(
-                {'end_time': 'End time should be in the future.'})
+            raise ValidationError({"end_time": "End time should be in the future."})
 
     def __str__(self) -> str:
-        if self.end_time <= timezone.now():
-            self.is_active = False
-            self.save()
+        # Note: __str__ should be side-effect free - do NOT call save() here
         return self.title
 
     # @receiver(pre_save, sender='apps.Banner')
@@ -543,8 +638,9 @@ class Banner(models.Model):
         return self.title
 
     class Meta:
-        db_table = 'Banner'
-        default_manager_name = 'objects'
+        db_table = "Banner"
+        default_manager_name = "objects"
+
 
 # class Image_Category(models.Model):
 #     """
@@ -566,12 +662,16 @@ class Feature(models.Model):
     ---------------------------
 
     """
+
     name = models.CharField(_("feature Name"), max_length=50)
-    cate = models.ManyToManyField(Category, verbose_name=_(
-        "category"), through='Feature_category',)
+    cate = models.ManyToManyField(
+        Category,
+        verbose_name=_("category"),
+        through="Feature_category",
+    )
 
     class Meta:
-        db_table = 'Feature'
+        db_table = "Feature"
 
     def get_category(self):
         return self.cate
@@ -586,13 +686,22 @@ class Feature_category(models.Model):
     ---------------------------
 
     """
-    feature = models.ForeignKey(Feature, verbose_name=_(
-        "feature"), on_delete=models.CASCADE, related_name='feature_category')
-    category = models.ForeignKey(Category, verbose_name=_(
-        "category"), on_delete=models.CASCADE, related_name='feature_category')
+
+    feature = models.ForeignKey(
+        Feature,
+        verbose_name=_("feature"),
+        on_delete=models.CASCADE,
+        related_name="feature_category",
+    )
+    category = models.ForeignKey(
+        Category,
+        verbose_name=_("category"),
+        on_delete=models.CASCADE,
+        related_name="feature_category",
+    )
 
     class Meta:
-        db_table = 'Feature_category'
+        db_table = "Feature_category"
 
 
 class Property(models.Model):
@@ -601,28 +710,47 @@ class Property(models.Model):
     ---------------------------
 
     """
-    user = models.ForeignKey(User, verbose_name=_(
-        "User"), on_delete=models.CASCADE, related_name='property')
-    category = models.ForeignKey(Category, verbose_name=_(
-        "category"), on_delete=models.CASCADE, related_name='property')
+
+    user = models.ForeignKey(
+        User, verbose_name=_("User"), on_delete=models.CASCADE, related_name="property"
+    )
+    category = models.ForeignKey(
+        Category,
+        verbose_name=_("category"),
+        on_delete=models.CASCADE,
+        related_name="property",
+    )
     address = models.ForeignKey(
-        Address, verbose_name=_("Address"), on_delete=models.CASCADE, related_name='property', blank=True, null=True)
+        Address,
+        verbose_name=_("Address"),
+        on_delete=models.CASCADE,
+        related_name="property",
+        blank=True,
+        null=True,
+    )
     name = models.CharField(_("Name"), max_length=50)
     description = models.TextField(_("description"))
     price = models.DecimalField(
-        _("Price"), max_digits=10, decimal_places=2, blank=True, null=True)
+        _("Price"), max_digits=10, decimal_places=2, blank=True, null=True
+    )
     size = models.IntegerField(_("size"))
     is_active = models.BooleanField(_("is_active"), default=True)
     is_deleted = models.BooleanField(_("is_deleted"), default=False)
     time_created = models.DateTimeField(
-        _("time_created"), auto_now=False, auto_now_add=True)
+        _("time_created"), auto_now=False, auto_now_add=True
+    )
     unique_number = models.SlugField(_("unique_number"), editable=False)
-    image = GenericRelation(Image, related_query_name='property')
+    image = GenericRelation(Image, related_query_name="property")
     for_sale = models.BooleanField(_("Is For sale"), default=False)
     is_featured = models.BooleanField(_("is_featured"), default=False)
     for_rent = models.BooleanField(_("Is For Rent?"), default=False)
     last_active = models.DateTimeField(
-        _("Last activet time"), auto_now=False, auto_now_add=False, null=True, blank=True)
+        _("Last activet time"),
+        auto_now=False,
+        auto_now_add=False,
+        null=True,
+        blank=True,
+    )
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -631,22 +759,26 @@ class Property(models.Model):
 
     # start in customize the fields for algolia
     class Meta:
-        db_table = 'Property'
+        db_table = "Property"
 
-   # add a speacial method to return the name of Property object
+    # add a speacial method to return the name of Property object
     def get_algolia_serializer(self):
         from . import algolia_serializers as serializers
+
         return serializers.PropertyAlgoliaSerializer(self).data
 
     @property
     def image_url(self):
         content_type = ContentType.objects.get_for_model(self)
-        urls = [i.image.url for i in Image.objects.filter(
-            content_type=content_type, object_id=self.pk)]
+        urls = [
+            i.image.url
+            for i in Image.objects.filter(content_type=content_type, object_id=self.pk)
+        ]
         return urls
 
     def data_serializers(self):
         from . import algolia_serializers as serializers
+
         return serializers.PropertyAlgoliaSerializer(self).data
 
     def __str__(self) -> str:
@@ -673,15 +805,24 @@ class Feature_property(models.Model):
     ---------------------------
 
     """
-    property = models.ForeignKey(Property, verbose_name=_(
-        "Property"), on_delete=models.CASCADE, related_name='feature_property')
-    feature = models.ForeignKey(Feature, verbose_name=_(
-        "Feature"), on_delete=models.CASCADE, related_name='feature_property')
-    image = GenericRelation(Image, related_query_name='featuer_property_image')
+
+    property = models.ForeignKey(
+        Property,
+        verbose_name=_("Property"),
+        on_delete=models.CASCADE,
+        related_name="feature_property",
+    )
+    feature = models.ForeignKey(
+        Feature,
+        verbose_name=_("Feature"),
+        on_delete=models.CASCADE,
+        related_name="feature_property",
+    )
+    image = GenericRelation(Image, related_query_name="featuer_property_image")
 
     class Meta:
-        db_table = 'Feature_property'
-        unique_together = ['property', 'feature']
+        db_table = "Feature_property"
+        unique_together = ["property", "feature"]
 
     def __str__(self):
         return self.feature.name
@@ -706,6 +847,7 @@ class Attribute(models.Model):
     Attribute model .
     ---------------------------
     """
+
     choices = [
         ("string", "String"),
         ("int", "Number"),
@@ -715,16 +857,16 @@ class Attribute(models.Model):
         ("float", "Float"),
     ]
     name = models.CharField(_("Name"), max_length=50)
-    data_type = models.CharField(
-        _("data_type"), max_length=50, choices=choices)
-    category = models.ManyToManyField(Category, verbose_name=_(
-        "categores"), blank=True, through='Category_attribute')
+    data_type = models.CharField(_("data_type"), max_length=50, choices=choices)
+    category = models.ManyToManyField(
+        Category, verbose_name=_("categores"), blank=True, through="Category_attribute"
+    )
 
     def __str__(self) -> str:
         return self.name
 
     class Meta:
-        db_table = 'Attribute'
+        db_table = "Attribute"
 
 
 class ValueModel(models.Model):
@@ -733,15 +875,20 @@ class ValueModel(models.Model):
     ---------------------------
 
     """
+
     attribute = models.ForeignKey(
-        Attribute, verbose_name=_("attribute"), on_delete=models.CASCADE, related_name='value_attribute')
+        Attribute,
+        verbose_name=_("attribute"),
+        on_delete=models.CASCADE,
+        related_name="value_attribute",
+    )
     value = models.CharField(_("Value"), max_length=50)
 
     def __str__(self):
         return f"{self.attribute.name} - {self.value}"
 
     class Meta:
-        db_table = 'Value'
+        db_table = "Value"
 
 
 class property_value(models.Model):
@@ -750,14 +897,23 @@ class property_value(models.Model):
     ---------------------------
 
     """
+
     property = models.ForeignKey(
-        Property, verbose_name=_("property"), on_delete=models.CASCADE, related_name='property_value')
+        Property,
+        verbose_name=_("property"),
+        on_delete=models.CASCADE,
+        related_name="property_value",
+    )
     value = models.ForeignKey(
-        ValueModel, verbose_name=_("value"), on_delete=models.CASCADE, related_name="property_value")
+        ValueModel,
+        verbose_name=_("value"),
+        on_delete=models.CASCADE,
+        related_name="property_value",
+    )
 
     class Meta:
-        db_table = 'property_value'
-        unique_together = ['property', 'value']
+        db_table = "property_value"
+        unique_together = ["property", "value"]
 
 
 class Category_attribute(models.Model):
@@ -766,27 +922,37 @@ class Category_attribute(models.Model):
     ---------------------------
 
     """
-    category = models.ForeignKey(Category, verbose_name=_(
-        "category"), on_delete=models.CASCADE, related_name='category_attribute')
+
+    category = models.ForeignKey(
+        Category,
+        verbose_name=_("category"),
+        on_delete=models.CASCADE,
+        related_name="category_attribute",
+    )
     attribute = models.ForeignKey(
-        Attribute, verbose_name=_("attribute"), on_delete=models.CASCADE, related_name='category_attribute')
+        Attribute,
+        verbose_name=_("attribute"),
+        on_delete=models.CASCADE,
+        related_name="category_attribute",
+    )
 
     class Meta:
-        db_table = 'Category_attribute'
+        db_table = "Category_attribute"
 
     def __str__(self):
         return self.category.name
+
 
 # End Property Models
 
 # Start Interaction Models
 
- # this mathod for make check the rate`s range that most be for 1 to 5
+# this mathod for make check the rate`s range that most be for 1 to 5
 
 
 def validate_rate_range(value):
     if value < 1 or value > 5:
-        raise ValidationError(_('Rate must be between 1 and 5.'))
+        raise ValidationError(_("Rate must be between 1 and 5."))
 
 
 class Rate(models.Model):
@@ -795,17 +961,28 @@ class Rate(models.Model):
     ---------------------------
 
     """
+
     prop = models.ForeignKey(
-        Property, verbose_name=_("prperty"), on_delete=models.CASCADE, related_name='rate')
+        Property,
+        verbose_name=_("prperty"),
+        on_delete=models.CASCADE,
+        related_name="rate",
+    )
     user = models.ForeignKey(
-        "apps.User", verbose_name=_("user"), on_delete=models.CASCADE, related_name='rate')
-    rate = models.FloatField(_("Rating Number"), default=0.0, validators=[
-                             validate_rate_range])
+        "apps.User",
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+        related_name="rate",
+    )
+    rate = models.FloatField(
+        _("Rating Number"), default=0.0, validators=[validate_rate_range]
+    )
     time_created = models.DateTimeField(
-        _("time_created"), auto_now=False, auto_now_add=True)
+        _("time_created"), auto_now=False, auto_now_add=True
+    )
 
     class Meta:
-        db_table = 'Rate'
+        db_table = "Rate"
 
 
 class Favorite(models.Model):
@@ -814,15 +991,25 @@ class Favorite(models.Model):
     ---------------------------
 
     """
+
     prop = models.ForeignKey(
-        Property, verbose_name=_("prop"), on_delete=models.CASCADE, related_name='favorites')
+        Property,
+        verbose_name=_("prop"),
+        on_delete=models.CASCADE,
+        related_name="favorites",
+    )
     user = models.ForeignKey(
-        "apps.User", verbose_name=_("user"), on_delete=models.CASCADE, related_name='favorites')
+        "apps.User",
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+        related_name="favorites",
+    )
     time_created = models.DateTimeField(
-        _("time_created"), auto_now=False, auto_now_add=True)
+        _("time_created"), auto_now=False, auto_now_add=True
+    )
 
     class Meta:
-        db_table = 'Favorite'
+        db_table = "Favorite"
 
 
 class Report(models.Model):
@@ -831,16 +1018,26 @@ class Report(models.Model):
     ---------------------------
 
     """
+
     prop = models.ForeignKey(
-        Property, verbose_name=_("property"), on_delete=models.CASCADE, related_name='report')
+        Property,
+        verbose_name=_("property"),
+        on_delete=models.CASCADE,
+        related_name="report",
+    )
     user = models.ForeignKey(
-        "apps.User", verbose_name=_("user"), on_delete=models.CASCADE, related_name='report')
+        "apps.User",
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+        related_name="report",
+    )
     time_created = models.DateTimeField(
-        _("time_created"), auto_now=False, auto_now_add=True)
+        _("time_created"), auto_now=False, auto_now_add=True
+    )
     note = models.TextField(_("Note"))
 
     class Meta:
-        db_table = 'Report'
+        db_table = "Report"
 
     # add a speacial method to return the name of Property object
     def __str__(self):
@@ -853,18 +1050,30 @@ class Review(models.Model):
     ---------------------------
 
     """
+
     prop = models.ForeignKey(
-        Property, verbose_name=_("Property"), on_delete=models.CASCADE, related_name='review')
+        Property,
+        verbose_name=_("Property"),
+        on_delete=models.CASCADE,
+        related_name="review",
+    )
     user = models.ForeignKey(
-        "apps.User", verbose_name=_("user"), on_delete=models.CASCADE, related_name='review')
+        "apps.User",
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+        related_name="review",
+    )
     time_created = models.DateTimeField(
-        _("time_created"), auto_now=False, auto_now_add=True)
+        _("time_created"), auto_now=False, auto_now_add=True
+    )
     review = models.TextField(_("Note"))
-    rate_review = models.FloatField(_("Rating Number"), default=0.0, validators=[
-        validate_rate_range])
+    rate_review = models.FloatField(
+        _("Rating Number"), default=0.0, validators=[validate_rate_range]
+    )
 
     class Meta:
-        db_table = 'Review'
+        db_table = "Review"
+
 
 # End Interaction Models
 # Start TICKET Models
@@ -876,10 +1085,11 @@ class Ticket_type(models.Model):
     ---------------------------
 
     """
+
     type = models.CharField(_("type"), max_length=50)
 
     class Meta:
-        db_table = 'Ticket_type'
+        db_table = "Ticket_type"
 
     def __str__(self) -> str:
         return self.type
@@ -891,10 +1101,11 @@ class Ticket_status(models.Model):
     ---------------------------
 
     """
+
     status = models.CharField(_("Status"), max_length=50)
 
     class Meta:
-        db_table = 'Ticket_status'
+        db_table = "Ticket_status"
 
 
 class Ticket(models.Model):
@@ -905,32 +1116,55 @@ class Ticket(models.Model):
     """
 
     STATUS_CHOICES = [
-        ('Opened', _('Opened')),
-        ('InProcess', _('In Process')),
-        ('Reviewed', _('Reviewed')),
+        ("Opened", _("Opened")),
+        ("InProcess", _("In Process")),
+        ("Reviewed", _("Reviewed")),
     ]
 
-    type = models.ForeignKey(Ticket_type, verbose_name=_(
-        "type"), on_delete=models.DO_NOTHING, related_name='ticket')
+    type = models.ForeignKey(
+        Ticket_type,
+        verbose_name=_("type"),
+        on_delete=models.DO_NOTHING,
+        related_name="ticket",
+    )
     # status = models.ForeignKey(
     #     Ticket_status, verbose_name=_("Ticket_status"), on_delete=models.CASCADE, related_name='ticket', null=True, blank=True)
-    status = models.CharField(max_length=100, blank=True, choices=STATUS_CHOICES,
-                              default='Opened', verbose_name=_("Ticket_status"))
-    ticket_solver = models.ForeignKey(User, verbose_name=_(
-        "solver"), on_delete=models.CASCADE, related_name="ticket_solver", null=True, blank=True)
-    ticket_sender = models.ForeignKey(User, verbose_name=_(
-        "sender"), on_delete=models.CASCADE, related_name="ticket_sender", blank=True, null=True)
+    status = models.CharField(
+        max_length=100,
+        blank=True,
+        choices=STATUS_CHOICES,
+        default="Opened",
+        verbose_name=_("Ticket_status"),
+    )
+    ticket_solver = models.ForeignKey(
+        User,
+        verbose_name=_("solver"),
+        on_delete=models.CASCADE,
+        related_name="ticket_solver",
+        null=True,
+        blank=True,
+    )
+    ticket_sender = models.ForeignKey(
+        User,
+        verbose_name=_("sender"),
+        on_delete=models.CASCADE,
+        related_name="ticket_sender",
+        blank=True,
+        null=True,
+    )
     phone_number = models.CharField(_("phone_number"), max_length=50)
     created_time = models.DateTimeField(
-        _("created_time"), auto_now=False, auto_now_add=True)
+        _("created_time"), auto_now=False, auto_now_add=True
+    )
     solved_time = models.DateTimeField(
-        _("solved_time"), auto_now=False, auto_now_add=False, blank=True, null=True)
+        _("solved_time"), auto_now=False, auto_now_add=False, blank=True, null=True
+    )
     email = models.EmailField(_("email"), max_length=254)
     problem_text = models.TextField(_("problem_text"))
-    image = GenericRelation(Image, related_query_name='ticket')
+    image = GenericRelation(Image, related_query_name="ticket")
 
     class Meta:
-        db_table = 'Ticket'
+        db_table = "Ticket"
 
 
 # class Image_Ticket(models.Model):
@@ -953,12 +1187,18 @@ class Solve_message(models.Model):
     ---------------------------
 
     """
+
     ticket = models.ForeignKey(
-        Ticket, verbose_name=_("ticket"), on_delete=models.CASCADE, related_name='solve_message')
+        Ticket,
+        verbose_name=_("ticket"),
+        on_delete=models.CASCADE,
+        related_name="solve_message",
+    )
     message = models.TextField(_("message"))
 
     class Meta:
-        db_table = 'Solve_message'
+        db_table = "Solve_message"
+
 
 # End TICKET Models
 # Start Notifications Models
@@ -970,17 +1210,17 @@ class Notification(models.Model):
     ---------------------------
 
     """
+
     # Who the notification is sent to
-    target = models.ForeignKey(
-        User, on_delete=models.CASCADE)
+    target = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # The user that the creation of the notification was triggered by.
     from_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=True, blank=True, related_name="from_user")
+        User, on_delete=models.CASCADE, null=True, blank=True, related_name="from_user"
+    )
 
     # statement describing the notification (ex: "Mitch sent you a friend request")
-    verb = models.CharField(
-        max_length=255, unique=False, blank=True, null=True)
+    verb = models.CharField(max_length=255, unique=False, blank=True, null=True)
 
     # When the notification was created/updated
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -1012,7 +1252,7 @@ class Notification(models.Model):
         return str(self.content_object.get_cname)
 
     class Meta:
-        db_table = 'Notification'
+        db_table = "Notification"
 
 
 # class User_notification(models.Model):
@@ -1039,14 +1279,14 @@ class PrivateChatRoom(models.Model):
     """
     A private room for people to chat in.
     """
-    user1 = models.ForeignKey(User,
-                              on_delete=models.CASCADE, related_name="user1")
-    user2 = models.ForeignKey(User,
-                              on_delete=models.CASCADE, related_name="user2")
+
+    user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user1")
+    user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user2")
 
     # Users who are currently connected to the socket (Used to keep track of unread messages)
     connected_users = models.ManyToManyField(
-        User, blank=True, related_name="connected_users")
+        User, blank=True, related_name="connected_users"
+    )
 
     is_active = models.BooleanField(default=False)
 
@@ -1079,7 +1319,7 @@ class PrivateChatRoom(models.Model):
         return f"PrivateChatRoom-{self.id}"
 
     class Meta:
-        db_table = 'PrivateChatRoom'
+        db_table = "PrivateChatRoom"
 
 
 class RoomChatMessageManager(models.Manager):
@@ -1092,11 +1332,14 @@ class RoomChatMessage(models.Model):
     """
     Chat message created by a user inside a Room
     """
-    user = models.ForeignKey(User,
-                             on_delete=models.CASCADE)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     room = models.ForeignKey(PrivateChatRoom, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
-    content = models.TextField(unique=False, blank=False,)
+    content = models.TextField(
+        unique=False,
+        blank=False,
+    )
 
     objects = RoomChatMessageManager()
 
@@ -1104,7 +1347,7 @@ class RoomChatMessage(models.Model):
         return self.content
 
     class Meta:
-        db_table = 'RoomChatMessage'
+        db_table = "RoomChatMessage"
 
 
 class UnreadChatRoomMessages(models.Model):
@@ -1112,20 +1355,21 @@ class UnreadChatRoomMessages(models.Model):
     Keep track of the number of unread messages by a specific user in a specific private chat.
     When the user connects the chat room, the messages will be considered "read" and 'count' will be set to 0.
     """
-    room = models.ForeignKey(
-        PrivateChatRoom, on_delete=models.CASCADE, related_name="room")
 
-    user = models.ForeignKey(User,
-                             on_delete=models.CASCADE, related_name='unread_message')
+    room = models.ForeignKey(
+        PrivateChatRoom, on_delete=models.CASCADE, related_name="room"
+    )
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="unread_message"
+    )
 
     count = models.IntegerField(default=0)
 
-    most_recent_message = models.CharField(
-        max_length=500, blank=True, null=True)
+    most_recent_message = models.CharField(max_length=500, blank=True, null=True)
 
     # last time msgs were read by the user
-    reset_timestamp = models.DateTimeField(
-        null=True, blank=True, auto_now_add=True)
+    reset_timestamp = models.DateTimeField(null=True, blank=True, auto_now_add=True)
 
     notifications = GenericRelation(Notification)
 
@@ -1155,7 +1399,9 @@ class UnreadChatRoomMessages(models.Model):
             return self.room.user1
 
     class Meta:
-        db_table = 'UnreadChatRoomMessages'
+        db_table = "UnreadChatRoomMessages"
+
+
 # End Chat
 # Friend
 
@@ -1173,11 +1419,8 @@ def find_or_create_private_chat(user1, user2):
 
 
 class FriendList(models.Model):
-
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="user")
-    friends = models.ManyToManyField(
-        User, blank=True, related_name="friends")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
+    friends = models.ManyToManyField(User, blank=True, related_name="friends")
 
     # set up the reverse relation to GenericForeignKey
     notifications = GenericRelation(Notification)
@@ -1279,7 +1522,7 @@ class FriendList(models.Model):
         return False
 
     class Meta:
-        db_table = 'FriendList'
+        db_table = "FriendList"
 
 
 class FriendRequest(models.Model):
@@ -1291,10 +1534,10 @@ class FriendRequest(models.Model):
                     - Person receiving the friend friend
     """
 
-    sender = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="sender")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
     receiver = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="receiver")
+        User, on_delete=models.CASCADE, related_name="receiver"
+    )
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
 
@@ -1316,9 +1559,12 @@ class FriendRequest(models.Model):
 
             # Update notification for RECEIVER
             receiver_notification = Notification.objects.get(
-                target=self.receiver, content_type=content_type, object_id=self.id)
+                target=self.receiver, content_type=content_type, object_id=self.id
+            )
             receiver_notification.is_active = False
-            receiver_notification.verb = f"You accepted {self.sender.name}'s friend request."
+            receiver_notification.verb = (
+                f"You accepted {self.sender.name}'s friend request."
+            )
             receiver_notification.timestamp = timezone.now()
             receiver_notification.save()
 
@@ -1326,7 +1572,6 @@ class FriendRequest(models.Model):
 
             sender_friend_list = FriendList.objects.get(user=self.sender)
             if sender_friend_list:
-
                 # Create notification for SENDER
                 self.notifications.create(
                     target=self.sender,
@@ -1354,7 +1599,8 @@ class FriendRequest(models.Model):
 
         # Update notification for RECEIVER
         notification = Notification.objects.get(
-            target=self.receiver, content_type=content_type, object_id=self.id)
+            target=self.receiver, content_type=content_type, object_id=self.id
+        )
         notification.is_active = False
         notification.verb = f"You declined {self.sender}'s friend request."
         notification.from_user = self.sender
@@ -1391,8 +1637,11 @@ class FriendRequest(models.Model):
         )
 
         notification = Notification.objects.get(
-            target=self.receiver, content_type=content_type, object_id=self.id)
-        notification.verb = f"{self.sender.name} cancelled the friend request sent to you."
+            target=self.receiver, content_type=content_type, object_id=self.id
+        )
+        notification.verb = (
+            f"{self.sender.name} cancelled the friend request sent to you."
+        )
         # notification.timestamp = timezone.now()
         notification.read = False
         notification.save()
@@ -1405,33 +1654,46 @@ class FriendRequest(models.Model):
         return "FriendRequest"
 
     class Meta:
-        db_table = 'FriendRequest'
+        db_table = "FriendRequest"
+
+
 # End Friend
 
 
 # End Chats Models
 class Alarm(models.Model):
-    user = models.ForeignKey(User, verbose_name=_(
-        "User"), on_delete=models.CASCADE, related_name='alarm')
+    user = models.ForeignKey(
+        User, verbose_name=_("User"), on_delete=models.CASCADE, related_name="alarm"
+    )
 
-    state = models.ForeignKey(State, verbose_name=_(
-        "State"), on_delete=models.CASCADE, related_name='alarm')
-    category = models.ForeignKey(Category, verbose_name=_(
-        "Category"), on_delete=models.CASCADE, related_name='alarm')
+    state = models.ForeignKey(
+        State, verbose_name=_("State"), on_delete=models.CASCADE, related_name="alarm"
+    )
+    category = models.ForeignKey(
+        Category,
+        verbose_name=_("Category"),
+        on_delete=models.CASCADE,
+        related_name="alarm",
+    )
 
     is_active = models.BooleanField(_("Activite?"), default=True)
     time_created = models.DateTimeField(
-        _("time_created"), auto_now=False, auto_now_add=True)
+        _("time_created"), auto_now=False, auto_now_add=True
+    )
     time_updated = models.DateTimeField(
-        _("time_updated"), auto_now=True, auto_now_add=False)
+        _("time_updated"), auto_now=True, auto_now_add=False
+    )
     max_price = models.DecimalField(
-        _("Max Price"), max_digits=10, decimal_places=2, blank=True, null=True)
+        _("Max Price"), max_digits=10, decimal_places=2, blank=True, null=True
+    )
     min_price = models.DecimalField(
-        _("Min Price"), max_digits=10, decimal_places=2, blank=True, null=True)
+        _("Min Price"), max_digits=10, decimal_places=2, blank=True, null=True
+    )
     for_sale = models.BooleanField(_("For Sale?"), default=True)
     for_rent = models.BooleanField(_("For Rent?"), default=True)
     value = models.ManyToManyField(
-        Attribute, verbose_name=_("alarm_value"), through="Alarm_value")
+        Attribute, verbose_name=_("alarm_value"), through="Alarm_value"
+    )
     notifications = GenericRelation(Notification)
 
     @property
@@ -1448,23 +1710,31 @@ class Alarm(models.Model):
             from_user=None,  # You may set this to a specific user if needed
             verb="Your alarm matched a new property!",
             timestamp=timezone.now(),
-            content_object=content_type
+            content_object=content_type,
         )
         return notification
 
     class Meta:
-        db_table = 'Alarm'
+        db_table = "Alarm"
 
 
 class Alarm_value(models.Model):
-    alarm = models.ForeignKey(Alarm, verbose_name=_(
-        "Alarm"), on_delete=models.CASCADE, related_name='alarm_value')
-    attribute = models.ForeignKey(Attribute, verbose_name=_(
-        "Attribute"), on_delete=models.CASCADE, related_name='alarm_value')
+    alarm = models.ForeignKey(
+        Alarm,
+        verbose_name=_("Alarm"),
+        on_delete=models.CASCADE,
+        related_name="alarm_value",
+    )
+    attribute = models.ForeignKey(
+        Attribute,
+        verbose_name=_("Attribute"),
+        on_delete=models.CASCADE,
+        related_name="alarm_value",
+    )
     value = models.CharField(_("Value"), max_length=50)
 
     class Meta:
-        db_table = 'Alarm_value'
+        db_table = "Alarm_value"
 
 
 # Start Alarm Models

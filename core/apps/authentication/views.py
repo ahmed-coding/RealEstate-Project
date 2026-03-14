@@ -21,18 +21,21 @@ class CustomAuthToken(CreateAPIView):
     serializer_class = AuthTokenSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
+        serializer = self.serializer_class(
+            data=request.data, context={"request": request}
+        )
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        user = serializer.validated_data["user"]
         token, created = Token.objects.get_or_create(user=user)
         login(request, user)
-        return Response({
-            'token': token.key,
-            'user_id': user.pk,
-            'email': user.email,
-            'user_type': user.user_type
-        })
+        return Response(
+            {
+                "token": token.key,
+                "user_id": user.pk,
+                "email": user.email,
+                "user_type": user.user_type,
+            }
+        )
 
 
 class ReigsterView(CreateAPIView):
@@ -40,6 +43,7 @@ class ReigsterView(CreateAPIView):
     ReigsterAPI to create user if request.session.has_key('email_code') and request.session.has_key('is_verify') is True
     and he will be replace the another view in User.view for Customer at new
     """
+
     # authentication_classes = [JWTAuthentication]
     # permission_classes = [IsAuthenticated]
     model = User
@@ -52,7 +56,7 @@ class ReigsterView(CreateAPIView):
         - in_Success:
             - data: (``string``) -> message from server.
             - user: (``User``) -> data of user after created.
-            - status_code : 200 
+            - status_code : 200
         - in_Fail:
             - error: (``string``) -> Error Message.
             - status: 401 when come bafore verify the ``email`` or ``phone_number``.
@@ -77,22 +81,21 @@ class ReigsterView(CreateAPIView):
             #     'imageUrl' : user_data.get('image', ''),
             #     # Add other fields as needed
             # }, merge=True)
-            return Response(
-                serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response({
-                'error': serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class LogoutView(APIView):
-
     """
     this will be take ``refresh`` token and add it to blackList
     Method :
         >>> [POST]
         dont add more
     """
+
     # authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = None
@@ -112,9 +115,7 @@ class LogoutView(APIView):
         # d.delete()
 
         logout(request=request)
-        return Response(data={
-            'data': 'Logout done'
-        }, status=status.HTTP_200_OK)
+        return Response(data={"data": "Logout done"}, status=status.HTTP_200_OK)
 
 
 #### Email Method ######
@@ -130,100 +131,323 @@ def check_email_velidate(request: Request):
     # for key in request.META :
     #     print(key)
 
-    if request.data.get('email'):
+    if request.data.get("email"):
         try:
-            email = User.objects.get(email=request.data.get('email'))
-            return Response({
-                'is_valid': False
-            }, status=status.HTTP_200_OK)
+            email = User.objects.get(email=request.data.get("email"))
+            return Response({"is_valid": False}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
-            return Response({
-                'is_valid': True
-            }, status=status.HTTP_200_OK)
-    return Response({
-        'error': "check-email-velidate"
-    }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"is_valid": True}, status=status.HTTP_200_OK)
+    return Response(
+        {"error": "check-email-velidate"}, status=status.HTTP_400_BAD_REQUEST
+    )
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 def send_verify_email(request: Request):
     """
-    Argament:
-        `email`: to send code.
+    Send OTP to email for verification.
+    Stores the code in DB with 10-minute expiry - NEVER returns the code in response.
     """
-    if request.data.get('email'):
-        try:
-            code = generit_random_code(4)
-            print(code)
-            email = request.data.get('email')
-            template = loader.get_template('email-template/code_design.html').render({
-                'code': code
-            })
-            send = EmailMessage(
-                "OTP Form RealEstate authentication Verify", template,  settings.EMAIL_HOST_USER, [email, ])
-            # send_mail(
-            #     f" Welcome Your Code : {code}.", settings.EMAIL_HOST_USER, [email, ], fail_silently=False)
-            send.content_subtype = 'html'
-            send.send()
-            # {
-            #     "email": "ahmed.128hemzh@gmail.com"
-            # }
-            # request.session['email_code'] = code
-            # request.session['is_verify'] = False
-            return Response({
-                'code': code
-            }, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({"error": e}, status=status.HTTP_204_NO_CONTENT)
+    from django.utils import timezone
+    from datetime import timedelta
+    from apps.models import VerificationCode
 
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    email = request.data.get("email")
+    if not email:
+        return Response(
+            {"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        # Generate 4-digit code
+        code = generit_random_code(4)
+
+        # Calculate expiry time (10 minutes from now)
+        expiry = timezone.now() + timedelta(minutes=10)
+
+        # Delete any existing unused codes for this email
+        VerificationCode.objects.filter(email=email, is_used=False).delete()
+
+        # Create new verification code in DB
+        VerificationCode.objects.create(
+            email=email, random_code=code, expire_date=expiry
+        )
+
+        # Send email with the code
+        template = loader.get_template("email-template/code_design.html").render(
+            {"code": code}
+        )
+        send = EmailMessage(
+            "OTP Form RealEstate authentication Verify",
+            template,
+            settings.EMAIL_HOST_USER,
+            [
+                email,
+            ],
+        )
+        send.content_subtype = "html"
+        send.send()
+
+        # IMPORTANT: Never return the code in the API response!
+        return Response(
+            {"message": "Verification code sent to your email"},
+            status=status.HTTP_200_OK,
+        )
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 def verify_email(request: Request):
+    """
+    Verify the OTP code sent to email.
+    Validates against stored code in DB with expiry check.
+    """
+    from django.utils import timezone
+    from apps.models import VerificationCode
 
-    email_code = ''
-    code = ''
-    # and request.session.has_key('is_verify'): -> لما نكمل بشكل كامل لازم يكون create user من هناء لما يكون False يعني مايقع شي
-    # if request.session.has_key('email_code'):
-    #     email_code = request.session.get('email_code')
-    # else:
-    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
-    if request.data.get('code'):
-        code = request.data.get('code')
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    # if email_code == code:        # request.session['is_verify'] = True # هنا
+    email = request.data.get("email")
+    code = request.data.get("code")
 
-    if code:
-        return Response({
-            'is_valid': True
-        }, status=status.HTTP_200_OK)
-    else:
-        return Response({
-            'is_valid': False
-        }, status=status.HTTP_200_OK)
+    if not email or not code:
+        return Response(
+            {"error": "Email and code are required"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        # Find the verification code for this email
+        verification = VerificationCode.objects.filter(
+            email=email, random_code=code, is_used=False
+        ).first()
+
+        if not verification:
+            return Response(
+                {"is_valid": False, "error": "Invalid or expired verification code"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Check if code has expired
+        if verification.expire_date < timezone.now():
+            return Response(
+                {"is_valid": False, "error": "Verification code has expired"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Mark code as used
+        verification.is_used = True
+        verification.save()
+
+        return Response(
+            {"is_valid": True, "message": "Email verified successfully"},
+            status=status.HTTP_200_OK,
+        )
+
+    except Exception as e:
+        return Response(
+            {"is_valid": False, "error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
 
 #### End Email Method ######
 
 
-class PasswordResetView(APIView):
-    serializer_class = PasswordResetSerializer
+class PasswordResetRequestView(APIView):
+    """
+    Request a password reset.
+    Generates a cryptographic token and sends it via email.
+    """
+
+    permission_classes = []  # Public endpoint
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data['email']
-            new_password = serializer.validated_data['new_password']
+        from apps.models import PasswordResetToken
+        from django.utils import timezone
+        from datetime import timedelta
+
+        email = request.data.get("email")
+        if not email:
+            return Response(
+                {"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
             user = User.objects.get(email=email)
-            # Reset the password
+        except User.DoesNotExist:
+            # Don't reveal whether the email exists or not
+            return Response(
+                {"message": "If the email exists, a reset link will be sent"},
+                status=status.HTTP_200_OK,
+            )
+
+        try:
+            # Invalidate any existing tokens for this user
+            PasswordResetToken.objects.filter(user=user, is_used=False).update(
+                is_used=True
+            )
+
+            # Generate cryptographically secure token
+            token = PasswordResetToken.generate_token()
+
+            # Set expiry to 15 minutes from now
+            expire_at = timezone.now() + timedelta(minutes=15)
+
+            # Create token in database
+            reset_token = PasswordResetToken.objects.create(
+                user=user, token=token, expire_at=expire_at
+            )
+
+            # Send email with reset link (containing the token)
+            reset_link = f"https://yourdomain.com/reset-password?token={token}"
+            template = loader.get_template("email-template/password_reset.html").render(
+                {"user": user, "reset_link": reset_link}
+            )
+            send = EmailMessage(
+                "Password Reset Request",
+                template,
+                settings.EMAIL_HOST_USER,
+                [
+                    email,
+                ],
+            )
+            send.content_subtype = "html"
+            send.send()
+
+            return Response(
+                {"message": "If the email exists, a reset link will be sent"},
+                status=status.HTTP_200_OK,
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class PasswordResetConfirmView(APIView):
+    """
+    Confirm password reset with valid token.
+    Validates token, checks expiry, and updates password.
+    """
+
+    permission_classes = []  # Public endpoint
+
+    def post(self, request):
+        from apps.models import PasswordResetToken
+        from django.utils import timezone
+
+        token = request.data.get("token")
+        new_password = request.data.get("new_password")
+
+        if not token or not new_password:
+            return Response(
+                {"error": "Token and new password are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            # Find the token
+            reset_token = (
+                PasswordResetToken.objects.filter(token=token, is_used=False)
+                .select_related("user")
+                .first()
+            )
+
+            if not reset_token:
+                return Response(
+                    {"error": "Invalid or expired reset token"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # Check if token has expired
+            if reset_token.expire_at < timezone.now():
+                return Response(
+                    {"error": "Reset token has expired"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # Validate password strength (optional - can add more validation)
+            if len(new_password) < 8:
+                return Response(
+                    {"error": "Password must be at least 8 characters"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # Update password
+            user = reset_token.user
             user.set_password(new_password)
-            # user.profile.reset_password_token = ''
-            # user.profile.save()
             user.save()
 
-            return Response({"message": "Password has been reset"}, status=status.HTTP_200_OK)
+            # Mark token as used
+            reset_token.is_used = True
+            reset_token.save()
+
+            return Response(
+                {"message": "Password has been reset successfully"},
+                status=status.HTTP_200_OK,
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+# Keep old view for backwards compatibility (will be deprecated)
+class PasswordResetView(APIView):
+    serializer_class = PasswordResetSerializer
+    permission_classes = []  # Public endpoint
+
+    def post(self, request):
+        # This is the old insecure implementation - redirect to new endpoints
+        # For backwards compatibility, we'll use the new token-based approach
+        from apps.models import PasswordResetToken
+        from django.utils import timezone
+        from datetime import timedelta
+
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data["email"]
+            new_password = serializer.validated_data.get("new_password")
+
+            # Check if this is a token-based request
+            token = request.data.get("token")
+            if token:
+                # Use the new token-based verification
+                reset_token = (
+                    PasswordResetToken.objects.filter(token=token, is_used=False)
+                    .select_related("user")
+                    .first()
+                )
+
+                if not reset_token:
+                    return Response(
+                        {"error": "Invalid or expired reset token"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                if reset_token.expire_at < timezone.now():
+                    return Response(
+                        {"error": "Reset token has expired"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                user = reset_token.user
+                user.set_password(new_password)
+                user.save()
+
+                reset_token.is_used = True
+                reset_token.save()
+
+                return Response(
+                    {"message": "Password has been reset"}, status=status.HTTP_200_OK
+                )
+            else:
+                # Legacy support - just reset without token (insecure, should not be used)
+                return Response(
+                    {"error": "Token is required for password reset"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
