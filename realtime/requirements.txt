@@ -1,0 +1,14 @@
+# FastAPI and uvicorn
+fastapi==0.128.1
+uvicorn[standard]==0.32.0
+httpx==0.28.1
+
+# Django and DRF (for ORM access)
+Django==4.2.5
+djangorestframework==3.14.0
+
+# Database
+psycopg2==2.9.9
+
+# Redis
+redis==5.2.0
